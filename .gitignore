@@ -1,0 +1,12 @@
+# Other stuff
+**/.DS_Store
+.idea
+obj
+bin
+.vs/
+.env
+
+# Front-end build stuff
+node_modules
+yarn-error.log
+dist/
