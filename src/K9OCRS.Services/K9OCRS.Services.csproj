@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.12.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\K9OCRS.Entities\K9OCRS.Entities.csproj" />
+    <ProjectReference Include="..\K9OCRS.Repositories\K9OCRS.Repositories.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,39 @@
+// Color Variables
+
+$blue: #3a83d1;
+$indigo: #7741ce;
+$purple: #7852bd;
+$pink: #cf5e92;
+$red: #c7525e;
+$orange: #d48849;
+$yellow: #d3ad3c;
+$green: #3ba955;
+$teal: #3abd96;
+$cyan: #349faf;
+
+$primary: $blue;
+$success: $green;
+$info: $cyan;
+$warning: $yellow;
+$danger: $red;
+
+$white: #fff;
+$gray-100: mix(#f8f9fa, $primary, 98%);
+$gray-200: mix(#e9ecef, $primary, 96%);
+$gray-300: mix(#dee2e6, $primary, 94%);
+$gray-400: mix(#ced4da, $primary, 92%);
+$gray-500: mix(#adb5bd, $primary, 90%);
+$gray-600: mix(#6c757d, $primary, 90%);
+$gray-700: mix(#495057, $primary, 90%);
+$gray-800: mix(#343a40, $primary, 90%);
+$gray-900: mix(#212529, $primary, 90%);
+$black: #000;
+
+$secondary: $gray-600;
+$light: $gray-200;
+$dark: $gray-800;
+
+$body-bg: lighten($gray-500, 6%); // #D8D9E2
+$body-color: $gray-900;
+
+$spacer: 2rem;

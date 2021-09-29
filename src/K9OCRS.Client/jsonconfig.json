@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": false,
+    "baseUrl": "./",
+    "paths": {
+      "root/*": ["/*"]
+    },
+    "module": "commonjs"
+  },
+  "exclude": ["node_modules"]
+}

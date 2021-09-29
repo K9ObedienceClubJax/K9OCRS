@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.9" />
+    <PackageReference Include="Npgsql" Version="5.0.7" />
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\K9OCRS.Entities\K9OCRS.Entities.csproj" />
+  </ItemGroup>
+
+</Project>
