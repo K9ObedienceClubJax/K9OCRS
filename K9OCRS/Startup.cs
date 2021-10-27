@@ -29,7 +29,7 @@ namespace K9OCRS
             LogStartup();
 
             services.AddControllersWithViews();
-            services.AddRazorPages();
+            services.AddRazorPages().WithRazorPagesRoot("/Views");
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
