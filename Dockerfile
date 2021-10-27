@@ -1,30 +1,19 @@
-# Webpack build
-FROM node:14.17.3-stretch AS frontend
-WORKDIR /client
-
-COPY ./src/K9OCRS.Client/package.json ./
-COPY ./src/K9OCRS.Client/yarn.lock ./
-
-RUN yarn
-
-COPY ./src/K9OCRS.Client ./
-
-RUN yarn build:prod
-
 # NETCORE BUILD
-FROM mcr.microsoft.com/dotnet/sdk:3.1.411 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /app
 
+# Install node@15.x
+RUN curl -sL https://deb.nodesource.com/setup_15.x |  bash -
+RUN apt-get install -y nodejs
+
 COPY ./*.sln ./
-COPY ./src ./src/
+COPY ./K9OCRS ./K9OCRS/
 
 RUN dotnet restore
 RUN dotnet publish -o /app/build
 
-COPY --from=frontend /client/dist /app/build/wwwroot/dist/
-
 # RUNTIME
-FROM mcr.microsoft.com/dotnet/aspnet:3.1.17
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
 
 # Set Default Time Zone
 RUN ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
