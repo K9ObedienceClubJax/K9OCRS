@@ -1,6 +1,6 @@
 using System;
 
-namespace Ignitech.K9OCRS
+namespace K9OCRS
 {
     public class WeatherForecast
     {

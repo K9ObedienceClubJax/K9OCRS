@@ -1,12 +1,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Autofac;
+using Serilog;
+using System;
+using System.Diagnostics;
 
-namespace Ignitech.K9OCRS
+namespace K9OCRS
 {
     public class Startup
     {
@@ -20,6 +26,7 @@ namespace Ignitech.K9OCRS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            LogStartup();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -29,6 +36,23 @@ namespace Ignitech.K9OCRS
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            // Http Clients
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            // Serilog Logging
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .Enrich.WithProperty("App Name", "K9OCRS")
+                .WriteTo.Console()
+                .CreateLogger();
+
+            void LogStartup()
+            {
+                var pid = Process.GetCurrentProcess().Id;
+                var name = GetType().Namespace;
+                Console.WriteLine("[{0}] service started as pid [{1}]", name, pid);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +68,14 @@ namespace Ignitech.K9OCRS
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            var forwardedHeadersOptions = new ForwardedHeadersOptions
+            {
+                RequireHeaderSymmetry = false,
+                ForwardedHeaders = ForwardedHeaders.All
+            };
+            forwardedHeadersOptions.KnownNetworks.Clear();
+            forwardedHeadersOptions.KnownProxies.Clear();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -67,6 +99,14 @@ namespace Ignitech.K9OCRS
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
+            });
+
+            app.UseCors(policy =>
+            {
+                var allowedOrigins = Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new string[] { };
+                policy.WithOrigins(allowedOrigins);
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
             });
         }
     }

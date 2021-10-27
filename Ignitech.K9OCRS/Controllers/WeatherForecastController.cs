@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Ignitech.K9OCRS.Controllers
+namespace K9OCRS.Controllers
 {
     [ApiController]
     [Route("[controller]")]
