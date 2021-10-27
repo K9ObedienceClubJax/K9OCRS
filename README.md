@@ -11,4 +11,4 @@
 # Running Locally
 ## You'll need:
 - Visual Studio 2019
-- NodeJs 15.x
+- NodeJS 15.x
