@@ -28,7 +28,16 @@ Example table: dbo.Books
 
 The process of making a new database table usable through a repository goes like this:
 
-1. Add the table name to the `Constants/DbTables.cs` table name's mapping
+1. Create an **entity** that represents a single row from the table
+
+```c#
+public class Book {
+    public int ID { get; set; }
+    public string Title { get; set; }
+}
+```
+
+2. Add the table name to the `Constants/DbTables.cs` table name's mapping
 
 ```c#
 public class DbTables {
@@ -37,15 +46,6 @@ public class DbTables {
             { nameof(Book), "[dbo].[Books]" },
         };
 	...
-}
-```
-
-2. Create an **entity** that represents the table
-
-```c#
-public class Book {
-    public int ID { get; set; }
-    public string Title { get; set; }
 }
 ```
 
