@@ -12,3 +12,4 @@
 ## You'll need:
 - Visual Studio 2019
 - NodeJS 15.x
+- A filled out `/K9OCRS/.env` file
