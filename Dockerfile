@@ -7,7 +7,7 @@ RUN curl -sL https://deb.nodesource.com/setup_15.x |  bash -
 RUN apt-get install -y nodejs
 
 COPY ./*.sln ./
-COPY ./K9OCRS ./K9OCRS/
+COPY ./src ./src/
 
 RUN dotnet restore
 RUN dotnet publish -o /app/build
