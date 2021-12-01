@@ -11,6 +11,7 @@ using Autofac;
 using Serilog;
 using System;
 using System.Diagnostics;
+using DataAccess;
 
 namespace K9OCRS
 {
@@ -53,6 +54,37 @@ namespace K9OCRS
                 var name = GetType().Namespace;
                 Console.WriteLine("[{0}] service started as pid [{1}]", name, pid);
             }
+
+            // Add Swagger
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1",
+                    new Microsoft.OpenApi.Models.OpenApiInfo
+                    {
+                        Title = "K9OCRS API",
+                        Description = "API for the K9 Obedience Club Registration System",
+                        Version = "v1"
+                    });
+            });
+        }
+
+        // Here we'll register repositories and services
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            // Creates the connection string from environment variables set in the .env file
+            // and a template connection string from appsettings.json
+            var connectionString = String.Format(
+                    Configuration.GetConnectionString("Template"),
+                    Configuration.GetValue<string>("DB_SERVER"),
+                    Configuration.GetValue<string>("DB_NAME"),
+                    Configuration.GetValue<string>("DB_USERNAME"),
+                    Configuration.GetValue<string>("DB_PASSWORD")
+            );
+
+            // Modules
+            builder.RegisterModule(new ModuleBuilder()
+                .UseConnectionOwner(connectionString)
+                .Build());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,6 +114,13 @@ namespace K9OCRS
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "K9OCRS API");
+            });
 
             app.UseEndpoints(endpoints =>
             {
