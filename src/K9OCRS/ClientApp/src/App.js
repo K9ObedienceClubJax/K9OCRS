@@ -7,6 +7,7 @@ import { Counter } from "./components/Counter";
 import ClassTypesDashboard from "./pages/ClassTypesDashboard";
 import ClassTypeSetup from "./pages/ClassTypeSetup";
 import Login from "./pages/Login";
+import CreatePassword from "./pages/Account/Create";
 
 import "./custom.scss";
 
@@ -22,6 +23,7 @@ export default class App extends Component {
         <Route path="/classtypes" component={ClassTypesDashboard} />
         <Route path="/classtype/1" component={ClassTypeSetup} />
         <Route path="/login" component={Login} />
+        <Route path="/Account/Create" component={CreatePassword} />
       </Layout>
     );
   }
