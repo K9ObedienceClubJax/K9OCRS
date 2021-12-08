@@ -1,9 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { Row, Col, Button, Input } from "reactstrap";
+import axios from "axios";
+
+async function handleSubmit(email) {
+  const response = await axios.post("/api/passwordreset", {
+    email,
+  });
+}
+
+function ValidateEmail(e) {
+  //Validate email
+  let regex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/i;
+  if (regex.test(e.value)) {
+    e.setAttribute("isvalid", "true");
+    e.setCustomValidity("");
+  } else {
+    e.setCustomValidity("Not a valid email format.");
+    e.reportValidity();
+  }
+}
 
 function PasswordReset() {
+  const [email, setEmail] = useState("");
+
   return (
-    <form asp-action="PasswordReset" method="post">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(email);
+      }}
+    >
       <h1 className="d-flex justify-content-center mt-4 font-weight-bold">
         Password Reset
       </h1>
@@ -18,11 +44,14 @@ function PasswordReset() {
               type="email"
               className="form-control"
               placeholder="Email Address"
-              for="Email"
+              htmlFor="Email"
               name="email"
-              value=""
-              aria-label="Email"
-              aria-describedby="basic-addon1"
+              value={email}
+              onChange={(e) => {
+                ValidateEmail(e.target);
+                setEmail(e.target.value);
+              }}
+              required
             />
           </div>
         </Col>
