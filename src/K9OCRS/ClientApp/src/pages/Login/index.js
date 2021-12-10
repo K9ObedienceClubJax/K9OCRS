@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Input } from "reactstrap";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 async function handleSubmit(email, password) {
   console.log({ email, password });
@@ -9,6 +10,7 @@ async function handleSubmit(email, password) {
 }
 
 function Login() {
+  let history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,6 +19,7 @@ function Login() {
       onSubmit={(e) => {
         e.preventDefault();
         handleSubmit(email, password);
+        history.push("/");
       }}
     >
       <h1 className="mt-4 mb-4 d-flex justify-content-center ">Login</h1>
