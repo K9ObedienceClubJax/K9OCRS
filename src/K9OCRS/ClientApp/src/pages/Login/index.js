@@ -57,7 +57,7 @@ function Login() {
 
       <Row>
         <Col lg="4" className="mx-auto">
-          <a href="/passwordreset">Forgot Password?</a>
+          <a href="/account/passwordreset">Forgot Password?</a>
           <Button
             className="float-right"
             size="lg"
@@ -72,7 +72,7 @@ function Login() {
       <Row>
         <Col lg="4" className="mx-auto">
           <a
-            href="/signup"
+            href="/account/create"
             className="d-flex justify-content-center mt-4 font-weight-bold"
             style={{ color: "#545b62" }}
           >
