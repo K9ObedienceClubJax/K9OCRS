@@ -3,7 +3,7 @@ import { Container } from "reactstrap";
 import NavBar from "./NavBar";
 import SiteBanner from "./SiteBanner";
 
-export class Layout extends Component {
+export default class Layout extends Component {
   static displayName = Layout.name;
 
   render() {

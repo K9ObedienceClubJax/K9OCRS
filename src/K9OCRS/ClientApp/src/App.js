@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import ClassTypesDashboard from './pages/ClassTypesDashboard';
-import ClassTypeSetup from './pages/ClassTypeSetup';
+import Layout from './sharedComponents/Layout';
+
+// Page imports
+import Catalog from './pages/Catalog';
+import Confirm from './pages/Catalog/Confirm';
+
+import Login from './pages/Account/Login';
 import CreatePassword from './pages/Account/Create';
 import PasswordReset from './pages/Account/PasswordReset';
-import Confirm from './pages/Registration/Confirm';
-import Login from './pages/Login';
-import DogSetup from './pages/DogSetup/dogSetup';
-import DogDetails from './pages/DogDetails/dogDetails';
-import MyDogs from './pages/MyDogs/myDogs'
 
-import './custom.scss';
+import MyDogs from './pages/MyDogs';
+import DogDetails from './pages/DogDetails';
+import DogSetup from './pages/DogSetup';
+
+import ClassTypesDashboard from './pages/ClassTypesDashboard';
+import ClassTypeSetup from './pages/ClassTypeSetup';
+
+import './app.scss';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -22,7 +27,7 @@ export default class App extends Component {
       <Layout>
         <Switch>
           {/* Routes available to anyone */}
-          <Route path='/' component={Home} exact />
+          <Route path='/' component={Catalog} exact />
           <Route path='/Account/Login' component={Login} />
           <Route path='/Account/Create' component={CreatePassword} />
           <Route path='/Account/PasswordReset' component={PasswordReset} />

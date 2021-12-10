@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import boostrap from "bootstrap";
 import data from "./data.json";
 import CourseDisplay from "./CourseDisplay";
 import Search from "./Search";

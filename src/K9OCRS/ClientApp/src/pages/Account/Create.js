@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Input } from "reactstrap";
-import axios from "axios";
+//import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 function ValidateEmail(e) {
@@ -31,7 +31,7 @@ function ValidatePassword(e) {
 
 function ValidateConfirm(e, password) {
   //Validate passwords are the same
-  if (password == e.value) {
+  if (password === e.value) {
     e.setAttribute("isvalid", "true");
     e.setCustomValidity("");
   } else {
@@ -51,13 +51,14 @@ function CreateAccount() {
 
   async function handleSubmit(first, last, email, password, confirm, history) {
     try {
-      const response = await axios.post("/api/account", {
-        first,
-        last,
-        email,
-        password,
-        confirm,
-      });
+      // commented this since the linter said it was unused
+      // const response = await axios.post("/api/account", {
+      //   first,
+      //   last,
+      //   email,
+      //   password,
+      //   confirm,
+      // });
       history.push("/login");
       // setResult(response);
     } catch (err) {
