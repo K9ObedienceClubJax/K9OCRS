@@ -7,9 +7,9 @@ import { Counter } from './components/Counter';
 import ClassTypesDashboard from './pages/ClassTypesDashboard';
 import ClassTypeSetup from './pages/ClassTypeSetup';
 import Confirm from "./pages/Registration/Confirm";
-import DogRegistration from './pages/DogRegistration';
-import DogProfile from './pages/DogProfile';
-import DogList from './pages/DogList'
+import dogSetUp from './pages/DogSetup/dogSetup';
+import DogDetails from './pages/DogDetails/dogDetails';
+import myDogs from './pages/MyDogs/myDogs'
 
 import "./custom.scss";
 
@@ -25,9 +25,9 @@ export default class App extends Component {
         <Route path='/classtypes' component={ClassTypesDashboard} />
         <Route path='/classtype/1' component={ClassTypeSetup} />
         <Route path="/confirm" component={Confirm} />
-        <Route path='/DogRegistration' component={DogRegistration} />
-        <Route path='/DogProfile' component={DogProfile} />
-        <Route path='/DogList' component={DogList} />
+        <Route path='/dogSetup' component={dogSetUp} exact />
+        <Route path='/MyDogs/:dogId' component={DogDetails} />
+        <Route path='/myDogs' component={myDogs} exact />
       </Layout>
     );
   }

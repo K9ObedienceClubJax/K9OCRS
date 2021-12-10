@@ -2,7 +2,7 @@ import React from 'react'
 import { Container, Row, Col, Button } from 'reactstrap'
 import { FaPenSquare, FaCheck } from 'react-icons/fa'
 
-const index = () => {
+const myDogs = () => {
     return (
         <Container>
             <h1 style={Heading1}>My Dogs</h1>
@@ -54,4 +54,4 @@ const dogDetails = {
     paddingTop: 70
 }
 
-export default index
+export default myDogs

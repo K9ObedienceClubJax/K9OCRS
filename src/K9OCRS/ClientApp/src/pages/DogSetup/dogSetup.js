@@ -2,7 +2,7 @@ import React from 'react'
 import {Container, FormGroup, Label, Input, Button} from 'reactstrap'
 
 
-const index = () => {
+const dogSetup = () => {
     return (
         <Container>
             <h1>Dog Registration</h1>
@@ -66,4 +66,4 @@ const index = () => {
     )
 }
 
-export default index
+export default dogSetup

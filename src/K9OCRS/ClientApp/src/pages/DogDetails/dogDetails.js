@@ -2,7 +2,7 @@ import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import { FaPenSquare } from 'react-icons/fa'
 
-const index = () => {
+const dogDetails = () => {
     return (
         <Container>
             <Row>
@@ -16,19 +16,19 @@ const index = () => {
                     <Row style={dogDetailsContainer}>
                          <h3>Breed:</h3><br/>
                     </Row>
-                    <Row style={dogDetails}>
+                    <Row style={dogDetail}>
                         Golden Retriever
                     </Row>
                     <Row style={dogDetailsContainer}>
                          <h3>Age:</h3><br/>
                     </Row>
-                    <Row style={dogDetails}>
+                    <Row style={dogDetail}>
                         8 weeks
                     </Row>
                     <Row style={dogDetailsContainer}>
                          <h3>Current Class:</h3><br/>
                     </Row>
-                    <Row style={dogDetails}>
+                    <Row style={dogDetail}>
                         STAR Puppy
                     </Row>
                 </Col>
@@ -36,19 +36,19 @@ const index = () => {
                 <Row style={dogDetailsContainer}>
                          <h3>Date of Birth:</h3><br/>
                     </Row>
-                    <Row style={dogDetails}>
+                    <Row style={dogDetail}>
                         09/10/2021
                     </Row>
                     <Row style={dogDetailsContainer}>
                          <h3>Date of Vaccination:</h3><br/>
                     </Row>
-                    <Row style={dogDetails}>
+                    <Row style={dogDetail}>
                         11/05/21 (Up to date)
                     </Row>
                     <Row style={dogDetailsContainer}>
                          <h3>Class taken:</h3><br/>
                     </Row>
-                    <Row style={dogDetails}>
+                    <Row style={dogDetail}>
                         None
                     </Row>
                 </Col>
@@ -71,8 +71,8 @@ const dogDetailsContainer = {
     paddingTop: 50,
 }
 
-const dogDetails = {
+const dogDetail = {
     fontSize: 20,
 }
 
-export default index
+export default dogDetails
