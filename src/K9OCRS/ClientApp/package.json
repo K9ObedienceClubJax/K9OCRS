@@ -2,6 +2,7 @@
   "name": "k9OCRS",
   "version": "0.1.0",
   "private": true,
+  "proxy":  "https://localhost:5001",
   "dependencies": {
     "axios": "^0.24.0",
     "bootstrap": "^4.1.3",
