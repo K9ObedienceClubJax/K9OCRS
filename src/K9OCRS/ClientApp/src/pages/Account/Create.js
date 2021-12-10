@@ -1,17 +1,7 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Input } from "reactstrap";
 import axios from "axios";
-
-async function handleSubmit(first, last, email, password, confirm) {
-  const response = await axios.post("/api/account", {
-    first,
-    last,
-    email,
-    password,
-    confirm,
-  });
-  console.log(response);
-}
+import { useHistory } from "react-router-dom";
 
 function ValidateEmail(e) {
   //Validate email
@@ -51,17 +41,35 @@ function ValidateConfirm(e, password) {
 }
 
 function CreateAccount() {
+  let history = useHistory();
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [result, setResult] = useState("");
+
+  async function handleSubmit(first, last, email, password, confirm, history) {
+    try {
+      const response = await axios.post("/api/account", {
+        first,
+        last,
+        email,
+        password,
+        confirm,
+      });
+      history.push("/login");
+      // setResult(response);
+    } catch (err) {
+      setResult(err.response);
+    }
+  }
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit(first, last, email, password, confirm);
+        handleSubmit(first, last, email, password, confirm, history);
       }}
     >
       <h1 className="d-flex justify-content-center mt-4 font-weight-bold">
@@ -170,6 +178,7 @@ function CreateAccount() {
           </Button>
         </Col>
       </Row>
+      <p className="text-danger">{result?.data}</p>
     </form>
   );
 }

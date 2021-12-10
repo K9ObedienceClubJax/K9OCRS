@@ -51,6 +51,7 @@ namespace K9OCRS.Controllers
                 {
                     //Display: Passwords do not match
                     return StatusCode(400, "Passwords do not match");
+                    //return StatusCode(400, "User already exists");
                 }
             }
             else
@@ -58,7 +59,6 @@ namespace K9OCRS.Controllers
                 //Display: requirements
                 return StatusCode(400, "Password requires at least 8 characters, should contain at least one upper case, lower case, and digit");
             }
-
 
             return Ok(account.First + " " + account.Last + " " + account.Email + " " + account.Password);
         }
