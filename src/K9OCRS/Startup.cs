@@ -31,6 +31,7 @@ namespace K9OCRS
 
             services.AddControllersWithViews();
             services.AddRazorPages().WithRazorPagesRoot("/Views");
+            services.AddHttpContextAccessor();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -133,11 +134,12 @@ namespace K9OCRS
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
+                //spa.Options.DevServerPort = 5002;
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
+                //if (env.IsDevelopment())
+                //{
+                //    spa.UseReactDevelopmentServer(npmScript: "start");
+                //}
             });
 
             app.UseCors(policy =>

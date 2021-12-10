@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import paw from "../images/paw.png";
 import {
   Collapse,
   Navbar,
@@ -9,9 +8,9 @@ import {
   Button,
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import "./NavMenu.css";
+import { Nav } from "reactstrap";
 
-export class NavMenu extends Component {
+export default class NavMenu extends Component {
   static displayName = NavMenu.name;
 
   constructor(props) {
@@ -31,18 +30,27 @@ export class NavMenu extends Component {
 
   render() {
     return (
-      <header className="bg-dark">
         <Navbar
-          className="nav-background navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3 px-4"
+          className="navbar-toggleable-xl flex-xl-row-reverse"
+          color="primary"
+          expand="xl"
           light
         >
           <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
+          <div className="mx-2">
+              <Link to="/Account/Login" className="pe-2">
+                <Button color="light" outline>Login</Button>
+              </Link>
+              <Link to="/Account/Create">
+                <Button color="secondary">Get Started!</Button>
+              </Link>
+          </div>
           <Collapse
-            className="d-sm-inline-flex flex-sm-row-reverse"
+            className="d-xl-flex justify-content-end"
             isOpen={!this.state.collapsed}
             navbar
           >
-            <ul className="navbar-nav flex-grow">
+            <Nav className="flex-column flex-xl-row">
               <NavItem>
                 <NavLink tag={Link} className="text-dark" to="/">
                   Browse Classes
@@ -79,20 +87,9 @@ export class NavMenu extends Component {
                   My Account
                 </NavLink>
               </NavItem>
-            </ul>
+            </Nav>
           </Collapse>
-          <div>
-            <Link to="/Login">
-              <Button color="primary">Login</Button>
-            </Link>
-          </div>
         </Navbar>
-        <div className="container ml-2 pt-0 pb-2 mb-2 text-white bg-dark">
-          <h2>
-            K9 Obedience Club <img src={paw} alt="paw" />
-          </h2>
-        </div>
-      </header>
     );
   }
 }

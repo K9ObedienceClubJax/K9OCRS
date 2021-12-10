@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Input } from "reactstrap";
-import axios from "axios";
+//import axios from "axios";
 
 async function handleSubmit(email) {
-  const response = await axios.post("/api/passwordreset", {
-    email,
-  });
+  // const response = await axios.post("/api/passwordreset", {
+  //   email,
+  // });
 }
 
 function ValidateEmail(e) {

@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import bootstrap from "bootstrap";
-import Courses from "../pages/sections/Courses";
+import Courses from "./components/Courses";
 
-export class Home extends Component {
-  static displayName = Home.name;
+export default class Catalog extends Component {
+  static displayName = Catalog.name;
 
   render() {
     return (
