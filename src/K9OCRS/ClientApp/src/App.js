@@ -9,6 +9,7 @@ import ClassTypeSetup from "./pages/ClassTypeSetup";
 import Login from "./pages/Login";
 import CreatePassword from "./pages/Account/Create";
 import PasswordReset from "./pages/Account/PasswordReset";
+import Confirm from "./pages/Registration/Confirm";
 
 import "./custom.scss";
 
@@ -26,6 +27,7 @@ export default class App extends Component {
         <Route path="/login" component={Login} />
         <Route path="/Account/Create" component={CreatePassword} />
         <Route path="/account/passwordreset" component={PasswordReset} />
+        <Route path="/confirm" component={Confirm} />
       </Layout>
     );
   }
