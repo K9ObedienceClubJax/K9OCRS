@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { boostrap } from "bootstrap";
+import boostrap from "bootstrap";
 import data from "./data.json";
 import CourseDisplay from "./CourseDisplay";
 import Search from "./Search";
@@ -20,7 +20,7 @@ const Courses = () => {
       <div>
         <Search query={query} onQueryChange={(myquery) => setQuery(myquery)} />
         {filteredClasses.map((props) => (
-          <CourseDisplay key={data.id} {...props} />
+          <CourseDisplay key={filteredClasses.id} {...props} />
         ))}
       </div>
     </div>

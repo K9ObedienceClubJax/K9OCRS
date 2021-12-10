@@ -1,4 +1,6 @@
 import React from "react";
+import { NavLink } from "reactstrap";
+import { Link } from "react-router-dom";
 
 export default function Sections({
   section,
@@ -11,7 +13,11 @@ export default function Sections({
 }) {
   return (
     <>
-      <td>{section}</td>
+      <td>
+        <NavLink tag={Link} className="text-dark" to="/confirm">
+          {section}
+        </NavLink>
+      </td>
       <td>{day}</td>
       <td>{time}</td>
       <td>{start}</td>
