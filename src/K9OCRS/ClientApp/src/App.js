@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router';
+import { Switch, Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import ClassTypesDashboard from './pages/ClassTypesDashboard';
@@ -20,16 +20,28 @@ export default class App extends Component {
   render() {
     return (
       <Layout>
-        <Route path='/' component={Home} exact />
-        <Route path='/classtypes' component={ClassTypesDashboard} />
-        <Route path='/classtypes/:classTypeId' component={ClassTypeSetup} />
-        <Route path='/Account/Create' component={CreatePassword} />
-        <Route path='/Account/PasswordReset' component={PasswordReset} />
-        <Route path='/confirm' component={Confirm} />
-        <Route path='/login' component={Login} />
-        <Route path='/DogSetup' component={DogSetup} exact />
-        <Route path='/MyDogs/:dogId' component={DogDetails} />
-        <Route path='/MyDogs' component={MyDogs} exact />
+        <Switch>
+          {/* Routes available to anyone */}
+          <Route path='/' component={Home} exact />
+          <Route path='/Account/Login' component={Login} />
+          <Route path='/Account/Create' component={CreatePassword} />
+          <Route path='/Account/PasswordReset' component={PasswordReset} />
+          <Route path='/Classes/Apply/Confirm' component={Confirm} />
+          {/* Routes available to Logged in Users */}
+          <Route path='/Account/Dogs' component={MyDogs} exact />
+          <Route path='/Account/Dogs/Add' component={DogSetup} exact />
+          <Route path='/Account/Dogs/:dogId' component={DogDetails} exact />
+          {/* Routes available to Instructors */}
+          {/* Routes available only to Administrators */}
+          <Route path='/Manage/ClassTypes' component={ClassTypesDashboard} exact />
+          <Route path='/Manage/ClassTypes/:classTypeId' component={ClassTypeSetup} exact />
+          {/* This is our 404 route or the route shown when a route is not found */}
+          <Route path="*">
+            <div>
+              <h2>Nothing here!</h2>
+            </div>
+          </Route>
+        </Switch>
       </Layout>
     );
   }

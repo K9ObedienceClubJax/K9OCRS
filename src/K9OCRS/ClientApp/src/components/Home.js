@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import bootstrap from "bootstrap";
 import Courses from "../pages/sections/Courses";
 
 export class Home extends Component {
