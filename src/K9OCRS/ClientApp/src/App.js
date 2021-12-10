@@ -20,7 +20,7 @@ export default class App extends Component {
         <Route path="/counter" component={Counter} />
         <Route path="/fetch-data" component={FetchData} />
         <Route path="/classtypes" component={ClassTypesDashboard} />
-        <Route path="/classtype/1" component={ClassTypeSetup} />
+        <Route path="/classtypes/:classTypeId" component={ClassTypeSetup} />
         <Route path="/confirm" component={Confirm} />
       </Layout>
     );
