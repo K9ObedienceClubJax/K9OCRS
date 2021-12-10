@@ -1,6 +1,7 @@
 import React from 'react'
 import { Container, Row, Col, Button } from 'reactstrap'
 import { FaPenSquare, FaCheck } from 'react-icons/fa'
+import { Link } from 'react-router-dom';
 
 const myDogs = () => {
     return (
@@ -28,7 +29,9 @@ const myDogs = () => {
                 <Col className="bg-light border" xs="2" >
                     <Row style={dogDetails}><b>Vaccinated:</b></Row>
                     <Row style={{display: 'flex', paddingLeft: 40}}><FaCheck/></Row>
-                    <Button style={{display: 'flex', marginTop: 20, }}>View More</Button>
+                    <Link to="/Account/Dogs/1">
+                        <Button style={{display: 'flex', marginTop: 20, }}>View More</Button>
+                    </Link>
                 </Col>
             </Row>
         </Container>

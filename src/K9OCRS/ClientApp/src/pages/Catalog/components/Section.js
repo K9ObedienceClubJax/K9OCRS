@@ -14,7 +14,7 @@ export default function Sections({
   return (
     <>
       <td>
-        <NavLink tag={Link} className="text-dark" to="/confirm">
+        <NavLink tag={Link} className="text-dark" to="/Classes/Apply/Confirm">
           {section}
         </NavLink>
       </td>

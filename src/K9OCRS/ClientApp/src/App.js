@@ -37,6 +37,7 @@ export default class App extends Component {
           <Route path='/Account/Dogs/Add' component={DogSetup} exact />
           <Route path='/Account/Dogs/:dogId' component={DogDetails} exact />
           {/* Routes available to Instructors */}
+
           {/* Routes available only to Administrators */}
           <Route path='/Manage/ClassTypes' component={ClassTypesDashboard} exact />
           <Route path='/Manage/ClassTypes/:classTypeId' component={ClassTypeSetup} exact />
