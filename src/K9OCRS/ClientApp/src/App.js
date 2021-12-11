@@ -14,6 +14,7 @@ import MyDogs from './pages/MyDogs';
 import DogDetails from './pages/DogDetails';
 import DogSetup from './pages/DogSetup';
 
+import ManagementDashboard from './pages/ManagementDashboard';
 import ClassTypesDashboard from './pages/ClassTypesDashboard';
 import ClassTypeSetup from './pages/ClassTypeSetup';
 
@@ -39,6 +40,7 @@ export default class App extends Component {
           {/* Routes available to Instructors */}
 
           {/* Routes available only to Administrators */}
+          <Route path='/Manage' component={ManagementDashboard} exact />
           <Route path='/Manage/ClassTypes' component={ClassTypesDashboard} exact />
           <Route path='/Manage/ClassTypes/:classTypeId' component={ClassTypeSetup} exact />
           {/* This is our 404 route or the route shown when a route is not found */}
