@@ -1,5 +1,6 @@
 import React from 'react';
 import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText } from 'reactstrap';
+import { NavLink } from 'reactstrap';
 
 // Dummy Data
 const dummyData = [
@@ -78,7 +79,9 @@ const ClassTypeCard = props => {
           <p><strong>Price:</strong> ${price}</p>
           <Row className="justify-content-between">
             <Col className="text-right">
-              View More
+              <NavLink href="/Manage/ClassTypes/1">
+                View More
+              </NavLink>
             </Col>
           </Row>
         </CardBody>
