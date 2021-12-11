@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace DataAccess.Entities
 {
     public class ClassType
@@ -11,7 +6,9 @@ namespace DataAccess.Entities
         public int ID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public string SessionLength { get; set; }
+        public string Requirements { get; set; }
+        public string ImageFilename { get; set; } // Add a default later
+        public string Duration { get; set; }
         public decimal Price { get; set; }
     }
 }

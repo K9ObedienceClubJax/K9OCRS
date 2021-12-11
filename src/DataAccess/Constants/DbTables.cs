@@ -10,7 +10,15 @@ namespace DataAccess.Constants
     {
         private static Dictionary<string, string> mappings = new Dictionary<string, string>
         {
+            { nameof(UserRole), "[dbo].[UserRoles]" },
+            { nameof(User), "[dbo].[Users]" },
+            { nameof(Dog), "[dbo].[Dogs]" },
+            { nameof(VaccinationRecord), "[dbo].[VaccinationRecords]" },
+            { nameof(ClassPhoto), "[dbo].[ClassPhotos]" },
             { nameof(ClassType), "[dbo].[ClassTypes]" },
+            { nameof(ClassSection), "[dbo].[ClassSections]" },
+            { nameof(ClassMeeting), "[dbo].[ClassMeetings]" },
+            { nameof(SectionApplication), "[dbo].[SectionApplications]" },
         };
 
         public static string Get(string entity) => mappings[entity];
