@@ -91,6 +91,7 @@ namespace K9OCRS
             // Modules
             builder.RegisterModule(new ModuleBuilder()
                 .UseSqlDatabase(databaseConnectionString)
+                .UseAzureBlobStorage(blobStorageConnectionString)
                 .Build());
         }
 
