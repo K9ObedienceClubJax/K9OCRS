@@ -3,6 +3,13 @@ using System.Threading.Tasks;
 using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
+using DataAccess.Clients.Contracts;
+using System;
+using DataAccess.Constants;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using K9OCRS.Extensions;
 
 namespace K9OCRS.Controllers
 {
@@ -10,13 +17,16 @@ namespace K9OCRS.Controllers
     [ApiController]
     public class ClassTypesController : ControllerBase
     {
+        private readonly ICloudStorageClient cloudStorageClient;
         private readonly IConnectionOwner connectionOwner;
         private readonly DbOwner dbOwner;
         public ClassTypesController(
+            ICloudStorageClient cloudStorageClient,
             IConnectionOwner connectionOwner,
             DbOwner dbOwner
         )
         {
+            this.cloudStorageClient = cloudStorageClient;
             this.connectionOwner = connectionOwner;
             this.dbOwner = dbOwner;
         }
@@ -74,6 +84,23 @@ namespace K9OCRS.Controllers
             });
 
             return Ok(result);
+        }
+
+        [HttpPost("testImageUpload")]
+        public async Task<ActionResult> UploadImage([FromForm] IFormFile file)
+        {
+            if (file != null)
+            {
+                var data = await file.ToBinaryData();
+
+                var filename = "testImageUpload" + Path.GetExtension(file.FileName);
+
+                await cloudStorageClient.UploadFile(UploadType.ClassPicture, filename, file.ContentType, data);
+
+                return Ok();
+            }
+
+            return BadRequest();
         }
     }
 }
