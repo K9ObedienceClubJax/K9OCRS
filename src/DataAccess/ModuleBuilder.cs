@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Autofac;
 using DataAccess.Modules;
@@ -17,7 +17,7 @@ namespace DataAccess
         /// Setup a database to be able to be resolved.
         /// </summary>
         /// <returns></returns>
-        public ModuleBuilder UseConnectionOwner(string connectionString)
+        public ModuleBuilder UseSqlDatabase(string connectionString)
         {
             actions.Add(builder =>
             {
