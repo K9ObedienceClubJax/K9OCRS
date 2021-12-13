@@ -12,9 +12,7 @@ namespace K9OCRS.Configuration
 
             foreach (var line in File.ReadAllLines(filePath))
             {
-                var parts = line.Split(
-                    '=',
-                    StringSplitOptions.RemoveEmptyEntries);
+                var parts = line.Split('=', 2, StringSplitOptions.RemoveEmptyEntries);
 
                 if (parts.Length != 2)
                     continue;

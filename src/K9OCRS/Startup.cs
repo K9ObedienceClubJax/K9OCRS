@@ -72,19 +72,26 @@ namespace K9OCRS
         // Here we'll register repositories and services
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            // Creates the connection string from environment variables set in the .env file
+            // Creates the connection strings from environment variables set in the .env file
             // and a template connection string from appsettings.json
-            var connectionString = String.Format(
-                    Configuration.GetConnectionString("Template"),
+            var databaseConnectionString = String.Format(
+                    Configuration.GetConnectionString("Database"),
                     Configuration.GetValue<string>("DB_SERVER"),
                     Configuration.GetValue<string>("DB_NAME"),
                     Configuration.GetValue<string>("DB_USERNAME"),
                     Configuration.GetValue<string>("DB_PASSWORD")
             );
 
+            var blobStorageConnectionString = String.Format(
+                Configuration.GetConnectionString("BlobStorage"),
+                Configuration.GetValue<string>("STORAGE_NAME"),
+                Configuration.GetValue<string>("STORAGE_KEY")
+            );
+
             // Modules
             builder.RegisterModule(new ModuleBuilder()
-                .UseConnectionOwner(connectionString)
+                .UseSqlDatabase(databaseConnectionString)
+                .UseAzureBlobStorage(blobStorageConnectionString)
                 .Build());
         }
 

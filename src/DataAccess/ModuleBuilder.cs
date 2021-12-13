@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autofac;
+using DataAccess.Clients;
+using DataAccess.Clients.Contracts;
 using DataAccess.Modules;
 using DataAccess.Modules.Contracts;
 
@@ -17,7 +19,7 @@ namespace DataAccess
         /// Setup a database to be able to be resolved.
         /// </summary>
         /// <returns></returns>
-        public ModuleBuilder UseConnectionOwner(string connectionString)
+        public ModuleBuilder UseSqlDatabase(string connectionString)
         {
             actions.Add(builder =>
             {
@@ -29,6 +31,25 @@ namespace DataAccess
 
                 // Repositories
                 builder.RegisterType<DbOwner>().SingleInstance();
+            });
+
+            return this;
+        }
+
+        /// <summary>
+        /// Setup the azure storage client
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public ModuleBuilder UseAzureBlobStorage(string connectionString)
+        {
+            actions.Add(builder =>
+            {
+                builder.RegisterType<AzureStorageClient>()
+                 .As<ICloudStorageClient>()
+                 .WithParameter("connectionString", connectionString)
+                 .SingleInstance()
+                 .PreserveExistingDefaults();
             });
 
             return this;
