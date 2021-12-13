@@ -24,21 +24,20 @@ namespace DataAccess.Clients
         }
 
         // Upload
-        public async Task UploadFile(UploadType type, string name, BinaryData content)
+        public async Task UploadFile(UploadType type, string name, string contentType, BinaryData content)
         {
             BlobContainerClient containerClient = GetContainerClient(type);
+            BlobClient blobClient = containerClient.GetBlobClient(name);
 
-            try
+            var uploadOptions = new BlobUploadOptions
             {
-                // Try uploading the file as a new blob
-                await containerClient.UploadBlobAsync(name, content);
-            }
-            catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
-            {
-                // If the blob already exists, overwrite it
-                var blobClient = containerClient.GetBlobClient(name);
-                await blobClient.UploadAsync(content, true);
-            }
+                HttpHeaders = new BlobHttpHeaders
+                {
+                    ContentType = contentType,
+                },
+            };
+
+            await blobClient.UploadAsync(content, uploadOptions);
         }
 
         // Delete
