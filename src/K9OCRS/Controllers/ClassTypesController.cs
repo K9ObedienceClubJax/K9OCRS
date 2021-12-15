@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using K9OCRS.Extensions;
 using Serilog;
+using K9OCRS.Models;
 
 namespace K9OCRS.Controllers
 {
@@ -49,9 +50,18 @@ namespace K9OCRS.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetClassTypeByID(int id)
         {
-            var result = await connectionOwner.Use(conn =>
+            var result = await connectionOwner.Use(async conn =>
             {
-                return dbOwner.ClassTypes.GetByID(conn, id);
+                // Get the data from the ClassTypes table
+                var entity = await dbOwner.ClassTypes.GetByID(conn, id);
+
+                // Get the list of photos related to the class type
+                var photos = await dbOwner.ClassPhotos.GetByClassTypeID(conn, id);
+
+                // Combine the data using the Model
+                var result = new ClassTypeResult(entity);
+                result.Photos = photos;
+                return result;
             });
 
             return Ok(result);
@@ -90,6 +100,17 @@ namespace K9OCRS.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{classTypeId}/photos")]
+        public async Task<IActionResult> GetPhotosByClassTypeID(int classTypeId)
+        {
+            var result = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.ClassPhotos.GetByClassTypeID(conn, classTypeId);
+            });
+
+            return Ok(result);
+        }
+
         [HttpPut("{classTypeId}/image")]
         public async Task<IActionResult> UpdateImage(int classTypeId, [FromForm] IFormFile file)
         {
@@ -97,9 +118,15 @@ namespace K9OCRS.Controllers
             {
                 var data = await file.ToBinaryData();
 
-                var filename =  Path.Combine(classTypeId.ToString(), String.Concat(classTypeId, Path.GetExtension(file.FileName)));
+                var filePath =  Path.Combine(classTypeId.ToString(), String.Concat(classTypeId, Path.GetExtension(file.FileName)));
+                var filename = Path.GetFileName(filePath);
 
-                await storageClient.UploadFile(UploadType.ClassPicture, filename, file.ContentType, data);
+                await storageClient.UploadFile(UploadType.ClassPicture, filePath, file.ContentType, data);
+
+                await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.ClassTypes.UpdateImage(conn, classTypeId, filename);
+                });
 
                 return Ok();
             }
@@ -110,11 +137,16 @@ namespace K9OCRS.Controllers
         [HttpDelete("{classTypeId}/image/{filename}")]
         public async Task<IActionResult> DeleteImage(int classTypeId, string fileName)
         {
-            if (fileName != null && fileName != "")
+            if (!String.IsNullOrEmpty(fileName) && !String.IsNullOrWhiteSpace(fileName))
             {
                 var filename = Path.Combine(classTypeId.ToString(), fileName);
 
                 await storageClient.DeleteFile(UploadType.ClassPicture, filename);
+
+                await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.ClassTypes.UpdateImage(conn, classTypeId, "ClassPlaceholder.png");
+                });
 
                 return Ok();
             }
@@ -131,14 +163,47 @@ namespace K9OCRS.Controllers
             {
                 for (int i = 0; i < files.Count; i++)
                 {
-                    var guid = Guid.NewGuid().ToString().ToUpper();
                     var data = await files[i].ToBinaryData();
+                    var ext = Path.GetExtension(files[i].FileName);
+                    var contType = files[i].ContentType;
 
-                    var filename = Path.Combine(StorageContainers.GetWithParams(UploadType.ClassPhoto, classTypeId), String.Concat(guid, Path.GetExtension(files[i].FileName)));
+                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
+                    {
+                        try
+                        {
+                            var photo = new ClassPhoto
+                            {
+                                ClassTypeID = classTypeId,
+                                Filename = "creating",
+                            };
 
-                    tasks.Add(storageClient.UploadFile(UploadType.ClassPicture, filename, files[i].ContentType, data));
+                            var classPhotoId = await dbOwner.ClassPhotos.Add(conn, tr, photo);
+
+                            var filePath = String.Concat(
+                                StorageContainers.GetWithParams(UploadType.ClassPhoto, classTypeId),
+                                "/",
+                                classPhotoId,
+                                ext
+                            );
+
+                            var filename = Path.GetFileName(filePath);
+
+                            await storageClient.UploadFile(UploadType.ClassPicture, filePath, contType, data);
+
+                            photo.ID = classPhotoId;
+                            photo.Filename = filename;
+
+                            await dbOwner.ClassPhotos.Update(conn, tr, photo);
+
+                            tr.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            tr.Rollback();
+                        }
+                    }));
                 }
-                
+
                 try
                 {
                     await Task.WhenAll(tasks);
@@ -163,9 +228,27 @@ namespace K9OCRS.Controllers
                 for (int i = 0; i < fileNames.Count; i++)
                 {
 
-                    var filePath = Path.Combine(StorageContainers.GetWithParams(UploadType.ClassPhoto, classTypeId), fileNames[i]);
+                    var filePath = String.Concat(
+                        StorageContainers.GetWithParams(UploadType.ClassPhoto, classTypeId),
+                        "/",
+                        fileNames[i]
+                    );
 
-                    tasks.Add(storageClient.DeleteFile(UploadType.ClassPicture, filePath));
+                    var photoId = Int32.Parse(fileNames[i].Substring(0, fileNames[i].IndexOf('.')));
+
+                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
+                    {
+                        try
+                        {
+                            await dbOwner.ClassPhotos.Delete(conn, tr, photoId);
+                            await storageClient.DeleteFile(UploadType.ClassPicture, filePath);
+                            tr.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            tr.Rollback();
+                        }
+                    }));
                 }
 
                 try
