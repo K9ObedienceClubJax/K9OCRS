@@ -95,7 +95,7 @@ namespace K9OCRS.Controllers
 
                 var filename = "testImageUpload" + Path.GetExtension(file.FileName);
 
-                await cloudStorageClient.UploadFile(UploadType.ClassPicture, filename, file.ContentType, data);
+                await storageClient.UploadFile(UploadType.ClassPicture, filename, file.ContentType, data);
 
                 return Ok();
             }
