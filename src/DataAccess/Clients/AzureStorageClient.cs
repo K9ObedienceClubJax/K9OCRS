@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Clients
 {
-    public class AzureStorageClient : ICloudStorageClient
+    public class AzureStorageClient : IStorageClient
     {
         private readonly BlobContainerClient profilePicturesContainerClient;
         private readonly BlobContainerClient dogProfilePicturesContainerClient;
