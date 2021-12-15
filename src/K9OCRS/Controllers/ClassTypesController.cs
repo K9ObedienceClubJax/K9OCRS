@@ -32,7 +32,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllClassTypes()
         {
             var result = await connectionOwner.Use(conn =>
             {
@@ -43,7 +43,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProductByID(int id)
+        public async Task<IActionResult> GetClassTypeByID(int id)
         {
             var result = await connectionOwner.Use(conn =>
             {
@@ -54,7 +54,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct(ClassType entity)
+        public async Task<IActionResult> CreateClassType(ClassType entity)
         {
             var result = await connectionOwner.Use(conn =>
             {
@@ -65,7 +65,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateProduct(ClassType entity)
+        public async Task<IActionResult> UpdateClassType(ClassType entity)
         {
             var result = await connectionOwner.Use(conn =>
             {
@@ -76,7 +76,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteClassType(int id)
         {
             var result = await connectionOwner.Use(conn =>
             {
