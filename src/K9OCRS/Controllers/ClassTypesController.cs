@@ -97,9 +97,24 @@ namespace K9OCRS.Controllers
             {
                 var data = await file.ToBinaryData();
 
-                var filename =  String.Concat(classTypeId, "/", classTypeId, Path.GetExtension(file.FileName));
+                var filename =  Path.Combine(classTypeId.ToString(), String.Concat(classTypeId, Path.GetExtension(file.FileName)));
 
-                await cloudStorageClient.UploadFile(UploadType.ClassPicture, filename, file.ContentType, data);
+                await storageClient.UploadFile(UploadType.ClassPicture, filename, file.ContentType, data);
+
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpDelete("{classTypeId}/image/{filename}")]
+        public async Task<IActionResult> DeleteImage(int classTypeId, string fileName)
+        {
+            if (fileName != null && fileName != "")
+            {
+                var filename = Path.Combine(classTypeId.ToString(), fileName);
+
+                await storageClient.DeleteFile(UploadType.ClassPicture, filename);
 
                 return Ok();
             }
@@ -108,7 +123,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost("{classTypeId}/photos")]
-        public async Task<ActionResult> UploadImage(int classTypeId, [FromForm] List<IFormFile> files)
+        public async Task<ActionResult> UploadPhotos(int classTypeId, [FromForm] List<IFormFile> files)
         {
             var tasks = new List<Task>();
 
@@ -119,9 +134,9 @@ namespace K9OCRS.Controllers
                     var guid = Guid.NewGuid().ToString().ToUpper();
                     var data = await files[i].ToBinaryData();
 
-                    var filename = String.Concat(classTypeId, "/photos/", guid, Path.GetExtension(files[i].FileName));
+                    var filename = Path.Combine(StorageContainers.GetWithParams(UploadType.ClassPhoto, classTypeId), String.Concat(guid, Path.GetExtension(files[i].FileName)));
 
-                    tasks.Add(cloudStorageClient.UploadFile(UploadType.ClassPicture, filename, files[i].ContentType, data));
+                    tasks.Add(storageClient.UploadFile(UploadType.ClassPicture, filename, files[i].ContentType, data));
                 }
                 
                 try
@@ -132,6 +147,35 @@ namespace K9OCRS.Controllers
                 catch (Exception e)
                 {
                     logger.Error(e, "An error ocurred while uploading class photos");
+                }
+            }
+
+            return BadRequest();
+        }
+
+        [HttpDelete("{classTypeId}/photos")]
+        public async Task<ActionResult> DeletePhotos(int classTypeId, [FromBody] List<string> fileNames)
+        {
+            var tasks = new List<Task>();
+
+            if (fileNames != null && fileNames.Count > 0)
+            {
+                for (int i = 0; i < fileNames.Count; i++)
+                {
+
+                    var filePath = Path.Combine(StorageContainers.GetWithParams(UploadType.ClassPhoto, classTypeId), fileNames[i]);
+
+                    tasks.Add(storageClient.DeleteFile(UploadType.ClassPicture, filePath));
+                }
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "An error ocurred while deleting class photos");
                 }
             }
 
