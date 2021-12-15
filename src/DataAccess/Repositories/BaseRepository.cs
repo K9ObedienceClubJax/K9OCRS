@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using DataAccess.Repositories.Contracts;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -40,19 +40,39 @@ namespace DataAccess.Repositories
             var result = await conn.QueryAsync<T>($"SELECT * FROM {_tableName}");
             return result.ToList();
         }
+
         public virtual async Task<int> Add(IDbConnection conn, T entity)
         {
             var insertQuery = GenerateInsertQuery();
-            return await conn.ExecuteAsync(insertQuery, entity);
+            return await conn.QueryFirstOrDefaultAsync<int>(insertQuery, entity);
         }
+
+        public virtual async Task<int> Add(IDbConnection conn, IDbTransaction tr, T entity)
+        {
+            var insertQuery = GenerateInsertQuery();
+            return await conn.QueryFirstOrDefaultAsync<int>(insertQuery, entity, tr);
+        }
+
         public virtual async Task<int> Update(IDbConnection conn, T entity)
         {
             var updateQuery = GenerateUpdateQuery();
             return await conn.ExecuteAsync(updateQuery, entity);
         }
+
+        public virtual async Task<int> Update(IDbConnection conn, IDbTransaction tr, T entity)
+        {
+            var updateQuery = GenerateUpdateQuery();
+            return await conn.ExecuteAsync(updateQuery, entity, tr);
+        }
+
         public virtual async Task<int> Delete(IDbConnection conn, int id)
         {
             return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id });
+        }
+
+        public virtual async Task<int> Delete(IDbConnection conn, IDbTransaction tr, int id)
+        {
+            return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id }, tr);
         }
 
         private IEnumerable<PropertyInfo> GetProperties => typeof(T).GetProperties();
