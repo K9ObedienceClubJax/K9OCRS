@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DataAccess.Extensions;
 using DataAccess.Repositories.Contracts;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -80,8 +81,9 @@ namespace DataAccess.Repositories
         private static List<string> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties)
         {
             return (from prop in listOfProperties
-                    let attributes = prop.GetCustomAttributes(typeof(DescriptionAttribute), false)
-                    where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "ignore"
+                    let attributes = prop.GetCustomAttributes(typeof(TransactionIgnoreAttribute), false)
+                    //where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "RepoIgnore"
+                    where attributes.Length <= 0
                     select prop.Name).ToList();
         }
 
