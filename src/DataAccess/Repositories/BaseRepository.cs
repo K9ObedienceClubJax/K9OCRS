@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using DataAccess.Repositories.Contracts;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -102,7 +102,7 @@ namespace DataAccess.Repositories
 
             insertQuery
                 .Remove(insertQuery.Length - 1, 1)
-                .Append(") VALUES (");
+                .Append(") OUTPUT INSERTED.ID VALUES (");
 
             properties.ForEach(prop => {
                 if (prop != "ID")
