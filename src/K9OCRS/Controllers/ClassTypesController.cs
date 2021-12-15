@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using DataAccess;
 using DataAccess.Entities;
@@ -19,18 +19,18 @@ namespace K9OCRS.Controllers
     public class ClassTypesController : ControllerBase
     {
         private readonly ILogger logger;
-        private readonly ICloudStorageClient cloudStorageClient;
+        private readonly IStorageClient storageClient;
         private readonly IConnectionOwner connectionOwner;
         private readonly DbOwner dbOwner;
         public ClassTypesController(
             ILogger logger,
-            ICloudStorageClient cloudStorageClient,
+            IStorageClient storageClient,
             IConnectionOwner connectionOwner,
             DbOwner dbOwner
         )
         {
             this.logger = logger;
-            this.cloudStorageClient = cloudStorageClient;
+            this.storageClient = storageClient;
             this.connectionOwner = connectionOwner;
             this.dbOwner = dbOwner;
         }
