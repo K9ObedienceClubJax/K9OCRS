@@ -46,7 +46,7 @@ namespace DataAccess.Clients
         // Upload
         public async Task UploadFile(UploadType type, string name, string contentType, BinaryData content)
         {
-            var filepath = Path.Combine(containers[type], name);
+            var filepath = String.Concat(containers[type], "/", name);
             var dirPath = Path.GetDirectoryName(filepath);
             // Ensures the full directory path exists, necessary for container sub folders
             Directory.CreateDirectory(dirPath);
@@ -57,7 +57,7 @@ namespace DataAccess.Clients
         // This needs to stay as an async method for the sake of way the controller will call it
         public async Task DeleteFile(UploadType type, string name)
         {
-            var filepath = Path.Combine(containers[type], name);
+            var filepath = String.Concat(containers[type], "/", name);
             var dirPath = Path.GetDirectoryName(filepath);
             
             File.Delete(filepath);

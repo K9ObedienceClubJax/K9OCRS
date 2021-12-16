@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DataAccess.Extensions;
 using DataAccess.Repositories.Contracts;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -40,19 +41,39 @@ namespace DataAccess.Repositories
             var result = await conn.QueryAsync<T>($"SELECT * FROM {_tableName}");
             return result.ToList();
         }
+
         public virtual async Task<int> Add(IDbConnection conn, T entity)
         {
             var insertQuery = GenerateInsertQuery();
-            return await conn.ExecuteAsync(insertQuery, entity);
+            return await conn.QueryFirstOrDefaultAsync<int>(insertQuery, entity);
         }
+
+        public virtual async Task<int> Add(IDbConnection conn, IDbTransaction tr, T entity)
+        {
+            var insertQuery = GenerateInsertQuery();
+            return await conn.QueryFirstOrDefaultAsync<int>(insertQuery, entity, tr);
+        }
+
         public virtual async Task<int> Update(IDbConnection conn, T entity)
         {
             var updateQuery = GenerateUpdateQuery();
             return await conn.ExecuteAsync(updateQuery, entity);
         }
+
+        public virtual async Task<int> Update(IDbConnection conn, IDbTransaction tr, T entity)
+        {
+            var updateQuery = GenerateUpdateQuery();
+            return await conn.ExecuteAsync(updateQuery, entity, tr);
+        }
+
         public virtual async Task<int> Delete(IDbConnection conn, int id)
         {
             return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id });
+        }
+
+        public virtual async Task<int> Delete(IDbConnection conn, IDbTransaction tr, int id)
+        {
+            return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id }, tr);
         }
 
         private IEnumerable<PropertyInfo> GetProperties => typeof(T).GetProperties();
@@ -60,8 +81,9 @@ namespace DataAccess.Repositories
         private static List<string> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties)
         {
             return (from prop in listOfProperties
-                    let attributes = prop.GetCustomAttributes(typeof(DescriptionAttribute), false)
-                    where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "ignore"
+                    let attributes = prop.GetCustomAttributes(typeof(TransactionIgnoreAttribute), false)
+                    //where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "RepoIgnore"
+                    where attributes.Length <= 0
                     select prop.Name).ToList();
         }
 
@@ -82,7 +104,7 @@ namespace DataAccess.Repositories
 
             insertQuery
                 .Remove(insertQuery.Length - 1, 1)
-                .Append(") VALUES (");
+                .Append(") OUTPUT INSERTED.ID VALUES (");
 
             properties.ForEach(prop => {
                 if (prop != "ID")

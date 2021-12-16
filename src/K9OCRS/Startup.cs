@@ -12,6 +12,7 @@ using Serilog;
 using System;
 using System.Diagnostics;
 using DataAccess;
+using K9OCRS.Configuration;
 
 namespace K9OCRS
 {
@@ -77,13 +78,15 @@ namespace K9OCRS
             // Modules
 
             var dataAccessModule = new ModuleBuilder();
-            String databaseConnectionString;
+            string databaseConnectionString;
+            string storageBasePath;
 
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
             {
+                storageBasePath = Configuration.GetValue<string>("StorageBasePaths:LocalStorage");
                 databaseConnectionString = Configuration.GetConnectionString("LocalDB");
                 
-                dataAccessModule.UseLocalStorage(Configuration.GetValue<string>("StorageBasePaths:LocalStorage"));
+                dataAccessModule.UseLocalStorage(storageBasePath);
             }
             else
             {
@@ -103,13 +106,19 @@ namespace K9OCRS
                     Configuration.GetValue<string>("STORAGE_KEY")
                 );
 
-                
+                storageBasePath = Configuration.GetValue<string>("StorageBasePaths:AzureBlobStorage");
+
                 dataAccessModule.UseAzureBlobStorage(blobStorageConnectionString);
             }
 
             dataAccessModule.UseSqlDatabase(databaseConnectionString);
 
             builder.RegisterModule(dataAccessModule.Build());
+
+            builder.RegisterType<ServiceConstants>()
+                    .WithParameter("storageBasePath", storageBasePath)
+                    .SingleInstance()
+                    .AsSelf();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
