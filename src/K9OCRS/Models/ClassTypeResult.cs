@@ -12,6 +12,7 @@ namespace K9OCRS.Models
             this.Description = entity.Description;
             this.Requirements = entity.Requirements;
             this.ImageFilename = entity.ImageFilename;
+            this.Duration = entity.Duration;
             this.Price = entity.Price;
         }
 
