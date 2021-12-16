@@ -12,6 +12,8 @@ using System.IO;
 using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
+using Microsoft.Extensions.Configuration;
+using K9OCRS.Configuration;
 
 namespace K9OCRS.Controllers
 {
@@ -23,8 +25,11 @@ namespace K9OCRS.Controllers
         private readonly IStorageClient storageClient;
         private readonly IConnectionOwner connectionOwner;
         private readonly DbOwner dbOwner;
+        private readonly ServiceConstants serviceConstants;
+
         public ClassTypesController(
             ILogger logger,
+            ServiceConstants serviceConstants,
             IStorageClient storageClient,
             IConnectionOwner connectionOwner,
             DbOwner dbOwner
@@ -34,6 +39,8 @@ namespace K9OCRS.Controllers
             this.storageClient = storageClient;
             this.connectionOwner = connectionOwner;
             this.dbOwner = dbOwner;
+
+            this.serviceConstants = serviceConstants;
         }
 
         [HttpGet]
@@ -59,7 +66,7 @@ namespace K9OCRS.Controllers
                 var photos = await dbOwner.ClassPhotos.GetByClassTypeID(conn, id);
 
                 // Combine the data using the Model
-                var result = new ClassTypeResult(entity);
+                var result = new ClassTypeResult(entity, serviceConstants.storageBasePath);
                 result.Photos = photos;
                 return result;
             });
@@ -118,7 +125,7 @@ namespace K9OCRS.Controllers
             {
                 var data = await file.ToBinaryData();
 
-                var filePath =  Path.Combine(classTypeId.ToString(), String.Concat(classTypeId, Path.GetExtension(file.FileName)));
+                var filePath =  String.Concat(classTypeId.ToString(), "/", classTypeId, Path.GetExtension(file.FileName));
                 var filename = Path.GetFileName(filePath);
 
                 await storageClient.UploadFile(UploadType.ClassPicture, filePath, file.ContentType, data);
@@ -139,7 +146,7 @@ namespace K9OCRS.Controllers
         {
             if (!String.IsNullOrEmpty(fileName) && !String.IsNullOrWhiteSpace(fileName))
             {
-                var filename = Path.Combine(classTypeId.ToString(), fileName);
+                var filename = String.Concat(classTypeId.ToString(), "/", fileName);
 
                 await storageClient.DeleteFile(UploadType.ClassPicture, filename);
 
