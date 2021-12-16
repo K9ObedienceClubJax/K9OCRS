@@ -1,3 +1,5 @@
+USE k9ocrs
+GO
 
 DELETE FROM ClassMeetings;
 DBCC CHECKIDENT ('[ClassMeetings]', RESEED, 0);
