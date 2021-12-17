@@ -119,16 +119,16 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPut("{classTypeId}/image")]
-        public async Task<IActionResult> UpdateImage(int classTypeId, [FromForm] IFormFile file)
+        public async Task<IActionResult> UpdateImage(int classTypeId, [FromForm] FileUpload upload)
         {
-            if (file != null)
+            if (upload.Files != null && upload.Files.Count > 0)
             {
-                var data = await file.ToBinaryData();
+                var data = await upload.Files[0].ToBinaryData();
 
-                var filePath =  String.Concat(classTypeId.ToString(), "/", classTypeId, Path.GetExtension(file.FileName));
+                var filePath = String.Concat(classTypeId.ToString(), "/", classTypeId, Path.GetExtension(upload.Files[0].FileName));
                 var filename = Path.GetFileName(filePath);
 
-                await storageClient.UploadFile(UploadType.ClassPicture, filePath, file.ContentType, data);
+                await storageClient.UploadFile(UploadType.ClassPicture, filePath, upload.Files[0].ContentType, data);
 
                 await connectionOwner.Use(conn =>
                 {
@@ -162,17 +162,17 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost("{classTypeId}/photos")]
-        public async Task<ActionResult> UploadPhotos(int classTypeId, [FromForm] List<IFormFile> files)
+        public async Task<ActionResult> UploadPhotos(int classTypeId, [FromForm] FileUpload upload)
         {
             var tasks = new List<Task>();
 
-            if (files != null && files.Count > 0)
+            if (upload.Files != null && upload.Files.Count > 0)
             {
-                for (int i = 0; i < files.Count; i++)
+                for (int i = 0; i < upload.Files.Count; i++)
                 {
-                    var data = await files[i].ToBinaryData();
-                    var ext = Path.GetExtension(files[i].FileName);
-                    var contType = files[i].ContentType;
+                    var data = await upload.Files[i].ToBinaryData();
+                    var ext = Path.GetExtension(upload.Files[i].FileName);
+                    var contType = upload.Files[i].ContentType;
 
                     tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
                     {
