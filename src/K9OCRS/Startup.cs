@@ -13,6 +13,7 @@ using System;
 using System.Diagnostics;
 using DataAccess;
 using K9OCRS.Configuration;
+using System.IO;
 
 namespace K9OCRS
 {
@@ -83,10 +84,13 @@ namespace K9OCRS
 
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
             {
+                // This relative path will be used for generating the file urls
                 storageBasePath = Configuration.GetValue<string>("StorageBasePaths:LocalStorage");
+                // This one will be used for actually storing files
+                var fullStorageBasePath = Path.Combine(Environment.CurrentDirectory, "ClientApp", "public", storageBasePath);
                 databaseConnectionString = Configuration.GetConnectionString("LocalDB");
                 
-                dataAccessModule.UseLocalStorage(storageBasePath);
+                dataAccessModule.UseLocalStorage(fullStorageBasePath);
             }
             else
             {
