@@ -1,0 +1,15 @@
+@import '../../util/colors.scss';
+
+.pageHeader {
+  &__breadcrumbs {
+    display: inline-block;
+    background-color: $gray-100;
+    padding: .6rem 1.2rem;
+    border-radius: .25rem;
+    margin-top: .5rem;
+
+    .breadcrumb {
+      margin-bottom: 0;
+    }
+  }
+}

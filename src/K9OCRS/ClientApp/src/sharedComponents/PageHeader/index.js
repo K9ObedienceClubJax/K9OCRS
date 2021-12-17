@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import { Col, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+
+import './styles.scss';
 
 const PageHeader = props => {
   const {
@@ -12,11 +14,11 @@ const PageHeader = props => {
   const cn = 'pageHeader';
 
   return (
-    <div className={`${cn} d-flex flex-column flex-xl-row  justify-content-xl-between`}>
-      <Col className={`${cn}__left`}>
+    <div className={`${cn} d-flex flex-column flex-xl-row  justify-content-xl-between mb-4`}>
+      <Col className={`${cn}__left mb-4`}>
         <h1>{title}</h1>
         { breadCrumbItems?.length > 0 &&
-          <Breadcrumb>
+          <Breadcrumb className={`${cn}__breadcrumbs`}>
             {breadCrumbItems?.map(item => (
               <BreadcrumbItem
                 key={item.label}
@@ -30,10 +32,10 @@ const PageHeader = props => {
           </Breadcrumb>
         }
       </Col>
-      <Col className={`${cn}__right`}>
-        <Row xl="4" lg="3" className="justify-content-end">
+      <Col className={`${cn}__right mb-4`}>
+        <div className='d-grid gap-2 d-md-flex justify-content-md-end'>
           {children}
-        </Row>
+        </div>
       </Col>
     </div>
   );
@@ -53,7 +55,10 @@ PageHeader.propTypes = {
       active: PropTypes.bool,
     }),
   ),
-  children: PropTypes.array,
+  children: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.object,
+  ]),
 };
 
 export default PageHeader;
