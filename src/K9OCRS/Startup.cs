@@ -12,6 +12,7 @@ using Serilog;
 using System;
 using System.Diagnostics;
 using DataAccess;
+using K9OCRS.Configuration;
 
 namespace K9OCRS
 {
@@ -72,33 +73,58 @@ namespace K9OCRS
         // Here we'll register repositories and services
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            // Creates the connection strings from environment variables set in the .env file
-            // and a template connection string from appsettings.json
-            var databaseConnectionString = String.Format(
-                    Configuration.GetConnectionString("Database"),
-                    Configuration.GetValue<string>("DB_SERVER"),
-                    Configuration.GetValue<string>("DB_NAME"),
-                    Configuration.GetValue<string>("DB_USERNAME"),
-                    Configuration.GetValue<string>("DB_PASSWORD")
-            );
-
-            var blobStorageConnectionString = String.Format(
-                Configuration.GetConnectionString("BlobStorage"),
-                Configuration.GetValue<string>("STORAGE_NAME"),
-                Configuration.GetValue<string>("STORAGE_KEY")
-            );
+            
 
             // Modules
-            builder.RegisterModule(new ModuleBuilder()
-                .UseSqlDatabase(databaseConnectionString)
-                .UseAzureBlobStorage(blobStorageConnectionString)
-                .Build());
+
+            var dataAccessModule = new ModuleBuilder();
+            string databaseConnectionString;
+            string storageBasePath;
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
+            {
+                storageBasePath = Configuration.GetValue<string>("StorageBasePaths:LocalStorage");
+                databaseConnectionString = Configuration.GetConnectionString("LocalDB");
+                
+                dataAccessModule.UseLocalStorage(storageBasePath);
+            }
+            else
+            {
+                // Creates the connection strings from environment variables set in the .env file
+                // and a template connection string from appsettings.json
+                databaseConnectionString = String.Format(
+                        Configuration.GetConnectionString("Database"),
+                        Configuration.GetValue<string>("DB_SERVER"),
+                        Configuration.GetValue<string>("DB_NAME"),
+                        Configuration.GetValue<string>("DB_USERNAME"),
+                        Configuration.GetValue<string>("DB_PASSWORD")
+                );
+
+                var blobStorageConnectionString = String.Format(
+                    Configuration.GetConnectionString("BlobStorage"),
+                    Configuration.GetValue<string>("STORAGE_NAME"),
+                    Configuration.GetValue<string>("STORAGE_KEY")
+                );
+
+                storageBasePath = Configuration.GetValue<string>("StorageBasePaths:AzureBlobStorage");
+
+                dataAccessModule.UseAzureBlobStorage(blobStorageConnectionString);
+            }
+
+            dataAccessModule.UseSqlDatabase(databaseConnectionString);
+
+            builder.RegisterModule(dataAccessModule.Build());
+
+            builder.RegisterType<ServiceConstants>()
+                    .WithParameter("storageBasePath", storageBasePath)
+                    .SingleInstance()
+                    .AsSelf();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsEnvironment("Local"))
             {
                 app.UseDeveloperExceptionPage();
             }
