@@ -37,14 +37,6 @@ export default class NavMenu extends Component {
           light
         >
           <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
-          <div className="mx-2">
-              <Link to="/Account/Login" className="pe-2">
-                <Button color="light" outline>Login</Button>
-              </Link>
-              <Link to="/Account/Create">
-                <Button color="secondary">Get Started!</Button>
-              </Link>
-          </div>
           <Collapse
             className="d-xl-flex justify-content-end"
             isOpen={!this.state.collapsed}
@@ -89,6 +81,14 @@ export default class NavMenu extends Component {
               </NavItem>
             </Nav>
           </Collapse>
+          <div className="ms-5">
+              <Link to="/Account/Login" className="pe-2">
+                <Button color="light" outline>Login</Button>
+              </Link>
+              <Link to="/Account/Create">
+                <Button color="secondary">Get Started!</Button>
+              </Link>
+          </div>
         </Navbar>
     );
   }
