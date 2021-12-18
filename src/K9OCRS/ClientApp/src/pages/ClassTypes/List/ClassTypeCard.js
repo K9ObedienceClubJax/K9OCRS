@@ -7,7 +7,7 @@ const ClassTypeCard = props => {
     title,
     description,
     imageUrl,
-    sessionLength,
+    duration,
     price,
   } = props;
 
@@ -17,14 +17,14 @@ const ClassTypeCard = props => {
     <Col className="mb-4" xs="12" sm="8" md="4">
       <Card>
         <CardImg
-          alt="Test Image"
+          alt={`Image for the ${title} class`}
           src={imageUrl}
           top
         />
         <CardBody>
           <CardTitle tag="h5">{title}</CardTitle>
           <CardText>{trimmedDesc}</CardText>
-          <p><strong>Length:</strong> {sessionLength}</p>
+          <p><strong>Length:</strong> {duration}</p>
           <p><strong>Price:</strong> ${price}</p>
           <Row className="justify-content-between">
             <Col className="text-right">
