@@ -6,8 +6,9 @@
   transition: box-shadow .2s, transform .2s;
 
   .card-img-top {
-    height: inherit;
+    height: 30vh;
     object-fit: cover;
+    object-position: center;
   }
 
   &:hover {

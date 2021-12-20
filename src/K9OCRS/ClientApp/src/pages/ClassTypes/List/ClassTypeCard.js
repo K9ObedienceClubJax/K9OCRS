@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, CardHeader, CardFooter } from 'reactstrap';
+import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, CardHeader } from 'reactstrap';
 
 import './style.scss';
 
@@ -16,7 +16,7 @@ const ClassTypeCard = props => {
 
   const history = useHistory();
 
-  const trimmedDesc = description.substring(0, 120) + '...';
+  const trimmedDesc = description.length > 125 ? description.substring(0, 125) + '...' : description;
 
   return (
     <Col className="mb-4" sm="12" md="6" lg="4" xl="3">
@@ -31,8 +31,14 @@ const ClassTypeCard = props => {
         </CardHeader>
         <CardBody>
           <CardText>{trimmedDesc}</CardText>
-          <p><strong>Length:</strong> {duration}</p>
-          <p><strong>Price:</strong> ${price}</p>
+          <Row>
+            <Col xs="8" md="6">
+              <p className='text-truncate'><strong>Length:</strong> {duration}</p>
+            </Col>
+            <Col xs="4" md="6" className='d-flex justify-content-end'>
+              <p><strong>Price:</strong> ${price}</p>
+            </Col>
+          </Row>
         </CardBody>
       </Card>
     </Col>
