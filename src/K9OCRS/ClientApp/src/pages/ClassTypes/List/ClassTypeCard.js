@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText } from 'reactstrap';
 import { NavLink } from 'reactstrap';
 
@@ -28,7 +29,7 @@ const ClassTypeCard = props => {
           <p><strong>Price:</strong> ${price}</p>
           <Row className="justify-content-between">
             <Col className="text-right">
-              <NavLink href="/Manage/ClassTypes/1">
+              <NavLink tag={Link} to="/Manage/ClassTypes/1">
                 View More
               </NavLink>
             </Col>

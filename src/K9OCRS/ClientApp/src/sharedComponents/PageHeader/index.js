@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { Col, Breadcrumb, BreadcrumbItem, UncontrolledAlert } from 'reactstrap';
 
 import './styles.scss';
@@ -24,8 +25,8 @@ const PageHeader = props => {
               {breadCrumbItems?.map(item => (
                 <BreadcrumbItem
                   key={item.label}
-                  tag="a"
-                  href={item.path}
+                  tag={Link}
+                  to={item.path}
                   active={item.active}
                 >
                   {item.label}
