@@ -39,8 +39,8 @@ export default class NavMenu extends Component {
           expand="xl"
           light
         >
-          <NavbarBrand />
-          <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
+          <NavbarBrand className="m-0"/>
+          <NavbarToggler onClick={this.toggleNavbar} />
           <Collapse
             className="d-xl-flex justify-content-end"
             isOpen={!this.state.collapsed}

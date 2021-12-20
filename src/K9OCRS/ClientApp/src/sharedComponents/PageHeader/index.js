@@ -17,8 +17,8 @@ const PageHeader = props => {
 
   return (
     <>
-      <div className={`${cn} d-flex flex-column flex-xl-row  justify-content-xl-between`}>
-        <Col className={`${cn}__left mb-4`}>
+      <div className={`${cn} d-flex flex-column flex-md-row  justify-content-lg-between`}>
+        <Col className={`${cn}__left mb-4`} md="8">
           <h1>{title}</h1>
           { breadCrumbItems?.length > 0 &&
             <Breadcrumb className={`${cn}__breadcrumbs`}>

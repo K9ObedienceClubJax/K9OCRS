@@ -11,7 +11,7 @@ export default class Layout extends Component {
       <div>
         <NavBar />
         <SiteBanner />
-        <Container className="px-5" fluid>
+        <Container className="px-4 px-md-5" fluid>
           {this.props.children}
         </Container>
       </div>
