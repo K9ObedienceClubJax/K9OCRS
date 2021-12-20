@@ -1,10 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText } from 'reactstrap';
-import { NavLink } from 'reactstrap';
+import { useHistory } from 'react-router-dom';
+import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, CardHeader, CardFooter } from 'reactstrap';
+
+import './style.scss';
 
 const ClassTypeCard = props => {
   const {
+    id,
     title,
     description,
     imageUrl,
@@ -12,28 +14,25 @@ const ClassTypeCard = props => {
     price,
   } = props;
 
+  const history = useHistory();
+
   const trimmedDesc = description.substring(0, 120) + '...';
 
   return (
-    <Col className="mb-4" xs="12" sm="8" md="4">
-      <Card>
+    <Col className="mb-4" sm="12" md="6" lg="4" xl="3">
+      <Card className="classTypeCard h-100" onClick={() => history.push(`/Manage/ClassTypes/${id}`)}>
         <CardImg
           alt={`Image for the ${title} class`}
           src={imageUrl}
           top
         />
+        <CardHeader className='bg-primary' style={{'--bs-bg-opacity': .2 }}>
+          <CardTitle tag="p" className="h3 d-block text-truncate">{title}</CardTitle>
+        </CardHeader>
         <CardBody>
-          <CardTitle tag="h5">{title}</CardTitle>
           <CardText>{trimmedDesc}</CardText>
           <p><strong>Length:</strong> {duration}</p>
           <p><strong>Price:</strong> ${price}</p>
-          <Row className="justify-content-between">
-            <Col className="text-right">
-              <NavLink tag={Link} to="/Manage/ClassTypes/1">
-                View More
-              </NavLink>
-            </Col>
-          </Row>
         </CardBody>
       </Card>
     </Col>

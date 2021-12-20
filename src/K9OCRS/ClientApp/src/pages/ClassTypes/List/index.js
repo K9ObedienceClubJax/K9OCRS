@@ -36,13 +36,13 @@ const ClassTypesList = () => {
       >
         <Button tag={Link} to="/Manage/ClassTypes/Add" color="primary">Add a Class Type</Button>
       </PageHeader>
-      <Container className="px-5" fluid>
+      <Container className="px-lg-5" fluid>
         { loading ? <Spinner /> : (
-          <Row className="my-4" xs="1" sm="2" md="3">
+          <Row className="my-4">
             {
-              classTypes?.map(ct => (
+              classTypes?.length > 0 ? classTypes.map(ct => (
                 <ClassTypeCard key={ct.id} {...ct} />
-              ))
+              )) : <p>There's no Class Types to show at the moment. Lets <Link to="/Manage/ClassTypes/Add">add the first one</Link>!</p>
             }
           </Row>
         )}

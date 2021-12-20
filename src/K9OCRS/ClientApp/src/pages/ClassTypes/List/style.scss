@@ -1,0 +1,17 @@
+@import '../../../app.scss';
+
+.classTypeCard {
+  cursor: pointer;
+  box-shadow: $box-shadow-sm;
+  transition: box-shadow .2s, transform .2s;
+
+  .card-img-top {
+    height: inherit;
+    object-fit: cover;
+  }
+
+  &:hover {
+    box-shadow: $box-shadow;
+    transform: translate(0,-.2rem);
+  }
+}
