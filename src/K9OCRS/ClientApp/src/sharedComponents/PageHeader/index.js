@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Col, Breadcrumb, BreadcrumbItem, UncontrolledAlert } from 'reactstrap';
 
 import './styles.scss';
@@ -15,6 +15,8 @@ const PageHeader = props => {
 
   const cn = 'pageHeader';
 
+  const { pathname: currentPath } = useLocation();
+
   return (
     <>
       <div className={`${cn} d-flex flex-column flex-md-row  justify-content-lg-between`}>
@@ -26,8 +28,9 @@ const PageHeader = props => {
                 <BreadcrumbItem
                   key={item.label}
                   tag={Link}
-                  to={item.path}
+                  to={item.path || currentPath}
                   active={item.active}
+                  disabled={item.active}
                 >
                   {item.label}
                 </BreadcrumbItem>

@@ -11,8 +11,12 @@
     .breadcrumb {
       margin-bottom: 0;
 
-      a.breadcrumb-item.active {
+      a.breadcrumb-item {
+        &.active, &:disabled {
+          pointer-events: none;
+          touch-action: none;
           text-decoration: none;
+        }
       }
     }
   }
