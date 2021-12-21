@@ -2,7 +2,7 @@
   "configurations": [
     {
       "type": "pwa-chrome",
-      "name": "http://localhost:3000/",
+      "name": "chrome debug",
       "request": "launch",
       "url": "http://localhost:3000/"
     }
