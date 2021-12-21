@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 
 export default function ManagementDashboard() {
@@ -7,7 +8,7 @@ export default function ManagementDashboard() {
       <h2>Class Management</h2>
       <Nav>
         <NavItem>
-          <NavLink href="/Manage/ClassTypes">
+          <NavLink tag={Link} to="/Manage/ClassTypes">
             Class Types
           </NavLink>
         </NavItem>

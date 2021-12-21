@@ -14,6 +14,7 @@ using Serilog;
 using K9OCRS.Models;
 using Microsoft.Extensions.Configuration;
 using K9OCRS.Configuration;
+using System.Linq;
 
 namespace K9OCRS.Controllers
 {
@@ -46,10 +47,12 @@ namespace K9OCRS.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllClassTypes()
         {
-            var result = await connectionOwner.Use(conn =>
+            var entities = await connectionOwner.Use(conn =>
             {
                 return dbOwner.ClassTypes.GetAll(conn);
             });
+
+            var result = entities.Select(e => new ClassTypeResult(e, serviceConstants.storageBasePath));
 
             return Ok(result);
         }

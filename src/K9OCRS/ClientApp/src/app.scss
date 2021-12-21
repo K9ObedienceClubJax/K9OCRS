@@ -1,1 +1,5 @@
 @import 'util/bootstrapOverrides.scss';
+
+body {
+  padding-top: 56px; // This is to account for the navbar being position: fixed
+}
