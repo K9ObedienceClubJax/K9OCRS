@@ -37,6 +37,7 @@ export default class NavMenu extends Component {
           className="k9-navbar navbar-toggleable-xl flex-xl-row-reverse"
           color="primary"
           expand="xl"
+          light
         >
           <NavbarBrand className="m-0"/>
           <NavbarToggler onClick={this.toggleNavbar} />
