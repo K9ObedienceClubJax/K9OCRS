@@ -48,7 +48,8 @@ const ClassTypesList = () => {
         <Button tag={Link} to="/Manage/ClassTypes/Add" color="primary">Add a Class Type</Button>
       </PageHeader>
       <Container className="px-lg-5" fluid>
-        { loading ? <Spinner /> : (
+        { loading && <Spinner /> }
+        { loading || alerts?.length > 0 ? null : (
           <Row className="my-4">
             {
               visibleClassTypes?.length > 0 ? visibleClassTypes.map(ct => (
