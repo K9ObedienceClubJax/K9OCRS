@@ -1,6 +1,9 @@
 
 @import './colors.scss';
 
+// Variables
+$font-weight-bold: 600;
+
 // Options
 
 $enable-shadows: true;
@@ -22,6 +25,10 @@ $spacers: map-merge(
 
 // Navbar
 $navbar-padding-x: 2.5rem;
+$nav-link-font-weight: 600;
+
+// Buttons
+$btn-font-weight: $font-weight-bold;
 
 // Keep this at the end of the file!
 @import 'bootstrap/scss/bootstrap.scss';
