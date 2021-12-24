@@ -1,11 +1,34 @@
-import React from 'react';
-import { Container, Row, Button, Input } from 'reactstrap';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Row, Button, Input } from 'reactstrap';
+import * as classTypesClient from '../../../util/apiClients/classTypes';
 import PageHeader from '../../../sharedComponents/PageHeader';
 import { Link } from 'react-router-dom';
 
 const ClassTypeSetup = () => {
+
+  const [loading, setLoading] = useState(true);
+  const [alerts, setAlerts] = useState([]);
+  const [classType, setClassType] = useState([]);
+
+  const { classTypeId } = useParams();
+
+  useEffect(() => {
+    async function getTest() {
+      try {
+        const res = await classTypesClient.getClassTypeByID(classTypeId);
+        setClassType(res?.data);
+        setLoading(false);
+      } catch(err) {
+        setLoading(false);
+        setAlerts([{ color: 'danger', message: 'We\'re having issues retrieving the requested class type.' }]);
+      }
+    }
+    getTest();
+  }, [classTypeId]);
+
   return (
-    <Container>
+    <div>
       <PageHeader
         title="Class Types Management"
         breadCrumbItems={[
@@ -14,9 +37,7 @@ const ClassTypeSetup = () => {
           { label: 'Class Types Setup', active: true }
         ]}
       >
-        <Link to='/Manage/ClassTypes/Add' className="ms-2 p-0">
-          <Button color="primary">Save Changes</Button>
-        </Link>
+        <Button tag={Link} to="/Manage/ClassTypes/Add" color="primary">Save Changes</Button>
       </PageHeader>
       <form className="d-flex flex-column">
         <Row className="g-2">
@@ -36,7 +57,7 @@ const ClassTypeSetup = () => {
           <Button color="primary" type="submit">Submit</Button>
         </Row>
       </form>
-    </Container>
+    </div>
   );
 };
 
