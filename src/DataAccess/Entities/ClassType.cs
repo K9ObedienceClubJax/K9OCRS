@@ -5,6 +5,18 @@ namespace DataAccess.Entities
 {
     public class ClassType
     {
+        public ClassType() { }
+        public ClassType(ClassType entity)
+        {
+            ID = entity.ID;
+            Title = entity.Title;
+            Description = entity.Description;
+            Requirements = entity.Requirements;
+            ImageFilename = entity.ImageFilename;
+            Duration = entity.Duration;
+            Price = entity.Price;
+        }
+
         [TransactionIgnore]
         public int ID { get; set; }
         public string Title { get; set; }
