@@ -7,12 +7,10 @@ using DataAccess.Clients.Contracts;
 using System;
 using DataAccess.Constants;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using System.IO;
 using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
-using Microsoft.Extensions.Configuration;
 using K9OCRS.Configuration;
 using System.Linq;
 
@@ -68,9 +66,11 @@ namespace K9OCRS.Controllers
                 // Get the list of photos related to the class type
                 var photos = await dbOwner.ClassPhotos.GetByClassTypeID(conn, id);
 
+                var photoResults = photos.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
+
                 // Combine the data using the Model
-                var result = new ClassTypeResult(entity, serviceConstants.storageBasePath);
-                result.Photos = photos;
+                var result = new ClassTypeResult(entity, serviceConstants.storageBasePath, photoResults);
+
                 return result;
             });
 
@@ -118,7 +118,9 @@ namespace K9OCRS.Controllers
                 return dbOwner.ClassPhotos.GetByClassTypeID(conn, classTypeId);
             });
 
-            return Ok(result);
+            var photoResults = result.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
+
+            return Ok(photoResults);
         }
 
         [HttpPut("{classTypeId}/image")]
@@ -210,6 +212,7 @@ namespace K9OCRS.Controllers
                         catch (Exception ex)
                         {
                             tr.Rollback();
+                            throw new Exception(ex.Message);
                         }
                     }));
                 }
