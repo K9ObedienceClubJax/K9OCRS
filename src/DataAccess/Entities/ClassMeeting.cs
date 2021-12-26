@@ -1,9 +1,9 @@
-using DataAccess.Extensions;
+﻿using DataAccess.Extensions;
 using System;
 
 namespace DataAccess.Entities
 {
-    public class ClassMeeting
+    public class ClassMeeting : IComparable
     {
         public ClassMeeting() { }
         public ClassMeeting(ClassMeeting entity)
@@ -15,5 +15,11 @@ namespace DataAccess.Entities
         [TransactionIgnore]
         public int ID { get; set; }
         public DateTime Date { get; set; }
+
+        public int CompareTo(object obj)
+        {
+            ClassMeeting b = (ClassMeeting) obj;
+            return DateTime.Compare(this.Date, b.Date);
+        }
     }
 }
