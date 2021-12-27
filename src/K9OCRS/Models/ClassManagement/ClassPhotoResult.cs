@@ -1,10 +1,11 @@
 ﻿using DataAccess.Constants;
 using DataAccess.Entities;
 
-namespace K9OCRS.Models
+namespace K9OCRS.Models.ClassManagement
 {
     public class ClassPhotoResult : ClassPhoto
     {
+        /// <example>K9Storage/classpictures/1/photos/1.jpg</example>
         public string ImageUrl { get; set; }
 
         public ClassPhotoResult(ClassPhoto entity, string storageBasePath) : base(entity) => ImageUrl = GenerateImageUrl(storageBasePath);

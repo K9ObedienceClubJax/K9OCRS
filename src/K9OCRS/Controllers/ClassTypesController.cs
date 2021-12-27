@@ -11,6 +11,7 @@ using System.IO;
 using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
+using K9OCRS.Models.ClassManagement;
 using K9OCRS.Configuration;
 using System.Linq;
 
@@ -42,7 +43,10 @@ namespace K9OCRS.Controllers
             this.serviceConstants = serviceConstants;
         }
 
+        #region ClassTypes
+
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<ClassTypeResult>), 200)]
         public async Task<IActionResult> GetAllClassTypes()
         {
             var entities = await connectionOwner.Use(conn =>
@@ -56,6 +60,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ClassTypeResult), 200)]
         public async Task<IActionResult> GetClassTypeByID(int id)
         {
             var result = await connectionOwner.Use(async conn =>
@@ -110,18 +115,9 @@ namespace K9OCRS.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{classTypeId}/photos")]
-        public async Task<IActionResult> GetPhotosByClassTypeID(int classTypeId)
-        {
-            var result = await connectionOwner.Use(conn =>
-            {
-                return dbOwner.ClassPhotos.GetByClassTypeID(conn, classTypeId);
-            });
+        #endregion
 
-            var photoResults = result.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
-
-            return Ok(photoResults);
-        }
+        #region ClassType_Image
 
         [HttpPut("{classTypeId}/image")]
         public async Task<IActionResult> UpdateImage(int classTypeId, [FromForm] FileUpload upload)
@@ -164,6 +160,24 @@ namespace K9OCRS.Controllers
             }
 
             return BadRequest();
+        }
+
+        #endregion
+
+        #region ClassType_Photos
+
+        [HttpGet("{classTypeId}/photos")]
+        [ProducesResponseType(typeof(IEnumerable<ClassPhotoResult>), 200)]
+        public async Task<IActionResult> GetPhotosByClassTypeID(int classTypeId)
+        {
+            var result = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.ClassPhotos.GetByClassTypeID(conn, classTypeId);
+            });
+
+            var photoResults = result.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
+
+            return Ok(photoResults);
         }
 
         [HttpPost("{classTypeId}/photos")]
@@ -277,5 +291,7 @@ namespace K9OCRS.Controllers
 
             return BadRequest();
         }
+
+        #endregion
     }
 }

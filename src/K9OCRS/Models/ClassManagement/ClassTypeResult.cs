@@ -2,10 +2,11 @@
 using DataAccess.Entities;
 using System.Collections.Generic;
 
-namespace K9OCRS.Models
+namespace K9OCRS.Models.ClassManagement
 {
     public class ClassTypeResult : ClassType
     {
+        /// <example>K9Storage/classpictures/ClassPlaceholder.png</example>
         public string ImageUrl { get; set; }
         public IEnumerable<ClassPhotoResult> Photos { get; set; }
 
