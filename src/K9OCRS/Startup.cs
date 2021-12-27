@@ -70,14 +70,18 @@ namespace K9OCRS
                         Version = "v1"
                     });
 
-                var srcPath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, "..", "..", "..", ".."));
-                var dataAccessPath = Path.Combine(srcPath, "DataAccess", "bin", "Debug");
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
+                {
 
-                var mainName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-                var dataAccessName = typeof(ModuleBuilder).GetTypeInfo().Assembly.GetName().Name;
+                    var srcPath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, "..", "..", "..", ".."));
+                    var dataAccessPath = Path.Combine(srcPath, "DataAccess", "bin", "Debug");
 
-                options.IncludeXmlComments("bin/Debug/" + mainName + ".xml");
-                options.IncludeXmlComments(Path.Combine(dataAccessPath, dataAccessName + ".xml"));
+                    var mainName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+                    var dataAccessName = typeof(ModuleBuilder).GetTypeInfo().Assembly.GetName().Name;
+
+                    options.IncludeXmlComments("bin/Debug/" + mainName + ".xml");
+                    options.IncludeXmlComments(Path.Combine(dataAccessPath, dataAccessName + ".xml"));
+                }
             });
         }
 
