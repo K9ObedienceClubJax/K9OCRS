@@ -14,6 +14,7 @@ namespace DataAccess.Entities
 
         [TransactionIgnore]
         public int ID { get; set; }
+        public int SectionID { get; set; }
         public DateTime Date { get; set; }
 
         public int CompareTo(object obj)

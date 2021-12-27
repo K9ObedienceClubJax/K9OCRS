@@ -74,8 +74,6 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassSections' and xtype='U'
 		ID INTEGER IDENTITY NOT NULL,
 		ClassTypeID INTEGER NOT NULL,
 		InstructorID INTEGER NOT NULL,
-		StartDate DATE NOT NULL,
-		EndDate DATE NOT NULL,
 		RosterSize INTEGER NOT NULL,
 		PRIMARY KEY (ID)
 	);
@@ -83,6 +81,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassSections' and xtype='U'
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassMeetings' and xtype='U')
 	CREATE TABLE ClassMeetings (
 		ID INTEGER IDENTITY NOT NULL,
+		ClassSectionID INTEGER NOT NULL,
 		Date DATETIME NOT NULL,
 		PRIMARY KEY (ID)
 	);
@@ -107,5 +106,6 @@ ALTER TABLE VaccinationRecords ADD FOREIGN KEY (DogID) REFERENCES Dogs(ID);
 ALTER TABLE ClassPhotos ADD FOREIGN KEY (ClassTypeID) REFERENCES ClassTypes(ID);
 ALTER TABLE ClassSections ADD FOREIGN KEY (InstructorID) REFERENCES Users(ID);
 ALTER TABLE ClassSections ADD FOREIGN KEY (ClassTypeID) REFERENCES ClassTypes(ID);
+ALTER TABLE ClassMeetings ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID);
 ALTER TABLE SectionApplications ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID);
 ALTER TABLE SectionApplications ADD FOREIGN KEY (DogID) REFERENCES Dogs(ID);
