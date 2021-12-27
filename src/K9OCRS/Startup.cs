@@ -14,6 +14,7 @@ using System.Diagnostics;
 using DataAccess;
 using K9OCRS.Configuration;
 using System.IO;
+using System.Reflection;
 
 namespace K9OCRS
 {
@@ -68,6 +69,15 @@ namespace K9OCRS
                         Description = "API for the K9 Obedience Club Registration System",
                         Version = "v1"
                     });
+
+                var srcPath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, "..", "..", "..", ".."));
+                var dataAccessPath = Path.Combine(srcPath, "DataAccess", "bin", "Debug");
+
+                var mainName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+                var dataAccessName = typeof(ModuleBuilder).GetTypeInfo().Assembly.GetName().Name;
+
+                options.IncludeXmlComments("bin/Debug/" + mainName + ".xml");
+                options.IncludeXmlComments(Path.Combine(dataAccessPath, dataAccessName + ".xml"));
             });
         }
 
