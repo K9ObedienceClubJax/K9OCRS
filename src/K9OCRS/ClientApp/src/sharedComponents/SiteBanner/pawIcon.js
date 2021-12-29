@@ -1,5 +1,8 @@
 import React from 'react'
 
+/**
+ * The old image was a raster image so it looked blurry. Using an SVG ensures that it'll always look crisp.
+ */
 export default function pawIcon(props) {
    return (
       <svg

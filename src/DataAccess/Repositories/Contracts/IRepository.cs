@@ -9,7 +9,10 @@ namespace DataAccess.Repositories.Contracts
         Task<T> GetByID(IDbConnection conn, int id);
         Task<IReadOnlyList<T>> GetAll(IDbConnection conn);
         Task<int> Add(IDbConnection conn, T entity);
+        Task<int> Add(IDbConnection conn, IDbTransaction tr, T entity);
         Task<int> Update(IDbConnection conn, T entity);
+        Task<int> Update(IDbConnection conn, IDbTransaction tr, T entity);
         Task<int> Delete(IDbConnection conn, int id);
+        Task<int> Delete(IDbConnection conn, IDbTransaction tr, int id);
     }
 }

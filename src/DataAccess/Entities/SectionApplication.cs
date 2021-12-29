@@ -1,9 +1,11 @@
-﻿using System;
+﻿using DataAccess.Extensions;
+using System;
 
 namespace DataAccess.Entities
 {
     public class SectionApplication
     {
+        [TransactionIgnore]
         public int ID { get; set; }
         public int ClassSectionID { get; set; }
         public int DogID { get; set; }

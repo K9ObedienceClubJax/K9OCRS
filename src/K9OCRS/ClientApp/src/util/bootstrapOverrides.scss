@@ -1,32 +1,8 @@
 
-// Base gray-scale
-$white:    #fff;
-$gray-100: #f8faf8;
-$gray-200: #eaefe9;
-$gray-300: #dee6df;
-$gray-400: #cedacf;
-$gray-500: #adbdae;
-$gray-600: #6c7d6c;
-$gray-700: #495749;
-$gray-800: #344035;
-$gray-900: #212922;
-$black:    #000;
+@import './colors.scss';
 
-// Base color-wheel
-$blue:    #007bff;
-$indigo:  #6610f2;
-$purple:  #6f42c1;
-$pink:    #e83e8c;
-$red:     #DC3545;
-$orange:  #fd7e14;
-$yellow:  #FFC107;
-$green:   #1ECC46;
-$teal:    #20c997;
-$cyan:    #17A2B8;
-
-// Theme Colors
-$primary: #7DB06F;
-$secondary: $gray-600; //#6C7D6E;
+// Variables
+$font-weight-bold: 600;
 
 // Options
 
@@ -49,6 +25,10 @@ $spacers: map-merge(
 
 // Navbar
 $navbar-padding-x: 2.5rem;
+$nav-link-font-weight: 600;
+
+// Buttons
+$btn-font-weight: $font-weight-bold;
 
 // Keep this at the end of the file!
 @import 'bootstrap/scss/bootstrap.scss';

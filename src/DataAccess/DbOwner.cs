@@ -14,8 +14,8 @@ namespace DataAccess
         public readonly IRepository<User> Users;
         public readonly IRepository<Dog> Dogs;
         public readonly IRepository<VaccinationRecord> VaccinationRecords;
-        public readonly IRepository<ClassPhoto> ClassPhotos;
-        public readonly IRepository<ClassType> ClassTypes;
+        public readonly IClassPhotosRepository ClassPhotos;
+        public readonly IClassTypesRepository ClassTypes;
         public readonly IRepository<ClassSection> ClassSections;
         public readonly IRepository<ClassMeeting> ClassMeetings;
         public readonly IRepository<SectionApplication> SectionApplications;

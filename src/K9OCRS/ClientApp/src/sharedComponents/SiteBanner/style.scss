@@ -1,6 +1,14 @@
+@import '../../app.scss';
 
 .sitebanner {
   &__pawicon {
+    width: 32px; // smaller on phones
     transform: rotateZ(25deg);
+  }
+
+  @include media-breakpoint-up(md) {
+    &__pawicon {
+      width: 48px;
+    }
   }
 }

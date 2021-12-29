@@ -46,8 +46,27 @@ namespace DataAccess
             actions.Add(builder =>
             {
                 builder.RegisterType<AzureStorageClient>()
-                 .As<ICloudStorageClient>()
+                 .As<IStorageClient>()
                  .WithParameter("connectionString", connectionString)
+                 .SingleInstance()
+                 .PreserveExistingDefaults();
+            });
+
+            return this;
+        }
+
+        /// <summary>
+        /// Setup the local storage client
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public ModuleBuilder UseLocalStorage(string localStorageBasePath)
+        {
+            actions.Add(builder =>
+            {
+                builder.RegisterType<LocalStorageClient>()
+                 .As<IStorageClient>()
+                 .WithParameter("localStorageBasePath", localStorageBasePath)
                  .SingleInstance()
                  .PreserveExistingDefaults();
             });

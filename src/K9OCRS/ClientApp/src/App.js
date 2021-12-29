@@ -15,9 +15,9 @@ import DogDetails from './pages/DogDetails';
 import DogSetup from './pages/DogSetup';
 
 import ManagementDashboard from './pages/ManagementDashboard';
-import ClassTypesDashboard from './pages/ClassTypesDashboard';
-import TestUpload from './pages/ClassTypesDashboard/TestUpload';
-import ClassTypeSetup from './pages/ClassTypeSetup';
+import ClassTypesList from './pages/ClassTypes/List';
+import ClassTypeSetup from './pages/ClassTypes/Setup';
+import TestUpload from './pages/ClassTypes/TestUpload';
 
 import './app.scss';
 
@@ -42,7 +42,7 @@ export default class App extends Component {
 
           {/* Routes available only to Administrators */}
           <Route path='/Manage' component={ManagementDashboard} exact />
-          <Route path='/Manage/ClassTypes' component={ClassTypesDashboard} exact />
+          <Route path='/Manage/ClassTypes' component={ClassTypesList} exact />
           <Route path='/Manage/ClassTypes/testImageUpload' component={TestUpload} exact /> {/* This route is just for a quick test, it will be removed */}
           <Route path='/Manage/ClassTypes/:classTypeId' component={ClassTypeSetup} exact />
           {/* This is our 404 route or the route shown when a route is not found */}

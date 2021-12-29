@@ -1,3 +1,6 @@
+USE k9ocrs
+GO
+
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='UserRoles' and xtype='U')
 	CREATE TABLE UserRoles (
 		ID INTEGER IDENTITY NOT NULL,
@@ -14,7 +17,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Users' and xtype='U')
 		LastName NVARCHAR(70) NOT NULL,
 		Email NVARCHAR(128) NOT NULL,
 		Password NVARCHAR(256) NOT NULL,
-		ProfilePictureFilename VARCHAR(70),
+		ProfilePictureFilename VARCHAR(70) DEFAULT 'UserPlaceholder.png',
 		PRIMARY KEY (ID)
 	);
 
@@ -30,7 +33,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Dogs' and xtype='U')
 		Name NVARCHAR(35) NOT NULL,
 		Breed NVARCHAR(35) NOT NULL,
 		DateOfBirth DATE NOT NULL,
-		ProfilePictureFilename VARCHAR(70),
+		ProfilePictureFilename VARCHAR(70) DEFAULT 'DogPlaceholder.png',
 		PRIMARY KEY (ID)
 	);
 
@@ -59,7 +62,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassTypes' and xtype='U')
 		Title VARCHAR(156) NOT NULL,
 		Description VARCHAR(2048) NOT NULL,
 		Requirements VARCHAR(512),
-		ImageFilename VARCHAR(70),
+		ImageFilename VARCHAR(70) DEFAULT 'ClassPlaceholder.png',
 		Duration VARCHAR(128) NOT NULL,
 		Price MONEY NOT NULL,
 		PRIMARY KEY (ID),
@@ -71,8 +74,6 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassSections' and xtype='U'
 		ID INTEGER IDENTITY NOT NULL,
 		ClassTypeID INTEGER NOT NULL,
 		InstructorID INTEGER NOT NULL,
-		StartDate DATE NOT NULL,
-		EndDate DATE NOT NULL,
 		RosterSize INTEGER NOT NULL,
 		PRIMARY KEY (ID)
 	);
@@ -80,6 +81,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassSections' and xtype='U'
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassMeetings' and xtype='U')
 	CREATE TABLE ClassMeetings (
 		ID INTEGER IDENTITY NOT NULL,
+		ClassSectionID INTEGER NOT NULL,
 		Date DATETIME NOT NULL,
 		PRIMARY KEY (ID)
 	);
@@ -104,16 +106,6 @@ ALTER TABLE VaccinationRecords ADD FOREIGN KEY (DogID) REFERENCES Dogs(ID);
 ALTER TABLE ClassPhotos ADD FOREIGN KEY (ClassTypeID) REFERENCES ClassTypes(ID);
 ALTER TABLE ClassSections ADD FOREIGN KEY (InstructorID) REFERENCES Users(ID);
 ALTER TABLE ClassSections ADD FOREIGN KEY (ClassTypeID) REFERENCES ClassTypes(ID);
+ALTER TABLE ClassMeetings ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID);
 ALTER TABLE SectionApplications ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID);
 ALTER TABLE SectionApplications ADD FOREIGN KEY (DogID) REFERENCES Dogs(ID);
-
---drop table ClassMeetings
---drop table VaccinationRecords
---drop table SectionApplications
---DROP TABLE UserDogs
---drop table Dogs
---DROP TABLE UserRoles
---DROP TABLE Users
---drop table ClassTypes
---drop table ClassPhotos
---drop table ClassSections

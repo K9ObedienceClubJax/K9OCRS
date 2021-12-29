@@ -3,12 +3,15 @@ import {
   Collapse,
   Navbar,
   NavbarToggler,
+  NavbarBrand,
   NavItem,
   NavLink,
   Button,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Nav } from "reactstrap";
+
+import './style.scss';
 
 export default class NavMenu extends Component {
   static displayName = NavMenu.name;
@@ -31,20 +34,13 @@ export default class NavMenu extends Component {
   render() {
     return (
         <Navbar
-          className="navbar-toggleable-xl flex-xl-row-reverse"
+          className="k9-navbar navbar-toggleable-xl flex-xl-row-reverse"
           color="primary"
           expand="xl"
           light
         >
-          <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
-          <div className="mx-2">
-              <Link to="/Account/Login" className="pe-2">
-                <Button color="light" outline>Login</Button>
-              </Link>
-              <Link to="/Account/Create">
-                <Button color="secondary">Get Started!</Button>
-              </Link>
-          </div>
+          <NavbarBrand className="m-0"/>
+          <NavbarToggler onClick={this.toggleNavbar} />
           <Collapse
             className="d-xl-flex justify-content-end"
             isOpen={!this.state.collapsed}
@@ -88,6 +84,14 @@ export default class NavMenu extends Component {
                 </NavLink>
               </NavItem>
             </Nav>
+            <div className="ms-5 my-3 my-xl-0">
+              <Link to="/Account/Login" className="pe-2">
+                <Button color="light" outline>Login</Button>
+              </Link>
+              <Link to="/Account/Create">
+                <Button color="secondary">Get Started!</Button>
+              </Link>
+            </div>
           </Collapse>
         </Navbar>
     );
