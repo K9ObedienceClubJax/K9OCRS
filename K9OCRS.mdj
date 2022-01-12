@@ -22292,7 +22292,7 @@
 									"font": "Arial;13;1",
 									"left": 360,
 									"top": 290,
-									"width": 201.208984375,
+									"width": 208.90234375,
 									"height": 13,
 									"text": "ClassSection"
 								},
@@ -22319,7 +22319,7 @@
 											"font": "Arial;13;0",
 											"left": 365,
 											"top": 313,
-											"width": 191.208984375,
+											"width": 198.90234375,
 											"height": 13
 										},
 										{
@@ -22335,7 +22335,7 @@
 											"font": "Arial;13;0",
 											"left": 365,
 											"top": 328,
-											"width": 191.208984375,
+											"width": 198.90234375,
 											"height": 13
 										},
 										{
@@ -22351,7 +22351,7 @@
 											"font": "Arial;13;0",
 											"left": 365,
 											"top": 343,
-											"width": 191.208984375,
+											"width": 198.90234375,
 											"height": 13
 										},
 										{
@@ -22367,7 +22367,7 @@
 											"font": "Arial;13;0",
 											"left": 365,
 											"top": 358,
-											"width": 191.208984375,
+											"width": 198.90234375,
 											"height": 13
 										}
 									],
@@ -22375,7 +22375,7 @@
 									"font": "Arial;13;0",
 									"left": 360,
 									"top": 308,
-									"width": 201.208984375,
+									"width": 208.90234375,
 									"height": 68
 								}
 							],
@@ -22383,7 +22383,7 @@
 							"font": "Arial;13;0",
 							"left": 360,
 							"top": 285,
-							"width": 201.208984375,
+							"width": 208.90234375,
 							"height": 91,
 							"nameLabel": {
 								"$ref": "AAAAAAF9nebxH/5N1k4="
@@ -22572,8 +22572,8 @@
 									},
 									"fillColor": "#ffc082",
 									"font": "Arial;13;1",
-									"left": 368,
-									"top": 461,
+									"left": 360,
+									"top": 485,
 									"width": 208.1787109375,
 									"height": 13,
 									"text": "ClassMeeting"
@@ -22599,8 +22599,8 @@
 											},
 											"fillColor": "#ffc082",
 											"font": "Arial;13;0",
-											"left": 373,
-											"top": 484,
+											"left": 365,
+											"top": 508,
 											"width": 198.1787109375,
 											"height": 13
 										},
@@ -22615,8 +22615,8 @@
 											},
 											"fillColor": "#ffc082",
 											"font": "Arial;13;0",
-											"left": 373,
-											"top": 499,
+											"left": 365,
+											"top": 523,
 											"width": 198.1787109375,
 											"height": 13
 										},
@@ -22631,26 +22631,42 @@
 											},
 											"fillColor": "#ffc082",
 											"font": "Arial;13;0",
-											"left": 373,
-											"top": 514,
+											"left": 365,
+											"top": 538,
+											"width": 198.1787109375,
+											"height": 13
+										},
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAF+T9gcQJsntTc=",
+											"_parent": {
+												"$ref": "AAAAAAF9nettqv62TVI="
+											},
+											"model": {
+												"$ref": "AAAAAAF+T9gcKZsknzo="
+											},
+											"fillColor": "#ffc082",
+											"font": "Arial;13;0",
+											"left": 365,
+											"top": 553,
 											"width": 198.1787109375,
 											"height": 13
 										}
 									],
 									"fillColor": "#ffc082",
 									"font": "Arial;13;0",
-									"left": 368,
-									"top": 479,
+									"left": 360,
+									"top": 503,
 									"width": 208.1787109375,
-									"height": 53
+									"height": 68
 								}
 							],
 							"fillColor": "#ffc082",
 							"font": "Arial;13;0",
-							"left": 368,
-							"top": 456,
+							"left": 360,
+							"top": 480,
 							"width": 208.1787109375,
-							"height": 76,
+							"height": 91,
 							"nameLabel": {
 								"$ref": "AAAAAAF9nettqv61Gvc="
 							},
@@ -22677,7 +22693,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 466,
-									"top": 408,
+									"top": 420,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -22711,7 +22727,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 467,
-									"top": 424,
+									"top": 448,
 									"height": 13,
 									"alpha": -0.5235987755982988,
 									"distance": 30,
@@ -22728,7 +22744,7 @@
 								"$ref": "AAAAAAF9nebxHv5Mykw="
 							},
 							"lineStyle": 2,
-							"points": "452:375;452:456",
+							"points": "452:375;452:480",
 							"nameLabel": {
 								"$ref": "AAAAAAF9ne5KAP7fst0="
 							},
@@ -22941,7 +22957,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 604,
+									"left": 608,
 									"top": 335,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -22958,7 +22974,7 @@
 										"$ref": "AAAAAAF9nfFu6P9ES4Y="
 									},
 									"font": "Arial;13;0",
-									"left": 585,
+									"left": 593,
 									"top": 335,
 									"height": 13,
 									"alpha": 0.5235987755982988,
@@ -22993,7 +23009,7 @@
 								"$ref": "AAAAAAF9nebxHv5Mykw="
 							},
 							"lineStyle": 2,
-							"points": "560:356;648:356",
+							"points": "568:356;648:356",
 							"nameLabel": {
 								"$ref": "AAAAAAF9nfFu6P9Fkeo="
 							},
@@ -23511,7 +23527,7 @@
 								"$ref": "AAAAAAF9ncwQtf1lh1c="
 							},
 							"name": "ReviewedBy",
-							"type": "INT",
+							"type": "INTEGER",
 							"length": 0,
 							"nullable": true
 						},
@@ -23522,7 +23538,7 @@
 								"$ref": "AAAAAAF9ncwQtf1lh1c="
 							},
 							"name": "ReviewedDate",
-							"type": "DATE",
+							"type": "DATETIME",
 							"length": 0,
 							"nullable": true
 						}
@@ -23826,7 +23842,7 @@
 							"_parent": {
 								"$ref": "AAAAAAF9nebxHv5KUR4="
 							},
-							"name": "RosterSize",
+							"name": "RosterCapacity",
 							"type": "INTEGER",
 							"length": 0
 						}
@@ -23871,7 +23887,17 @@
 							"_parent": {
 								"$ref": "AAAAAAF9nettqf6y7Og="
 							},
-							"name": "Date",
+							"name": "StartDate",
+							"type": "DATETIME",
+							"length": 0
+						},
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAF+T9gcKZsknzo=",
+							"_parent": {
+								"$ref": "AAAAAAF9nettqf6y7Og="
+							},
+							"name": "EndDate",
 							"type": "DATETIME",
 							"length": 0
 						}
