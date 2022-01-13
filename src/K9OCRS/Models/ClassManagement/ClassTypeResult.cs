@@ -9,6 +9,7 @@ namespace K9OCRS.Models.ClassManagement
         /// <example>K9Storage/classpictures/ClassPlaceholder.png</example>
         public string ImageUrl { get; set; }
         public IEnumerable<ClassPhotoResult> Photos { get; set; }
+        public IEnumerable<ClassSectionResult> Sections { get; set; }
 
         public ClassTypeResult(ClassType entity, string storageBasePath) : base(entity) => ImageUrl = GenerateImageUrl(storageBasePath);
         public ClassTypeResult(ClassType entity, string storageBasePath, IEnumerable<ClassPhotoResult> photos) : this(entity, storageBasePath) => Photos = photos;

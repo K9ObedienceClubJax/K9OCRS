@@ -10,8 +10,8 @@ namespace K9OCRS.Models.ClassManagement
         public ClassSectionResult(ClassSection entity, IEnumerable<ClassMeeting> meetings) : base(entity)
         {
             Meetings = meetings;
-            StartDate = Meetings.Min().Date;
-            EndDate = Meetings.Max().Date;
+            StartDate = Meetings.Min().StartDate;
+            EndDate = Meetings.Max().EndDate;
         }
         public ClassSectionResult(ClassSection entity, IEnumerable<ClassMeeting> meetings, ClassTypeResult classType) : this(entity, meetings) => ClassType = classType;
 
@@ -20,6 +20,5 @@ namespace K9OCRS.Models.ClassManagement
         public DateTime StartDate { get; set; }
         /// <example>2022-02-06T15:00:00</example>
         public DateTime EndDate { get; set; }
-        public ClassTypeResult ClassType { get; set; }
     }
 }
