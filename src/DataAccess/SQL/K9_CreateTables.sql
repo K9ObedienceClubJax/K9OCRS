@@ -74,7 +74,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassSections' and xtype='U'
 		ID INTEGER IDENTITY NOT NULL,
 		ClassTypeID INTEGER NOT NULL,
 		InstructorID INTEGER NOT NULL,
-		RosterSize INTEGER NOT NULL,
+		RosterCapacity INTEGER NOT NULL,
 		PRIMARY KEY (ID)
 	);
 
@@ -82,8 +82,11 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassMeetings' and xtype='U'
 	CREATE TABLE ClassMeetings (
 		ID INTEGER IDENTITY NOT NULL,
 		ClassSectionID INTEGER NOT NULL,
-		Date DATETIME NOT NULL,
-		PRIMARY KEY (ID)
+		StartDate DATETIME NOT NULL,
+		EndDate DATETIME NOT NULL,
+		PRIMARY KEY (ID),
+		-- Start and End should be on the same day
+		CONSTRAINT CHK_Dates CHECK (DATEDIFF(Day, StartDate, EndDate) = 0)
 	);
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='SectionApplications' and xtype='U')

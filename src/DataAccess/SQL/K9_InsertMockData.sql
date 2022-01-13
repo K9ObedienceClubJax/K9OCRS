@@ -11,10 +11,34 @@ VALUES
 	('Student');
 
 -- Users
+INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], ProfilePictureFilename)
+VALUES
+	(1, 'John', 'Doe', 'johndoe@mockignitech.whoops', 'MockPasswordThatShouldn''tWork', 'UserPlaceholder.png'),
+	(2, 'Peepee', 'Poopoo', 'PeepeePoopoo@mockignitech.whoops', 'MockPasswordThatShouldn''tWork', 'UserPlaceholder.png'),
+	(3, 'zig', 'zag', 'zigzag@mockignitech.whoops', 'MockPasswordThatShouldn''tWork', 'UserPlaceholder.png'),
+	(4, 'lmao', 'rofl', 'lmaorofl@mockignitech.whoops', 'MockPasswordThatShouldn''tWork', 'UserPlaceholder.png');
 
 -- Dogs
+INSERT INTO Dogs ([Name], [Breed], [DateOfBirth], [ProfilePictureFilename])
+VALUES
+	('Max', 'Golden Retriever', '2021-08-07', 'DogPlaceholder.png'),
+	('Peanut', 'Pomeranian', '2020-09-02', 'DogPlaceholder.png'),
+	('Jeff', 'Pug', '2021-04-03', 'DogPlaceholder.png'),
+	('Max', 'German Shepherd', '2020-12-16', 'DogPlaceholder.png'),
+	('Juan', 'Chihuahua', '2020-07-26', 'DogPlaceholder.png'),
+	('Coin', 'Shiba Inu', '2021-02-15', 'DogPlaceholder.png'),
+	('Fred', 'Bulldog', '2020-05-19', 'DogPlaceholder.png');
 
 -- User-Dogs
+INSERT INTO UserDogs ([UserID], [DogID])
+VALUES
+	(1,1),
+	(1,6),
+	(2,2),
+	(3,3),
+	(3,4),
+	(4,5),
+	(4,7);
 
 -- Class Types
 INSERT INTO ClassTypes (Title, [Description], Requirements, Duration, Price)
@@ -35,7 +59,23 @@ VALUES
 	('Trick Dog','Dogs want and crave mental workouts. What better way to satisfy this need through fun tricks while earning titles! AKC Trick Dog titles are official AKC titles listed on the dog’s title record. Purebreds and mixed breeds are eligible to earn AKC Trick Dog titles as well as many other sports like Obedience, Rally, Agility, Field Events, Herding and many more.',NULL,'7 weeks',120);
 
 -- Class Sections
+INSERT INTO ClassSections ([ClassTypeID], [InstructorID], [RosterCapacity])
+VALUES
+	(1, 1, 8),
+	(2, 2, 6),
+	(3, 2, 10);
 
 -- Class Meetings
+INSERT INTO ClassMeetings ([ClassSectionID], [StartDate], [EndDate])
+VALUES
+	(1, '2022-01-13 14:00:00.000', '2022-01-13 16:00:00.000'),
+	(1, '2022-01-20 14:00:00.000', '2022-01-20 16:00:00.000'),
+	(1, '2022-01-27 14:00:00.000', '2022-01-27 16:00:00.000'),
+	(2, '2022-01-13 14:00:00.000', '2022-01-13 14:00:00.000'),
+	(2, '2022-01-17 14:00:00.000', '2022-01-17 14:00:00.000'),
+	(2, '2022-01-20 14:00:00.000', '2022-01-20 14:00:00.000'),
+	(3, '2022-01-13 16:00:00.000', '2022-01-13 18:00:00.000'),
+	(3, '2022-01-17 16:00:00.000', '2022-01-17 18:00:00.000'),
+	(3, '2022-01-20 16:00:00.000', '2022-01-20 18:00:00.000');
 
 -- Section Applications
