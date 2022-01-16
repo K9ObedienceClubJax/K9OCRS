@@ -43,26 +43,59 @@ namespace K9OCRS.Controllers
             this.serviceConstants = serviceConstants;
         }
 
-        /// <summary>
-        /// Fetch a list of class sections grouped by their class type
-        /// </summary>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ClassTypeResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ClassSectionResult>), 200)]
         public async Task<IActionResult> GetAll()
         {
-            throw new NotImplementedException();
+            var result = await connectionOwner.Use(async conn =>
+            {
+                // Get all sections
+                var sections = await dbOwner.ClassSections.GetAll(conn);
+                // Get all instructors associated to sections
+                var instructorIds = sections.Select(s => s.InstructorID);
+                var instructors = (await dbOwner.Users.GetByIDs(conn, instructorIds)).ToList();
+                // Get all meetings
+                var meetings = await dbOwner.ClassMeetings.GetAll(conn);
+
+                // Group meetings by classSectionID
+                var groupedMeetings = meetings.Aggregate(new Dictionary<int, List<ClassMeeting>>(), (agg, m) =>
+                {
+                    if (agg.ContainsKey(m.ClassSectionID))
+                    {
+                        agg[m.ClassSectionID].Add(m);
+                    }
+                    else
+                    {
+                        agg.Add(m.ClassSectionID, new List<ClassMeeting> { m });
+                    }
+                    return agg;
+                });
+
+                return sections.Select(s => new ClassSectionResult(
+                    s,
+                    groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null,
+                    instructors.Find(u => u.ID == s.InstructorID)
+                ));
+            });
+
+            return Ok(result);
         }
 
         [HttpGet("{classSectionId}")]
+        [ProducesResponseType(typeof(ClassSectionDetails), 200)]
         public async Task<IActionResult> GetByID(int classSectionId)
         {
-            throw new NotImplementedException();
-        }
+            var result = await connectionOwner.Use(async conn =>
+            {
+                var section = await dbOwner.ClassSections.GetByID(conn, classSectionId);
+                var meetings = await dbOwner.ClassMeetings.GetByID(conn, "ClassSectionID", section.ID);
+                var type = await dbOwner.ClassTypes.GetByID(conn, section.ClassTypeID);
+                var instructor = await dbOwner.Users.GetByID(conn, section.InstructorID);
 
-        [HttpGet("type/{classTypeId}")]
-        public async Task<IActionResult> GetByClassTypeID(int classTypeId)
-        {
-            throw new NotImplementedException();
+                return new ClassSectionDetails(section, meetings, instructor, new ClassTypeResult(type, serviceConstants.storageBasePath));
+            });
+
+            return Ok(result);
         }
 
         [HttpPost]
