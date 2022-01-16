@@ -17,7 +17,7 @@ namespace DataAccess.Entities
         [TransactionIgnore]
         public int ID { get; set; }
         /// <example>1</example>
-        public int SectionID { get; set; }
+        public int ClassSectionID { get; set; }
         /// <example>2021-12-26T13:00:00</example>
         public DateTime StartDate { get; set; }
         /// <example>2021-12-26T15:00:00</example>
