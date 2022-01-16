@@ -79,3 +79,9 @@ VALUES
 	(3, '2022-01-20 16:00:00.000', '2022-01-20 18:00:00.000');
 
 -- Section Applications
+INSERT INTO SectionApplications (ClassSectionID, DogID, [Status], [Refunded])
+VALUES
+	(1, 3, 'Active', 0),
+	(2, 4, 'Cancelled', 0),
+	(2, 5, 'Pending', 0),
+	(1, 7, 'Cancelled', 1);
