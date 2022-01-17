@@ -8,10 +8,10 @@ namespace K9OCRS.Models.ClassManagement
     {
         /// <example>K9Storage/classpictures/ClassPlaceholder.png</example>
         public string ImageUrl { get; set; }
-        public IEnumerable<ClassPhotoResult> Photos { get; set; }
+        public IEnumerable<ClassSectionResult> Sections { get; set; }
 
         public ClassTypeResult(ClassType entity, string storageBasePath) : base(entity) => ImageUrl = GenerateImageUrl(storageBasePath);
-        public ClassTypeResult(ClassType entity, string storageBasePath, IEnumerable<ClassPhotoResult> photos) : this(entity, storageBasePath) => Photos = photos;
+        public ClassTypeResult(ClassType entity, string storageBasePath, IEnumerable<ClassSectionResult> sections) : this(entity, storageBasePath) => Sections = sections;
 
         // {basePath}/classpictures/{classTypeId}/{filename} or {basePath}/classpictures/{filename} if placeholder
         private string GenerateImageUrl(string storageBasepath)
