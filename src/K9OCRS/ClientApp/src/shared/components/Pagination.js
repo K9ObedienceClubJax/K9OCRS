@@ -1,5 +1,5 @@
 import React from 'react';
-import usePagination, { DOTS } from '../util/usePagination';
+import usePagination, { DOTS } from '../../util/usePagination';
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
 const CustomPagination = props => {

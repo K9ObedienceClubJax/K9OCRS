@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Container, Row, Spinner } from 'reactstrap';
-import * as classTypesClient from '../../../util/apiClients/classTypes';
-import PageHeader from '../../../sharedComponents/PageHeader';
+import * as classTypesClient from '../../../../util/apiClients/classTypes';
+import PageHeader from '../../../../shared/components/PageHeader';
 import ClassTypeCard from './ClassTypeCard';
-import CustomPagination from '../../../sharedComponents/Pagination';
+import CustomPagination from '../../../../shared/components/Pagination';
 
 const ClassTypesList = () => {
   const itemsPerPage = 8;

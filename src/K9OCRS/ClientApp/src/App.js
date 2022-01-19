@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router';
-import Layout from './sharedComponents/Layout';
+import Layout from './shared/components/Layout';
 
 // Page imports
 import Catalog from './pages/Catalog';
@@ -14,10 +14,10 @@ import MyDogs from './pages/MyDogs';
 import DogDetails from './pages/DogDetails';
 import DogSetup from './pages/DogSetup';
 
-import ManagementDashboard from './pages/ManagementDashboard';
-import ClassTypesList from './pages/ClassTypes/List';
-import ClassTypeSetup from './pages/ClassTypes/Setup';
-import TestUpload from './pages/ClassTypes/TestUpload';
+import ManagementDashboard from './areas/management/ManagementDashboard';
+import ClassTypesList from './areas/classes/ClassTypes/List';
+import ClassTypeSetup from './areas/classes/ClassTypes/Setup';
+import TestUpload from './areas/classes/ClassTypes/TestUpload';
 
 import './app.scss';
 
