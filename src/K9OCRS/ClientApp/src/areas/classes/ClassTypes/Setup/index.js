@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Button, Input } from 'reactstrap';
-import PageHeader from '../../../shared/components/PageHeader';
+import PageHeader from '../../../../shared/components/PageHeader';
 import { Link } from 'react-router-dom';
 
 const ClassTypeSetup = () => {
