@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router';
-import Layout from './sharedComponents/Layout';
+import Layout from './shared/components/Layout';
 
 // Page imports
 import Catalog from './pages/Catalog';
