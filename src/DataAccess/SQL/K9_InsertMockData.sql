@@ -13,6 +13,13 @@ VALUES
 -- Users
 
 -- Dogs
+INSERT INTO Dogs (Name, Breed, DateOfBirth, ProfilePictureFileName)
+VALUES
+	('Max'),
+	('German Shepherd'),
+	('2021/10/25'),
+	('https://i.imgur.com/Jry3RH1.jpeg');
+
 
 -- User-Dogs
 

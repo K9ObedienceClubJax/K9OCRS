@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace K9OCRS.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DogController : Controller
-    {
-        [HttpPost]
+    //[Route("api/[controller]")]
+    //[ApiController]
+    //public class DogController : Controller
+    //{
+    //    [HttpPost]
 
-    }
+    //}
 }
