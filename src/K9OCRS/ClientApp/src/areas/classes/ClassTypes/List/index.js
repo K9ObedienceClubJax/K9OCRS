@@ -31,7 +31,7 @@ const ClassTypesList = props => {
 
   useEffect(() => {
     fetchClassList({ setLoading, setAlerts });
-  }, []);
+  }, [fetchClassList]);
 
   return (
     <div>
