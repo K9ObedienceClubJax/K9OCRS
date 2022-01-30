@@ -1,6 +1,5 @@
 import React from 'react'
-import { Container, Row, Col } from 'reactstrap'
-import { FaPenSquare } from 'react-icons/fa'
+import { Container} from 'reactstrap'
 import Picture from '../MyDogs/components/Picture'
 import '../DogDetails/style.scss'
 import PageHeader from '../../sharedComponents/PageHeader'
@@ -37,7 +36,7 @@ const dogDetails = ({
                     <div className='labelValue'>{dateOfBirth}</div><br/>
                     <h3>Date of Vaccination:</h3>
                     <div className='labelValue'>{vaccineDate} ({vaccineApproval})</div><br/>
-                    <h3>Classes taken:</h3>
+                    <h3>Classes Taken:</h3>
                     <div className='labelValue'>{classesTaken.length}</div>
                 </div>
             </div>
