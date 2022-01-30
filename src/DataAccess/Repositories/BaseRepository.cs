@@ -36,6 +36,33 @@ namespace DataAccess.Repositories
             return result;
         }
 
+        public virtual async Task<IReadOnlyList<T>> GetByID(IDbConnection conn, string idColumn, int id)
+        {
+            var result = await conn.QueryAsync<T>($"SELECT * FROM {_tableName} WHERE [{idColumn}]=@Id", new { Id = id });
+            if (result == null)
+                throw new KeyNotFoundException($"{_tableName} with [{idColumn}] = {id} could not be found.");
+
+            return result.ToList();
+        }
+
+        public virtual async Task<IReadOnlyList<T>> GetByIDs(IDbConnection conn, IEnumerable<int> ids)
+        {
+            var result = await conn.QueryAsync<T>($"SELECT * FROM {_tableName} WHERE ID IN @Ids", new { Ids = ids });
+            if (result == null)
+                throw new KeyNotFoundException($"{_tableName} with ID in the given group of IDs could not be found.");
+
+            return result.ToList();
+        }
+
+        public virtual async Task<IReadOnlyList<T>> GetByIDs(IDbConnection conn, string idColumn, IEnumerable<int> ids)
+        {
+            var result = await conn.QueryAsync<T>($"SELECT * FROM {_tableName} WHERE [{idColumn}] IN @Ids", new { Ids = ids });
+            if (result == null)
+                throw new KeyNotFoundException($"{_tableName} with [{idColumn}] in the given group of IDs could not be found.");
+
+            return result.ToList();
+        }
+
         public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn)
         {
             var result = await conn.QueryAsync<T>($"SELECT * FROM {_tableName}");

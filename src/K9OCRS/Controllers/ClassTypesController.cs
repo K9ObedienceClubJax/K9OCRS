@@ -47,21 +47,81 @@ namespace K9OCRS.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ClassTypeResult>), 200)]
-        public async Task<IActionResult> GetAllClassTypes()
+        public async Task<IActionResult> GetClassesList([FromQuery] bool includeSections)
         {
-            var entities = await connectionOwner.Use(conn =>
+            IEnumerable<ClassTypeResult> result = null;
+
+            var (types, groupedSections) = await connectionOwner.Use(async conn =>
             {
-                return dbOwner.ClassTypes.GetAll(conn);
+                IEnumerable<ClassType> _types = null;
+                Dictionary<int, List<ClassSectionResult>> _groupedSections = null;
+
+                _types = await dbOwner.ClassTypes.GetAll(conn);
+
+                if (includeSections)
+                {
+                    var sections = await dbOwner.ClassSections.GetAll(conn);
+                    var meetings = await dbOwner.ClassMeetings.GetAll(conn);
+
+                    // Group meetings by classSectionID
+                    var groupedMeetings = meetings.Aggregate(new Dictionary<int, List<ClassMeeting>>(), (agg, m) =>
+                    {
+                        if (agg.ContainsKey(m.ClassSectionID))
+                        {
+                            agg[m.ClassSectionID].Add(m);
+                        }
+                        else
+                        {
+                            agg.Add(m.ClassSectionID, new List<ClassMeeting> { m });
+                        }
+                        return agg;
+                    });
+
+                    // Group sections by classTypeID
+                    _groupedSections = sections.Aggregate(new Dictionary<int, List<ClassSectionResult>>(), (agg, s) =>
+                    {
+                        if (agg.ContainsKey(s.ClassTypeID))
+                        {
+                            agg[s.ClassTypeID].Add(new ClassSectionResult(
+                                s,
+                                groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null
+                            ));
+                        }
+                        else
+                        {
+                            agg.Add(s.ClassTypeID, new List<ClassSectionResult> {
+                                new ClassSectionResult(
+                                    s,
+                                    groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null
+                                )
+                            });
+                        }
+                        return agg;
+                    });
+                }
+
+                return (_types, _groupedSections);
             });
 
-            var result = entities.Select(e => new ClassTypeResult(e, serviceConstants.storageBasePath));
+            if (includeSections)
+            {
+                result = types.Select(e => new ClassTypeResult(
+                    e,
+                    serviceConstants.storageBasePath,
+                    groupedSections.ContainsKey(e.ID) ? groupedSections[e.ID] : null
+                ));
+            }
+            else
+            {
+                result = types.Select(e => new ClassTypeResult(e, serviceConstants.storageBasePath));
+            }
 
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ClassTypeResult), 200)]
-        public async Task<IActionResult> GetClassTypeByID(int id)
+        public async Task<IActionResult> GetClassTypeDetails(int id)
         {
             var result = await connectionOwner.Use(async conn =>
             {
@@ -71,12 +131,25 @@ namespace K9OCRS.Controllers
                 // Get the list of photos related to the class type
                 var photos = await dbOwner.ClassPhotos.GetByClassTypeID(conn, id);
 
+                // Get the list of sections related to the class type
+                var sections = await dbOwner.ClassSections.GetByID(conn, "ClassTypeID", id);
+
+                // Get the list of meetings for each section
+                Dictionary<int, List<ClassMeeting>> meetings = new Dictionary<int, List<ClassMeeting>>();
+                
+                foreach (var section in sections.ToList())
+                {
+                    var sectionMeetings = await dbOwner.ClassMeetings.GetByID(conn, "ClassSectionID", section.ID);
+                    meetings.Add(section.ID, sectionMeetings.ToList());
+                }
+
+                // Combine the data using the Models
+                var sectionResults = sections.Select(s => new ClassSectionResult(s, meetings[s.ID]));
                 var photoResults = photos.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
 
-                // Combine the data using the Model
-                var result = new ClassTypeResult(entity, serviceConstants.storageBasePath, photoResults);
+                var details = new ClassTypeDetails(entity, serviceConstants.storageBasePath, photoResults, sectionResults);
 
-                return result;
+                return details;
             });
 
             return Ok(result);

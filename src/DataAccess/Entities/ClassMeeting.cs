@@ -9,21 +9,24 @@ namespace DataAccess.Entities
         public ClassMeeting(ClassMeeting entity)
         {
             ID = entity.ID;
-            Date = entity.Date;
+            StartDate = entity.StartDate;
+            EndDate = entity.EndDate;
         }
 
         /// <example>1</example>
         [TransactionIgnore]
         public int ID { get; set; }
         /// <example>1</example>
-        public int SectionID { get; set; }
+        public int ClassSectionID { get; set; }
         /// <example>2021-12-26T13:00:00</example>
-        public DateTime Date { get; set; }
+        public DateTime StartDate { get; set; }
+        /// <example>2021-12-26T15:00:00</example>
+        public DateTime EndDate { get; set; }
 
         public int CompareTo(object obj)
         {
             ClassMeeting b = (ClassMeeting) obj;
-            return DateTime.Compare(this.Date, b.Date);
+            return DateTime.Compare(this.StartDate, b.StartDate);
         }
     }
 }
