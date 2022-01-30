@@ -24,7 +24,7 @@ const Courses = () => {
 
   const filteredClasses = classTypes.filter((item) => {
     return (
-      item.title.toLowerCase().includes(query.toLowerCase) ||
+      item.title.toLowerCase().includes(query.toLowerCase()) ||
       item.description.toLowerCase().includes(query.toLowerCase())
     );
   });
@@ -41,7 +41,7 @@ const Courses = () => {
         setLoading(false);
       } catch(err) {
         setLoading(false);
-        setAlerts([{ color: 'danger', message: 'We\'re having issues retrieving the list of class types.' }]);
+        setAlerts([{ color: 'danger', message: 'We\'re having issues retrieving the list of classes.' }]);
       }
     }
     getTest();
@@ -57,9 +57,9 @@ const Courses = () => {
           <Search query={query} onQueryChange={(myquery) => setQuery(myquery)} />
           <Row className="my-4">
             {
-              visibleClassTypes?.length > 0 ? filteredClasses.map(ct => (
+              visibleClassTypes?.length > 0 ? visibleClassTypes.map(ct => (
                 <ClassTypeCard key={ct.id} {...ct} />
-              )) : <p>There's no Class Types to show at the moment. Lets <Link to="/Manage/ClassTypes/Add">add the first one</Link>!</p>
+              )) : <p>There are no classes that meet your search terms. Please try again!</p>
             }
           </Row>
           </>
