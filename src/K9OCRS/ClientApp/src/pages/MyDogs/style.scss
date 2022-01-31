@@ -1,0 +1,161 @@
+@import '../../app.scss';
+
+.dogProfilePic{
+    position: static;
+    width: 156px;
+    height: 156px;
+    border-radius: 50%;
+    /* Inside Auto Layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 0px;
+}
+
+//Self note: make media queries
+.dogCard{
+    display: flex;
+    flex-direction: row;
+
+    padding: 20px;
+
+    position: absolute;
+    width: 670px;
+    height: 196px;
+
+    background: #F5F5F5;
+
+    border: 1px solid #E1E1E1;
+    box-sizing: border-box;
+
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.075);
+    border-radius: 10px;
+
+    color: $body-color;
+
+    &__image {
+        margin-right: 1rem;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        
+        &-top {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+
+    .vaccine-status {
+        &--approved {
+            color: $success;
+        }
+
+        &--pending {
+            color: $warning;
+        }
+
+        &--denied {
+            color: $danger;
+        }
+    }
+
+    .dogCardLabel{
+        font-weight: bold;
+
+        margin-right: 1rem;
+    }
+}
+
+.ButtonContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 0px 10px;
+
+    position: static;
+    width: auto;
+    height: 56px;
+}
+
+.addDog{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0px;
+
+    position: static;
+    width: 125px;
+    height: 46px;
+    left: 1235px;
+    top: 0px;
+
+    background-color: #7DB06F;
+}
+
+.dogCardHeader{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 0px 20px;
+
+    position: static;
+    width: 454px;
+    height: 54px;
+    left: 0px;
+    top: 0px;
+
+
+/* Inside Auto Layout */
+
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+margin: 0px 0px;
+}
+
+// .vaccinationStatus{
+//     display: flex;
+//     flex-direction: row;
+//     justify-content: flex-end;
+//     align-items: center;
+//     padding: 0px;
+
+//     position: static;
+//     width: 223px;
+//     height: 24px;
+
+
+//     /* Inside Auto Layout */
+
+//     flex: none;
+//     order: 1;
+//     flex-grow: 0;
+//     margin: 0px 0px 141px;
+// }
+
+.cardBody{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px 0px 0px 20px;
+
+    position: static;
+    height: 92px;
+    width: auto;
+
+    /* Inside Auto Layout */
+
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0px 0px;
+}

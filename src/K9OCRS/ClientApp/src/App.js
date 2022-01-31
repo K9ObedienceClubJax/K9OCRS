@@ -35,9 +35,9 @@ export default class App extends Component {
           <Route path='/Account/PasswordReset' component={PasswordReset} />
           <Route path='/Classes/Apply/Confirm' component={Confirm} />
           {/* Routes available to Logged in Users */}
-          <Route path='/Account/Dogs' component={MyDogs} exact />
-          <Route path='/Account/Dogs/Add' component={DogSetup} exact />
-          <Route path='/Account/Dogs/:dogId' component={DogDetails} exact />
+          <Route path='/Account/MyDogs' component={MyDogs} exact />
+          <Route path='/Account/MyDogs/Add' component={DogSetup} exact />
+          <Route path='/Account/MyDogs/:dogId' component={DogDetails} exact />
           {/* Routes available to Instructors */}
           {/* Routes available only to Administrators */}
           <Route path='/Manage' component={ManagementDashboard} exact />
