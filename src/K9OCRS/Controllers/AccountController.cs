@@ -8,17 +8,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 
 namespace K9OCRS.Controllers
 {
@@ -128,43 +125,45 @@ namespace K9OCRS.Controllers
                 return dbOwner.Users.GetIdByLogin(conn, login.Email, login.Password);
             });
 
+            
+
             if (login != null && loginResult != null)
             {
+                var userResult = new UserResult(loginResult);
                 var token = GenerateToken(login, loginResult);
 
                 HttpContext.Response.Cookies.Append(
-                    "jwt",
+                    "k9jwt",
                     token.Result,
                     new CookieOptions
                     {
                         HttpOnly = true
                     });
 
-                return Ok("ID:" + loginResult.ElementAt(0).ID + " Name: " + loginResult.ElementAt(0).FirstName + " " + loginResult.ElementAt(0).LastName + " RoleID: " + loginResult.ElementAt(0).UserRoleID);
+                return Ok(userResult);
 
             }
 
-            return Ok(login.Email + " " + login.Password);
+            return Forbid();
         }
 
-        //[Authorize]
-        //[HttpGet("userinfo")]
-        //public IActionResult UserInfo()
-        //{
-        //    var identity = HttpContext.User.Identity as ClaimsIdentity;
+        [HttpGet("loginstatus")]
+        public IActionResult LoginStatus()
+        {
+            var cookie = Request.Cookies["k9jwt"];
+            if (cookie != null)
+            {
+                JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(cookie);
+                Console.WriteLine(token.Claims);
+                string email = token.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
+                //Login(email, token.Claims.);
+                //Return loginResult
+            }
+            return Ok("");
+        }
 
-        //    if (identity != null)
-        //    {
-        //        var userClaims = identity.Claims;
 
-        //        return Ok(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Sid)?.Value + userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value);
-        //    }
-
-
-        //    return null;
-        //}
-
-        private async Task<string> GenerateToken(Login login, IEnumerable<User> loginResult)
+        private async Task<string> GenerateToken(Login login, User loginResult)
         {
 
             {
@@ -173,8 +172,10 @@ namespace K9OCRS.Controllers
 
                 var claims = new[]
                 {
-                new Claim(ClaimTypes.Sid, loginResult.ElementAt(0).ID + ""),
-                new Claim(ClaimTypes.Role, loginResult.ElementAt(0).UserRoleID + "")
+                new Claim(ClaimTypes.Sid, loginResult.ID + ""),
+                new Claim(ClaimTypes.Email, loginResult.Email + ""),
+                new Claim(ClaimTypes.Name, loginResult.FirstName + " " + loginResult.LastName),
+                new Claim(ClaimTypes.Role, loginResult.UserRoleID + "")
             };
 
                 var token = new JwtSecurityToken(_config["Jwt:Issuer"],

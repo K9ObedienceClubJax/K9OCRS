@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { Row, Col, Button, Input } from 'reactstrap';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import * as actions from '../../areas/accounts/modules/actions';
 
-async function handleSubmit(email, password) {
-  console.log({ email, password });
-  const response = await axios.post('/api/account/login', { email, password });
-  console.log(response);
-}
+const Login = (props) => {
+  const { currentUser, loginAction } = props;
 
-function Login() {
   let history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  var userId;
+
+  useEffect(() => {
+    if (currentUser != null) {
+      history.push('/');
+    }
+  }, [currentUser]);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit(email, password);
-        history.push('/');
+        loginAction({ email, password });
       }}
     >
       <h1 className='mt-4 mb-4 d-flex justify-content-center '>Login</h1>
@@ -85,6 +86,11 @@ function Login() {
       </Row>
     </form>
   );
-}
+};
 
-export default Login;
+export default connect(
+  (state) => ({
+    currentUser: state.shared.currentUser,
+  }),
+  { loginAction: actions.login }
+)(Login);

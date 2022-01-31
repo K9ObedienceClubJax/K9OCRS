@@ -9,6 +9,6 @@ namespace DataAccess.Repositories.Contracts
     public interface IUsersRepository : IRepository<User>
     {
         Task<string> GetByEmail(IDbConnection conn, string email);
-        Task<IEnumerable<User>> GetIdByLogin(IDbConnection conn, string email, string password);
+        Task<User> GetIdByLogin(IDbConnection conn, string email, string password);
     }
 }
