@@ -5,14 +5,14 @@ import { useHistory } from 'react-router-dom';
 import * as actions from '../../areas/accounts/modules/actions';
 
 const Login = (props) => {
-  const { currentUser, loginAction } = props;
+  const { currentUser = null, loginAction } = props;
 
   let history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    if (currentUser != null) {
+    if (currentUser !== null) {
       history.push('/');
     }
   }, [currentUser]);

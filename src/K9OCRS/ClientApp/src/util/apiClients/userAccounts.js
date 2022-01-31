@@ -10,6 +10,8 @@ export const createAccount = async (accountEntity) =>
 export const login = async (email, password) =>
   axios.post(`${base}/login`, { email, password });
 
+export const loginStatus = async () => axios.get(`${base}/loginstatus`);
+
 //Update
 
 //Delete

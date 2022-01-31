@@ -126,7 +126,7 @@ namespace K9OCRS.Controllers
             });
 
             
-
+             
             if (login != null && loginResult != null)
             {
                 var userResult = new UserResult(loginResult);
@@ -148,18 +148,25 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("loginstatus")]
-        public IActionResult LoginStatus()
+        public async Task<IActionResult> LoginStatus()
         {
             var cookie = Request.Cookies["k9jwt"];
-            if (cookie != null)
+             if (cookie != null)
             {
                 JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(cookie);
                 Console.WriteLine(token.Claims);
-                string email = token.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
-                //Login(email, token.Claims.);
-                //Return loginResult
+                int id = Int32.Parse(token.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid").Value);
+
+                var loginResult = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Users.GetByID(conn, id);
+                });
+
+                var userResult = new UserResult(loginResult);
+
+                return Ok(userResult);
             }
-            return Ok("");
+            return Ok();
         }
 
 
