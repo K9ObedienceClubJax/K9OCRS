@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router';
+import ProtectedRoute from './shared/components/Routing/ProtectedRoute';
+import GuestOnlyRoute from './shared/components/Routing/GuestOnlyRoute';
+import { USER_ROLES } from './util/accessEvaluator';
 import Layout from './shared/components/Layout';
 
 // Page imports
@@ -30,27 +33,51 @@ export default class App extends Component {
         <Switch>
           {/* Routes available to anyone */}
           <Route path='/' component={Catalog} exact />
-          <Route path='/Account/Login' component={Login} />
-          <Route path='/Account/Create' component={CreatePassword} />
+          <GuestOnlyRoute path='/Account/Login' component={Login} />
+          <GuestOnlyRoute path='/Account/Create' component={CreatePassword} />
           <Route path='/Account/PasswordReset' component={PasswordReset} />
           <Route path='/Classes/Apply/Confirm' component={Confirm} />
           {/* Routes available to Logged in Users */}
-          <Route path='/Account/MyDogs' component={MyDogs} exact />
-          <Route path='/Account/MyDogs/Add' component={DogSetup} exact />
-          <Route path='/Account/MyDogs/:dogId' component={DogDetails} exact />
+          <ProtectedRoute
+            path='/Account/MyDogs'
+            component={MyDogs}
+            exact
+          />
+          <ProtectedRoute
+            path='/Account/MyDogs/Add'
+            component={DogSetup}
+            exact
+          />
+          <ProtectedRoute
+            path='/Account/MyDogs/:dogId'
+            component={DogDetails}
+            exact
+          />
           {/* Routes available to Instructors */}
           {/* Routes available only to Administrators */}
-          <Route path='/Manage' component={ManagementDashboard} exact />
-          <Route path='/Manage/ClassTypes' component={ClassTypesList} exact />
-          <Route
+          <ProtectedRoute
+            path='/Manage'
+            component={ManagementDashboard}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          <ProtectedRoute
+            path='/Manage/ClassTypes'
+            component={ClassTypesList}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          {/* This route is just for a quick test, it will be removed */}
+          <ProtectedRoute
             path='/Manage/ClassTypes/testImageUpload'
             component={TestUpload}
+            minimumAccess={USER_ROLES.Administrator}
             exact
-          />{' '}
-          {/* This route is just for a quick test, it will be removed */}
-          <Route
+          />
+          <ProtectedRoute
             path='/Manage/ClassTypes/:classTypeId'
             component={ClassTypeSetup}
+            minimumAccess={USER_ROLES.Administrator}
             exact
           />
           {/* This is our 404 route or the route shown when a route is not found */}
