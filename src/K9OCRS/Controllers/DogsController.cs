@@ -87,7 +87,7 @@ namespace K9OCRS.Controllers
         }
 
         //get a dog by Id
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetDog(int Id)
         {
             try
@@ -126,7 +126,7 @@ namespace K9OCRS.Controllers
         }
 
         //delete dog
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDog(int id)
         {
             try
