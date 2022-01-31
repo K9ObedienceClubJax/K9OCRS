@@ -6,6 +6,8 @@ import { USER_ROLES } from './util/accessEvaluator';
 import Layout from './shared/components/Layout';
 
 // Page imports
+import notFoundPage from './areas/management/404';
+
 import Catalog from './areas/applications/Catalog';
 import Confirm from './areas/applications/Confirmation';
 
@@ -81,11 +83,7 @@ export default class App extends Component {
             exact
           />
           {/* This is our 404 route or the route shown when a route is not found */}
-          <Route path='*'>
-            <div>
-              <h2>Nothing here!</h2>
-            </div>
-          </Route>
+          <Route path='*' component={notFoundPage} />
         </Switch>
       </Layout>
     );
