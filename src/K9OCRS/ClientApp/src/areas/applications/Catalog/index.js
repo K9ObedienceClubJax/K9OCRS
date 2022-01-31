@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {Link} from 'react-router-dom';
-import { Button, Container, Row, Spinner } from "reactstrap";
+import { Container, Row, Spinner } from "reactstrap";
 import * as classTypesClient from '../../../util/apiClients/classTypes';
-import ClassTypeCard from '../../../shared/components/ClassTypeCard';
+import PageHeader from '../../../shared/components/PageHeader';
+import ClassCard from './components/ClassCard';
 import CustomPagination from '../../../shared/components/Pagination';
-import CourseDisplay from "./CourseDisplay";
-import Search from "./Search";
+import Search from "./components/Search";
 
-const Courses = () => {
+const Catalog = () => {
   const itemsPerPage = 8;
 
   const [loading, setLoading] = useState(true);
@@ -19,13 +18,13 @@ const Courses = () => {
   const pageStartIndex = (page - 1) * itemsPerPage;
   const pageEndIndex = page * itemsPerPage;
 
-  
   let [query, setQuery] = useState("");
 
   const filteredClasses = classTypes.filter((item) => {
     return (
-      item.title.toLowerCase().includes(query.toLowerCase()) ||
-      item.description.toLowerCase().includes(query.toLowerCase())
+      item.title.toLowerCase().includes(query.toLowerCase())
+      // Commented this out because searching the description could be a bit confusing if people don't realize that the match is there
+      // item.description.substring(0, 125).toLowerCase().includes(query.toLowerCase())
     );
   });
 
@@ -49,7 +48,10 @@ const Courses = () => {
 
   return (
     <div>
-      <h3>Available Classes</h3>
+      <PageHeader
+        title="Class Catalog"
+        alerts={alerts}
+      />
       <Container className="px-lg-5" fluid>
         { loading && <Spinner /> }
         { loading || alerts?.length > 0 ? null : (
@@ -58,7 +60,7 @@ const Courses = () => {
           <Row className="my-4">
             {
               visibleClassTypes?.length > 0 ? visibleClassTypes.map(ct => (
-                <ClassTypeCard key={ct.id} {...ct} />
+                <ClassCard key={ct.id} {...ct} />
               )) : <p>There are no classes that meet your search terms. Please try again!</p>
             }
           </Row>
@@ -66,7 +68,7 @@ const Courses = () => {
         )}
       </Container>
       <div className="d-flex justify-content-end px-4 px-lg-5">
-      
+
         <CustomPagination
           onPageChange={setPage}
           totalCount={classTypes?.length}
@@ -78,4 +80,4 @@ const Courses = () => {
   );
 };
 
-export default Courses;
+export default Catalog;

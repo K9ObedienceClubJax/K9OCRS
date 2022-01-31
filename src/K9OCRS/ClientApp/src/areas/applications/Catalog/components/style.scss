@@ -1,6 +1,6 @@
-@import '../../app.scss';
+@import '../../../../app.scss';
 
-.classTypeCard {
+.classCard {
   cursor: pointer;
   box-shadow: $box-shadow-sm;
   transition: box-shadow .2s, transform .2s;

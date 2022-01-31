@@ -4,7 +4,7 @@ import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, CardHeader } fr
 
 import './style.scss';
 
-const ClassTypeCard = props => {
+const ClassCard = props => {
   const {
     id,
     title,
@@ -20,7 +20,7 @@ const ClassTypeCard = props => {
 
   return (
     <Col className="mb-4" sm="12" md="6" lg="4" xl="3">
-      <Card className="classTypeCard h-100" onClick={() => history.push(`/Manage/ClassTypes/${id}`)}>
+      <Card className="classCard h-100" onClick={() => history.push(`/Classes/${id}`)}>
         <CardImg
           alt={`Image for the ${title} class`}
           src={imageUrl}
@@ -45,4 +45,4 @@ const ClassTypeCard = props => {
   );
 };
 
-export default ClassTypeCard;
+export default ClassCard;
