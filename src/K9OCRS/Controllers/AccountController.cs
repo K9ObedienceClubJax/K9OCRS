@@ -68,16 +68,20 @@ namespace K9OCRS.Controllers
             {
                 Console.WriteLine("Email valid");
             }
-            var emailResult = await connectionOwner.Use(conn =>
-            {
-                return dbOwner.Users.GetByEmail(conn, account.Email);
-            });
-            if (emailResult.Contains(account.Email))
-            {
-                return StatusCode(400, "An account with that email already exists");
+            try {
+                var emailResult = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Users.GetByEmail(conn, account.Email);
+                });
+                 if (emailResult.Contains(account.Email))
+                {
+                    return StatusCode(400, "An account with that email already exists");
+                }
             }
+            catch (Exception e){
 
-
+            }           
+           
 
             //Validate password
             pattern = @"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$";
