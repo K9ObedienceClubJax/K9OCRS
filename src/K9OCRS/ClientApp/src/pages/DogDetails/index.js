@@ -5,13 +5,13 @@ import '../DogDetails/style.scss'
 import PageHeader from '../../shared/components/PageHeader'
 
 const dogDetails = ({
-    dogName = "untitled",
-    breed = 'unknown',
-    dateOfBirth = 'unknown',
-    age = 'unknown',
-    vaccineDate = 'undated',
-    vaccineApproval = 'undecided',
-    currentClass = 'unknown',
+    dogName = "Max",
+    breed = 'Golden Retriever',
+    dateOfBirth = '8-25-21',
+    age = '3 months',
+    vaccineDate = '9-1-2021',
+    vaccineApproval = 'Pending',
+    currentClass = 'STAR Puppy',
     classesTaken = []
     })  => {
     return (
