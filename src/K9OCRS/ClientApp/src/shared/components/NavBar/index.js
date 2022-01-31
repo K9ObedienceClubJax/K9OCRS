@@ -63,7 +63,7 @@ export default class NavMenu extends Component {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} className="text-dark" to="/Account/Dogs">
+                <NavLink tag={Link} className="text-dark" to="/Account/MyDogs">
                   My Dogs
                 </NavLink>
               </NavItem>

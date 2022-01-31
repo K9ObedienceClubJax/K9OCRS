@@ -35,18 +35,26 @@ export default class App extends Component {
           <Route path='/Account/PasswordReset' component={PasswordReset} />
           <Route path='/Classes/Apply/Confirm' component={Confirm} />
           {/* Routes available to Logged in Users */}
-          <Route path='/Account/Dogs' component={MyDogs} exact />
-          <Route path='/Account/Dogs/Add' component={DogSetup} exact />
-          <Route path='/Account/Dogs/:dogId' component={DogDetails} exact />
+          <Route path='/Account/MyDogs' component={MyDogs} exact />
+          <Route path='/Account/MyDogs/Add' component={DogSetup} exact />
+          <Route path='/Account/MyDogs/:dogId' component={DogDetails} exact />
           {/* Routes available to Instructors */}
-
           {/* Routes available only to Administrators */}
           <Route path='/Manage' component={ManagementDashboard} exact />
           <Route path='/Manage/ClassTypes' component={ClassTypesList} exact />
-          <Route path='/Manage/ClassTypes/testImageUpload' component={TestUpload} exact /> {/* This route is just for a quick test, it will be removed */}
-          <Route path='/Manage/ClassTypes/:classTypeId' component={ClassTypeSetup} exact />
+          <Route
+            path='/Manage/ClassTypes/testImageUpload'
+            component={TestUpload}
+            exact
+          />{' '}
+          {/* This route is just for a quick test, it will be removed */}
+          <Route
+            path='/Manage/ClassTypes/:classTypeId'
+            component={ClassTypeSetup}
+            exact
+          />
           {/* This is our 404 route or the route shown when a route is not found */}
-          <Route path="*">
+          <Route path='*'>
             <div>
               <h2>Nothing here!</h2>
             </div>
