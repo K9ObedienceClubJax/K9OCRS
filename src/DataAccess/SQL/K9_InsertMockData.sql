@@ -13,10 +13,10 @@ VALUES
 -- Users
 INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], ProfilePictureFilename)
 VALUES
-	(1, 'John', 'Doe', 'johndoe@mockignitech.whoops', 'MockPasswordThatShouldn''tWork', 'UserPlaceholder.png'),
-	(2, 'Peepee', 'Poopoo', 'PeepeePoopoo@mockignitech.whoops', 'MockPasswordThatShouldn''tWork', 'UserPlaceholder.png'),
-	(3, 'zig', 'zag', 'zigzag@mockignitech.whoops', 'MockPasswordThatShouldn''tWork', 'UserPlaceholder.png'),
-	(4, 'lmao', 'rofl', 'lmaorofl@mockignitech.whoops', 'MockPasswordThatShouldn''tWork', 'UserPlaceholder.png');
+	(1, 'John', 'Doe', 'admin@test.test', 'Test123456', 'UserPlaceholder.png'),
+	(2, 'Peepee', 'Poopoo', 'instructor@test.test', 'Test123456', 'UserPlaceholder.png'),
+	(3, 'zig', 'zag', 'member@test.test', 'Test123456', 'UserPlaceholder.png'),
+	(4, 'lmao', 'rofl', 'student@test.test', 'Test123456', 'UserPlaceholder.png');
 
 -- Dogs
 INSERT INTO Dogs ([Name], [Breed], [DateOfBirth], [ProfilePictureFilename])

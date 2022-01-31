@@ -4,6 +4,7 @@ import * as actions from '../../shared/modules/actions';
 import { Container } from 'reactstrap';
 import NavBar from './NavBar';
 import SiteBanner from './SiteBanner';
+import selectors from '../modules/selectors';
 
 const Layout = (props) => {
   const { currentUser, refreshLogin } = props;
@@ -28,7 +29,7 @@ const Layout = (props) => {
 
 export default connect(
   (state) => ({
-    currentUser: state.shared.currentUser,
+    currentUser: selectors.selectCurrentUser(state),
   }),
   { refreshLogin: actions.refreshLogin }
 )(Layout);
