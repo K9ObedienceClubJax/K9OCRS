@@ -15,7 +15,7 @@ const Login = (props) => {
     if (currentUser !== null) {
       history.push('/');
     }
-  }, [currentUser]);
+  }, [currentUser]); // eslint-disable-line
 
   return (
     <form

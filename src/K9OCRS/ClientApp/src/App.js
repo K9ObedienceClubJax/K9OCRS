@@ -3,8 +3,8 @@ import { Switch, Route } from 'react-router';
 import Layout from './shared/components/Layout';
 
 // Page imports
-import Catalog from './pages/Catalog';
-import Confirm from './pages/Catalog/Confirm';
+import Catalog from './areas/applications/Catalog';
+import Confirm from './areas/applications/Confirmation';
 
 import Login from './pages/Account/Login';
 import CreatePassword from './pages/Account/Create';

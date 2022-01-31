@@ -13,19 +13,17 @@ const Layout = (props) => {
     if (!currentUser) {
       refreshLogin();
     }
-  }, [currentUser]);
+  }, [currentUser]); // eslint-disable-line
 
-  {
-    return (
-      <div>
-        <NavBar />
-        <SiteBanner />
-        <Container className='px-4 px-md-5' fluid>
-          {props.children}
-        </Container>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <NavBar />
+      <SiteBanner />
+      <Container className='px-4 px-md-5' fluid>
+        {props.children}
+      </Container>
+    </div>
+  );
 };
 
 export default connect(
