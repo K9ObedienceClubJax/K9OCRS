@@ -16,3 +16,5 @@ export const isStudent = user => user?.userRoleID === USER_ROLES.Student;
 export const isAtLeastInstructor = user => user?.userRoleID <= USER_ROLES.Instructor;
 export const isAtLeastMember = user => user?.userRoleID <= USER_ROLES.Member;
 export const isAtLeastStudent = user => user?.userRoleID <= USER_ROLES.Student;
+
+export const isAtLeast = (user, minUserRole) => user?.userRoleID <= minUserRole;

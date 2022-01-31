@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { USER_ROLES } from '../../../util/accessEvaluator';
+import { USER_ROLES, isAtLeast } from '../../../util/accessEvaluator';
 import selectors from '../../modules/selectors';
 
 const ProtectedRoute = props => {
@@ -17,7 +17,7 @@ const ProtectedRoute = props => {
   }
   // if the user is logged in but their user has less access than needed for this route.
   // The lower the value of the role id, the higher the access. So our check is inverted ¯\_(ツ)_/¯
-  else if (minimumAccess && currentUser.userRoleId > minimumAccess) {
+  else if (minimumAccess && !isAtLeast(currentUser, minimumAccess)) {
     return <Redirect to="/" />;
   }
 
