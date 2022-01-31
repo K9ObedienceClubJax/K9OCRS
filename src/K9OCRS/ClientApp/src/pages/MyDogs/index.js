@@ -2,7 +2,7 @@ import React from 'react'
 import { Container} from 'reactstrap'
 import DogCard from './components/DogCard';
 import AddDog from './components/AddDog';
-import PageHeader from '../../sharedComponents/PageHeader';
+import PageHeader from '../../shared/components/PageHeader';
 
 const myDogs = () => {
     return (

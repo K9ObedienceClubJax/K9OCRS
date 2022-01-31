@@ -2,7 +2,7 @@ import React from 'react'
 import { Container} from 'reactstrap'
 import Picture from '../MyDogs/components/Picture'
 import '../DogDetails/style.scss'
-import PageHeader from '../../sharedComponents/PageHeader'
+import PageHeader from '../../shared/components/PageHeader'
 
 const dogDetails = ({
     dogName = "untitled",

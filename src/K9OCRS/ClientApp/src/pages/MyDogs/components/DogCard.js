@@ -1,43 +1,57 @@
 import React from 'react'
 import Picture from './Picture'
-import {Row, Col} from 'reactstrap'
 import {Link} from 'react-router-dom'
+import classNames from 'classnames';
 import '../style.scss'
 
 const DogCard = ({
-    name = "untitled",
-    vaccineApproval = "undecided",
+    id = 1,
+    name = "Max",
+    vaccineApproval = "Pending",
     activeClasses = [],
     pendingApplications = [],
     completedClasses = []
 }) => {
 
+    const cnVaccineStatus = classNames(
+        'vaccine-status',
+        {
+            'vaccine-status--approved': vaccineApproval === 'Approved',
+            'vaccine-status--pending': vaccineApproval === 'Pending',
+            'vaccine-status--denied': vaccineApproval === 'Denied',
+        }
+    );
+
     return (
-        <Link className='CardContainer' to={'/Account/Dogs/1'}>
-            <Col>
-                <Picture/>
-            </Col>
-            <Col>
-                <Row className='dogCardHeader'>
-                    <h3>{name}</h3>
-                    <Row>
-                        <p className='dogCardLabel'>Vaccination Record:</p>
-                        <p className='cardLabelValue'>{vaccineApproval}</p>
-                    </Row>
-                </Row>
-                <Row>
-                    <p className='dogCardLabel'>Active Classes: </p>
-                    <p className='cardLabelValue'>{activeClasses.length}</p>
-                </Row>
-                <Row>
-                    <p className='dogCardLabel'>Pending Class Applications: </p>
-                    <p className='cardLabelValue'>{pendingApplications.length}</p>
-                </Row>
-                <Row>
-                    <p className='dogCardLabel'>Completed Classes: </p>
-                    <p className='cardLabelValue'>{completedClasses.length}</p>
-                </Row>
-            </Col> 
+        <Link to={`/Account/MyDogs/${id}`}>
+            <div className='dogCard'>
+                <div className='dogCard__image col-xl-3'>
+                    <Picture/>
+                </div>
+                <div className='dogCard__content'>
+                    <div className='dogCard__content-top'>
+                        <h3>{name}</h3>
+                        <p>
+                            <span className='dogCardLabel'>Vaccination Record:</span>
+                            <span className={`cardLabelValue ${cnVaccineStatus}`}>{vaccineApproval}</span>
+                        </p>
+                    </div>
+                    <div className='dogCard__content-bottom'>
+                        <p>
+                            <span className='dogCardLabel'>Active Classes:</span>
+                            <span className='cardLabelValue'>{activeClasses.length}</span>
+                        </p>
+                        <p>
+                            <span className='dogCardLabel'>Pending Class Applications:</span>
+                            <span className='cardLabelValue'>{pendingApplications.length}</span>
+                        </p>
+                        <p>
+                            <span className='dogCardLabel'>Completed Classes:</span>
+                            <span className='cardLabelValue'>{completedClasses.length}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </Link>
     );
 }
