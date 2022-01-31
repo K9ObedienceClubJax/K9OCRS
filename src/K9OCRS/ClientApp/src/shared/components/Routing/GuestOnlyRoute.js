@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
+import selectors from '../../modules/selectors';
 
 const GuestOnlyRoute = props => {
   const {
@@ -26,5 +27,5 @@ GuestOnlyRoute.propTypes = {
 };
 
 export default connect(state => ({
-  currentUser: state.shared.currentUser,
+  currentUser: selectors.selectCurrentUser(state),
 }))(GuestOnlyRoute);

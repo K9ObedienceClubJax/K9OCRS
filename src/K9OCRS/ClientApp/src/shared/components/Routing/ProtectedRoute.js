@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { USER_ROLES } from '../../../util/accessEvaluator';
+import selectors from '../../modules/selectors';
 
 const ProtectedRoute = props => {
   const {
@@ -35,5 +36,5 @@ ProtectedRoute.propTypes = {
 };
 
 export default connect(state => ({
-  currentUser: state.shared.currentUser,
+  currentUser: selectors.selectCurrentUser(state),
 }))(ProtectedRoute);
