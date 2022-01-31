@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Input } from "reactstrap";
-//import axios from "axios";
+import createAccount from "../../util/apiClients/userAccounts";
+import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 function ValidateEmail(e) {
@@ -51,16 +52,15 @@ function CreateAccount() {
 
   async function handleSubmit(first, last, email, password, confirm, history) {
     try {
-      // commented this since the linter said it was unused
-      // const response = await axios.post("/api/account", {
-      //   first,
-      //   last,
-      //   email,
-      //   password,
-      //   confirm,
-      // });
+      const response = await createAccount({
+        first,
+        last,
+        email,
+        password,
+        confirm,
+      });
+      setResult(response);
       history.push("/login");
-      // setResult(response);
     } catch (err) {
       setResult(err.response);
     }
@@ -171,6 +171,9 @@ function CreateAccount() {
 
       <Row>
         <Col lg="4" className="mx-auto">
+          <p className="text-danger d-flex justify-content-center mb-3">
+            {result?.data}
+          </p>
           <Button
             className="btn btn-secondary btn-lg mx-auto d-flex justify-content-center"
             type="submit"
@@ -179,7 +182,6 @@ function CreateAccount() {
           </Button>
         </Col>
       </Row>
-      <p className="text-danger">{result?.data}</p>
     </form>
   );
 }
