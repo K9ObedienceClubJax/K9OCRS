@@ -15,5 +15,6 @@ export const loginStatus = async () => axios.get(`${base}/loginstatus`);
 //Update
 
 //Delete
+export const logout = async () => axios.get(`${base}/logout`);
 
 export default createAccount;

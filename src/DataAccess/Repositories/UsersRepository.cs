@@ -25,7 +25,7 @@ namespace DataAccess.Repositories
 
         public async Task<User> GetIdByLogin(IDbConnection conn, string email, string password)
         {
-            var query = $"SELECT ID, UserRoleID, FirstName, LastName FROM {_tableName} WHERE Email = @Email AND Password = @Password";
+            var query = $"SELECT ID, UserRoleID, Email, FirstName, LastName, ProfilePictureFilename FROM {_tableName} WHERE Email = @Email AND Password = @Password";
             return await conn.QueryFirstOrDefaultAsync<User>(query, new { Email = email, Password = password});
         }
     }

@@ -27,6 +27,7 @@ function* logout() {
   try {
     log('Logging out');
     // Call the api endpoint that removes the http-only cookie for the logged in user
+    const response = yield call(accountsApi.logout);
 
     // Then put an action so the current user's data is removed from the redux store and our front-end knows they're logged out
     yield put(sharedActions.loggedout());
