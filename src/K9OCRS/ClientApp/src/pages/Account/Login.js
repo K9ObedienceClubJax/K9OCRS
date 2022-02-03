@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, Button, Input } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import * as actions from '../../areas/accounts/modules/actions';
+import selectors from '../../shared/modules/selectors';
 
 const Login = (props) => {
   const { currentUser = null, loginAction } = props;
@@ -15,7 +16,7 @@ const Login = (props) => {
     if (currentUser !== null) {
       history.push('/');
     }
-  }, [currentUser]);
+  }, [currentUser]); // eslint-disable-line
 
   return (
     <form
@@ -90,7 +91,7 @@ const Login = (props) => {
 
 export default connect(
   (state) => ({
-    currentUser: state.shared.currentUser,
+    currentUser: selectors.selectCurrentUser(state),
   }),
   { loginAction: actions.login }
 )(Login);

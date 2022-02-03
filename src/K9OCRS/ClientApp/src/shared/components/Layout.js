@@ -4,6 +4,7 @@ import * as actions from '../../shared/modules/actions';
 import { Container } from 'reactstrap';
 import NavBar from './NavBar';
 import SiteBanner from './SiteBanner';
+import selectors from '../modules/selectors';
 
 const Layout = (props) => {
   const { currentUser, refreshLogin } = props;
@@ -13,24 +14,22 @@ const Layout = (props) => {
     if (!currentUser) {
       refreshLogin();
     }
-  }, [currentUser]);
+  }, [currentUser]); // eslint-disable-line
 
-  {
-    return (
-      <div>
-        <NavBar />
-        <SiteBanner />
-        <Container className='px-4 px-md-5' fluid>
-          {props.children}
-        </Container>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <NavBar />
+      <SiteBanner />
+      <Container className='px-4 px-md-5' fluid>
+        {props.children}
+      </Container>
+    </div>
+  );
 };
 
 export default connect(
   (state) => ({
-    currentUser: state.shared.currentUser,
+    currentUser: selectors.selectCurrentUser(state),
   }),
   { refreshLogin: actions.refreshLogin }
 )(Layout);
