@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { Row, Col, Button, Input } from 'reactstrap';
 import createAccount from '../../util/apiClients/userAccounts';
 import { useHistory } from 'react-router-dom';
+import * as actions from '../../areas/accounts/modules/actions';
+import selectors from '../../shared/modules/selectors';
 
 function ValidateEmail(e) {
   //Validate email
@@ -40,7 +43,15 @@ function ValidateConfirm(e, password) {
   }
 }
 
-function CreateAccount() {
+const CreateAccount = (props) => {
+  const { currentUser = null, loginAction } = props;
+
+  useEffect(() => {
+    if (currentUser !== null) {
+      history.push('/');
+    }
+  }, [currentUser]); // eslint-disable-line
+
   let history = useHistory();
   const [first, setFirst] = useState('');
   const [last, setLast] = useState('');
@@ -59,7 +70,8 @@ function CreateAccount() {
         confirm,
       });
       setResult(response);
-      history.push('/login');
+      loginAction({ email, password });
+      history.push('/');
     } catch (err) {
       setResult(err.response);
     }
@@ -183,6 +195,11 @@ function CreateAccount() {
       </Row>
     </form>
   );
-}
+};
 
-export default CreateAccount;
+export default connect(
+  (state) => ({
+    currentUser: selectors.selectCurrentUser(state),
+  }),
+  { loginAction: actions.login }
+)(CreateAccount);

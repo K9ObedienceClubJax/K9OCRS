@@ -13,9 +13,12 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
+
 
 namespace K9OCRS.Controllers
 {
@@ -43,7 +46,6 @@ namespace K9OCRS.Controllers
             this.serviceConstants = serviceConstants;
         }
 
-        // POST
         [HttpPost]
         public async Task<IActionResult> Account([FromBody] CreateAccount account)
         {
@@ -73,7 +75,7 @@ namespace K9OCRS.Controllers
                 {
                     return dbOwner.Users.GetByEmail(conn, account.Email);
                 });
-                 if (emailResult.Contains(account.Email))
+                 if (emailResult != null && emailResult.Contains(account.Email))
                 {
                     return StatusCode(400, "An account with that email already exists");
                 }
@@ -111,14 +113,13 @@ namespace K9OCRS.Controllers
                 user.FirstName = account.First;
                 user.LastName = account.Last;
                 user.Email = account.Email;
-                user.Password = account.Password;
+                user.Password = GetHashedPassword(account.Password);
                 return dbOwner.Users.Add(conn, user);
             });
 
             return Ok(result);
         }
 
-        // POST: Login
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Login login)
@@ -126,7 +127,7 @@ namespace K9OCRS.Controllers
 
             var loginResult = await connectionOwner.Use(conn =>
             {
-                return dbOwner.Users.GetIdByLogin(conn, login.Email, login.Password);
+                return dbOwner.Users.GetIdByLogin(conn, login.Email, GetHashedPassword(login.Password));
             });
 
             
@@ -173,10 +174,20 @@ namespace K9OCRS.Controllers
             return Ok();
         }
 
+        [HttpGet("logout")]
+        public IActionResult Logout()
+        {
+            //Delete the cookie
+            if (Request.Cookies["k9jwt"] != null)
+            {
+                HttpContext.Response.Cookies.Delete("k9jwt");
+            }
+            return Ok();
+        }
+
 
         private async Task<string> GenerateToken(Login login, User loginResult)
         {
-
             {
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
                 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -200,6 +211,17 @@ namespace K9OCRS.Controllers
             }
 
 
+        }
+
+        public static string GetHashedPassword(string password)
+        {
+            var encryptor = SHA256.Create();
+
+            byte[] passBytes = Encoding.ASCII.GetBytes(password);
+            byte[] hashBytes = encryptor.ComputeHash(passBytes);
+            string hashedPassword = Convert.ToBase64String(hashBytes);
+
+            return hashedPassword;
         }
     }
 }

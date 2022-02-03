@@ -10,13 +10,13 @@ VALUES
 	('Member'),
 	('Student');
 
--- Users
+-- Users (The password for all is "Test123456")
 INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], ProfilePictureFilename)
 VALUES
-	(1, 'John', 'Doe', 'admin@test.test', 'Test123456', 'UserPlaceholder.png'),
-	(2, 'Peepee', 'Poopoo', 'instructor@test.test', 'Test123456', 'UserPlaceholder.png'),
-	(3, 'zig', 'zag', 'member@test.test', 'Test123456', 'UserPlaceholder.png'),
-	(4, 'lmao', 'rofl', 'student@test.test', 'Test123456', 'UserPlaceholder.png');
+	(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
+	(2, 'Peepee', 'Poopoo', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
+	(3, 'zig', 'zag', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
+	(4, 'lmao', 'rofl', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png');
 
 -- Dogs
 INSERT INTO Dogs ([Name], [Breed], [DateOfBirth], [ProfilePictureFilename])
