@@ -59,8 +59,10 @@ function* fetchUserList() {
   }
 }
 
-export default [
+const sagas = [
   takeEvery(actions.login, login),
   takeEvery(actions.logout, logout),
   takeEvery(actions.fetchUserList, fetchUserList),
 ];
+
+export default sagas;

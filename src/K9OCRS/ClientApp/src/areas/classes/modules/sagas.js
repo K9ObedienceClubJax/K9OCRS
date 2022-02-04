@@ -18,6 +18,8 @@ function* fetchClassList({ payload }) {
   }
 }
 
-export default [
+const sagas = [
   takeEvery(actions.fetchClassList, fetchClassList),
 ];
+
+export default sagas;

@@ -35,7 +35,9 @@ function* refreshLogin() {
   }
 }
 
-export default [
+const sagas = [
   takeEvery(actions.exampleSaga, example),
   takeEvery(actions.refreshLogin, refreshLogin),
 ];
+
+export default sagas;
