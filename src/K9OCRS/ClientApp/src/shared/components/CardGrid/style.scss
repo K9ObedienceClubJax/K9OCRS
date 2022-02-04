@@ -3,10 +3,14 @@
 .cardGrid {
   &__row {
     &__col {
-      &__card {
-        cursor: pointer;
+      &__card,
+      &__card--clickable {
         box-shadow: $box-shadow-sm;
         transition: box-shadow .2s, transform .2s;
+      }
+
+      &__card--clickable {
+        cursor: pointer;
 
         &:hover {
           box-shadow: $box-shadow;

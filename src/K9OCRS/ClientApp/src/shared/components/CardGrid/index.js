@@ -11,7 +11,9 @@ const CardGrid = props => {
     errored,
     itemsPerPage,
     items,
+    keyName,
     emptyStateComponent,
+    clickable
   } = props;
 
   const [page, setPage] = useState(1);
@@ -32,8 +34,8 @@ const CardGrid = props => {
               visibleItems?.length > 0 ? visibleItems.map(item => {
                 return (
                   (
-                    <Col className="cardGrid__row__col mb-4" sm="12" md="6" lg="4" xl="3" key={item.key} >
-                      <Card className={`${item.className} cardGrid__row__col__card h-100`}>
+                    <Col className="cardGrid__row__col mb-4" sm="12" md="6" lg="4" xl="3" key={item.props[keyName]} >
+                      <Card className={`${item.props.className ?? ''} cardGrid__row__col__card${clickable ? '--clickable' : ''} h-100`}>
                         {item}
                       </Card>
                     </Col>
@@ -61,6 +63,8 @@ CardGrid.defaultProps = {
   errored: false,
   itemsPerPage: 8,
   emptyStateComponent: <p>No items to show.</p>,
+  keyName: 'id',
+  clickable: false,
 };
 
 CardGrid.propTypes = {
@@ -69,6 +73,8 @@ CardGrid.propTypes = {
   itemsPerPage: PropTypes.number,
   items: PropTypes.array.isRequired,
   emptyStateComponent: PropTypes.node,
+  keyName: PropTypes.string,
+  clickable: PropTypes.bool,
 };
 
 export default CardGrid;
