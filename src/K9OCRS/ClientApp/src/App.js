@@ -20,9 +20,9 @@ import DogDetails from './pages/DogDetails';
 import DogSetup from './pages/DogSetup';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
-import ClassTypesList from './areas/classes/ClassTypes/List';
-import ClassTypeSetup from './areas/classes/ClassTypes/Setup';
-import TestUpload from './areas/classes/ClassTypes/TestUpload';
+import ClassManagement from './areas/classes/ClassManagement';
+import ClassTypeSetup from './areas/classes/ClassTypeSetup';
+import TestUpload from './areas/classes/TestUpload';
 
 import './app.scss';
 
@@ -65,7 +65,7 @@ export default class App extends Component {
           />
           <ProtectedRoute
             path='/Manage/ClassTypes'
-            component={ClassTypesList}
+            component={ClassManagement}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />

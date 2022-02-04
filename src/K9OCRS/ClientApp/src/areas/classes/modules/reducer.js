@@ -2,43 +2,22 @@ import { handleActions } from 'redux-actions';
 import * as actions from './actions';
 
 const INITIAL_STATE = {
-  classTypesManagement: {
-    classList: [],
-    classDetails: {},
-  },
-  classSectionsManagement: {
-    sectionList: [],
-    sectionDetails: {},
-  },
+  classList: [],
+  classDetails: null,
+  sectionDetails: null,
 };
 
 export default handleActions({
   [actions.fetchedClassList]: (state, { payload }) => ({
     ...state,
-    classTypesManagement: {
-      ...state.classTypesManagement,
-      classList: payload,
-    },
+    classList: payload,
   }),
   [actions.fetchedClassDetails]: (state, { payload }) => ({
     ...state,
-    classTypesManagement: {
-      ...state.classTypesManagement,
-      classDetails: payload,
-    },
-  }),
-  [actions.fetchedSectionList]: (state, { payload }) => ({
-    ...state,
-    classSectionsManagement: {
-      ...state.classSectionsManagement,
-      sectionList: payload,
-    },
+    classDetails: payload,
   }),
   [actions.fetchedSectionDetails]: (state, { payload }) => ({
     ...state,
-    classSectionsManagement: {
-      ...state.classSectionsManagement,
-      sectionDetails: payload,
-    },
+    sectionDetails: payload,
   }),
 }, INITIAL_STATE);
