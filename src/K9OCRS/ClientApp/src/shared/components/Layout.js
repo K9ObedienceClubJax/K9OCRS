@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../shared/modules/actions';
-import { Container } from 'reactstrap';
+import { Container, Spinner } from 'reactstrap';
 import NavBar from './NavBar';
 import SiteBanner from './SiteBanner';
 import selectors from '../modules/selectors';
 
 const Layout = (props) => {
-  const { currentUser, refreshLogin } = props;
+  const {
+    currentUser,
+    refreshingUser,
+    refreshLogin
+  } = props;
   //static displayName = Layout.name;
 
   useEffect(() => {
@@ -21,7 +25,7 @@ const Layout = (props) => {
       <NavBar />
       <SiteBanner />
       <Container className='px-4 px-md-5' fluid>
-        {props.children}
+        { !refreshingUser ? props.children : <Spinner /> }
       </Container>
     </div>
   );
@@ -29,6 +33,7 @@ const Layout = (props) => {
 
 export default connect(
   (state) => ({
+    refreshingUser: selectors.selectRefreshingUser(state),
     currentUser: selectors.selectCurrentUser(state),
   }),
   { refreshLogin: actions.refreshLogin }
