@@ -14,7 +14,7 @@ function* fetchClassList({ payload }) {
     payload.setLoading(false);
   } catch (err) {
     payload.setLoading(false);
-    payload.setAlerts([{ color: 'danger', message: 'We\'re having issues retrieving the list of class types.' }]);
+    payload.setAlerts([{ color: 'danger', message: 'We\'re having issues retrieving the list of classes.' }]);
   }
 }
 
