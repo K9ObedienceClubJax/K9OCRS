@@ -2,6 +2,7 @@ import { handleActions } from 'redux-actions';
 import * as actions from './actions';
 
 const INITIAL_STATE = {
+  refreshingUser: true,
   currentUser: null,
   // State for the whole area
   myAccount: {
@@ -30,6 +31,7 @@ export default handleActions(
     }),
     [actions.loginRefreshed]: (state, { payload }) => ({
       ...state,
+      refreshingUser: false,
       currentUser: payload,
     }),
   },

@@ -1,0 +1,18 @@
+@import '../../../app.scss';
+
+.cardGrid {
+  &__row {
+    &__col {
+      &__card {
+        cursor: pointer;
+        box-shadow: $box-shadow-sm;
+        transition: box-shadow .2s, transform .2s;
+
+        &:hover {
+          box-shadow: $box-shadow;
+          transform: translate(0,-.2rem);
+        }
+      }
+    }
+  }
+}
