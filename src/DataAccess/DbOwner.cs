@@ -11,7 +11,7 @@ namespace DataAccess
     public class DbOwner
     {
         public readonly IRepository<UserRole> UserRoles;
-        public readonly IRepository<User> Users;
+        public readonly IUsersRepository Users;
         public readonly IRepository<Dog> Dogs;
         public readonly IRepository<VaccinationRecord> VaccinationRecords;
         public readonly IClassPhotosRepository ClassPhotos;

@@ -49,11 +49,11 @@ const CustomPagination = props => {
         </PaginationLink>
       </PaginationItem>
       {
-        paginationRange?.map(page => {
+        paginationRange?.map((page, idx) => {
           // If the pageItem is a DOT, render the DOTS unicode character
           if (page === DOTS) {
             return (
-              <PaginationItem disabled>
+              <PaginationItem key={`${idx}_${page}`} disabled>
                 <PaginationLink>
                   &#8230;
                 </PaginationLink>
@@ -63,7 +63,7 @@ const CustomPagination = props => {
 
           // Render our Page Links
           return (
-            <PaginationItem active={page === currentPage}>
+            <PaginationItem key={`${idx}_${page}`} active={page === currentPage}>
               <PaginationLink onClick={() => onChange(page)}>
                 {page}
               </PaginationLink>

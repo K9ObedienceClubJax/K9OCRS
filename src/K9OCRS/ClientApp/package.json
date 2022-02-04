@@ -9,6 +9,7 @@
     "classnames": "^2.3.1",
     "debug": "^4.3.3",
     "jquery": "^3.5.1",
+    "js-cookie": "^3.0.1",
     "merge": "^1.2.1",
     "oidc-client": "^1.9.0",
     "prop-types": "^15.7.2",
@@ -43,7 +44,7 @@
     "extends": "react-app"
   },
   "scripts": {
-    "start": "rimraf ./build && react-scripts start",
+    "start": "npm i && rimraf ./build && react-scripts start",
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
