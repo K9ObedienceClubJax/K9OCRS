@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -17,8 +18,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
-
+using System.Web.Helpers;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace K9OCRS.Controllers
 {
@@ -31,6 +33,8 @@ namespace K9OCRS.Controllers
         private readonly DbOwner dbOwner;
         private readonly ServiceConstants serviceConstants;
         private IConfiguration _config;
+       
+
 
         public AccountController(
             ServiceConstants serviceConstants,
@@ -44,6 +48,7 @@ namespace K9OCRS.Controllers
             this.dbOwner = dbOwner;
             _config = config;
             this.serviceConstants = serviceConstants;
+
         }
 
         [HttpPost]
@@ -75,7 +80,7 @@ namespace K9OCRS.Controllers
                 {
                     return dbOwner.Users.GetByEmail(conn, account.Email);
                 });
-                 if (emailResult != null && emailResult.Contains(account.Email))
+                 if (emailResult.Email.Contains(account.Email))
                 {
                     return StatusCode(400, "An account with that email already exists");
                 }
@@ -185,20 +190,80 @@ namespace K9OCRS.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
+        [HttpPost("forgotpassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        {
+            //Write token with account info
+            var token = GenerateForgotPasswordToken(email); 
+            //Create url with token
+
+            //var callbackUrl = Url.Action("ChangePassword", "Account",
+            //new { token = token.Result }, Request.Scheme);
+
+            var callbackUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "/Account/ChangePassword?token=" + token.Result;
+            //Send email
+            var apiKey = Environment.GetEnvironmentVariable("WELOVEDOGS");
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
+            var subject = "K9 Obedience Club Password Reset";
+            var to = new EmailAddress(email, email);
+            var plainTextContent = "Use the link to reset your password." + callbackUrl;
+            var htmlContent = "Click <a href=" + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            await client.SendEmailAsync(msg);
+            return Ok(callbackUrl);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("changepassword")]
+        public async Task<IActionResult> ChangePassword(PasswordReset passwordReset)
+        {
+            string tokenString = passwordReset.Token;
+            JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
+            string email = token.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
+            string password = token.Claims.First(claim => claim.Type.Contains("Password")).Value;
+
+            var accountResult = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetIdByLogin(conn, email, password);
+            });
+
+            User user = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetByID(conn, accountResult.ID);
+            });
+
+            if (accountResult.Email != null)
+            {
+                var tasks = new List<Task>();
+                tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
+                {
+                    user.Password = GetHashedPassword(passwordReset.Password);
+                    await dbOwner.Users.Update(conn, tr, user);
+                    tr.Commit();
+                }));
+
+                await Task.WhenAll(tasks);
+            }
+            //Create another controller that uses Request.QueryString to read token. If valid, load page, reset password.
+            return Ok();
+        }
+
 
         private async Task<string> GenerateToken(Login login, User loginResult)
         {
-            {
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            {
                 var claims = new[]
                 {
                 new Claim(ClaimTypes.Sid, loginResult.ID + ""),
                 new Claim(ClaimTypes.Email, loginResult.Email + ""),
                 new Claim(ClaimTypes.Name, loginResult.FirstName + " " + loginResult.LastName),
                 new Claim(ClaimTypes.Role, loginResult.UserRoleID + "")
-            };
+                };
 
                 var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                     _config["Jwt:Audience"],
@@ -209,7 +274,34 @@ namespace K9OCRS.Controllers
                 return new JwtSecurityTokenHandler().WriteToken(token);
 
             }
+        }
 
+        private async Task<string> GenerateForgotPasswordToken(string email)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            {
+                var accountResult = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Users.GetByEmail(conn, email);
+                });
+
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.Sid, accountResult.ID + ""),
+                  new Claim(ClaimTypes.Email, email + ""),
+                  new Claim(type: "Password", accountResult.Password)
+                };
+
+                var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+                    _config["Jwt:Audience"],
+                    claims,
+                    expires: DateTime.Now.AddMinutes(15),
+                    signingCredentials: credentials);
+
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
 
         }
 

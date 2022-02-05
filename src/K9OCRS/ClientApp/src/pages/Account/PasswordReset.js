@@ -1,27 +1,29 @@
-import React, { useState } from "react";
-import { Row, Col, Button, Input } from "reactstrap";
-//import axios from "axios";
-
-async function handleSubmit(email) {
-  // const response = await axios.post("/api/passwordreset", {
-  //   email,
-  // });
-}
+import React, { useState } from 'react';
+import { Row, Col, Button, Input } from 'reactstrap';
+import * as accountsApi from '../../util/apiClients/userAccounts';
 
 function ValidateEmail(e) {
   //Validate email
   let regex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/i;
   if (regex.test(e.value)) {
-    e.setAttribute("isvalid", "true");
-    e.setCustomValidity("");
+    e.setAttribute('isvalid', 'true');
+    e.setCustomValidity('');
   } else {
-    e.setCustomValidity("Not a valid email format.");
+    e.setCustomValidity('Not a valid email format.');
     e.reportValidity();
   }
 }
 
+async function handleSubmit(email) {
+  try {
+    await accountsApi.forgotPassword(email);
+  } catch (err) {
+    console.log(err.response);
+  }
+}
+
 function PasswordReset() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   return (
     <form
@@ -30,22 +32,22 @@ function PasswordReset() {
         handleSubmit(email);
       }}
     >
-      <h1 className="d-flex justify-content-center mt-4 font-weight-bold">
+      <h1 className='d-flex justify-content-center mt-4 font-weight-bold'>
         Password Reset
       </h1>
-      <p className="d-flex justify-content-center mt-4 font-weight-bold">
+      <p className='d-flex justify-content-center mt-4 font-weight-bold'>
         We will send you an email with the steps to reset your password.
       </p>
 
-      <Row mt="3">
-        <Col className="mx-auto" lg="3">
-          <div className="input-group mb-3">
+      <Row mt='3'>
+        <Col className='mx-auto' lg='3'>
+          <div className='input-group mb-3'>
             <Input
-              type="email"
-              className="form-control"
-              placeholder="Email Address"
-              htmlFor="Email"
-              name="email"
+              type='email'
+              className='form-control'
+              placeholder='Email Address'
+              htmlFor='Email'
+              name='email'
               value={email}
               onChange={(e) => {
                 ValidateEmail(e.target);
@@ -58,12 +60,12 @@ function PasswordReset() {
       </Row>
 
       <Row>
-        <Col className="mx-auto" lg="3">
+        <Col className='mx-auto' lg='3'>
           <Button
-            className="mx-auto d-flex justify-content-center"
-            size="lg"
-            type="submit"
-            color="primary"
+            className='mx-auto d-flex justify-content-center'
+            size='lg'
+            type='submit'
+            color='primary'
           >
             Reset
           </Button>
