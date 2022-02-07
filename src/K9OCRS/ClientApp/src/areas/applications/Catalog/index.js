@@ -12,11 +12,11 @@ const Catalog = () => {
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState([]);
   const [classTypes, setClassTypes] = useState([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
 
   // Calculate the start and end of our paginated subset of class types
-  const pageStartIndex = (page - 1) * itemsPerPage;
-  const pageEndIndex = page * itemsPerPage;
+  const pageStartIndex = page * itemsPerPage;
+  const pageEndIndex = (page + 1) * itemsPerPage;
 
   let [query, setQuery] = useState("");
 

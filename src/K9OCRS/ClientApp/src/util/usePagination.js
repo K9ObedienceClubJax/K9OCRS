@@ -21,7 +21,7 @@ const usePagination = ({
       paginationComponent, we return the range [1..totalPageCount]
     */
     if (totalPageNumbers >= totalPageCount) {
-      return range(1, totalPageCount);
+      return range(0, totalPageCount - 1);
     }
 
     /*
