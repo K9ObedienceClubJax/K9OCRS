@@ -64,20 +64,26 @@ export default class App extends Component {
             exact
           />
           <ProtectedRoute
-            path='/Manage/ClassTypes'
+            path='/Manage/Classes'
             component={ClassManagement}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />
           {/* This route is just for a quick test, it will be removed */}
           <ProtectedRoute
-            path='/Manage/ClassTypes/testImageUpload'
+            path='/Manage/Classes/testImageUpload'
             component={TestUpload}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />
           <ProtectedRoute
-            path='/Manage/ClassTypes/:classTypeId'
+            path='/Manage/Classes/Types/Add'
+            component={ClassTypeSetup}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          <ProtectedRoute
+            path='/Manage/Classes/Types/:classTypeId'
             component={ClassTypeSetup}
             minimumAccess={USER_ROLES.Administrator}
             exact

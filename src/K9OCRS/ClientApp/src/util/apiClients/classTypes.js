@@ -13,7 +13,7 @@ export const addClassTypePhotos = async (classTypeId, files) => await axios.put(
 });
 
 // Read
-export const getAllClassTypes = async () => await axios.get(base);
+export const getAllClassTypes = async () => await axios.get(base, { params: { includeSections: true } });
 
 export const getClassTypeByID = async classTypeId => await axios.get(`${base}/${classTypeId}`);
 
