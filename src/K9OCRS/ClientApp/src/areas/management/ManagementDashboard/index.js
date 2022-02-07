@@ -8,8 +8,8 @@ export default function ManagementDashboard() {
       <h2>Class Management</h2>
       <Nav>
         <NavItem>
-          <NavLink tag={Link} to="/Manage/ClassTypes">
-            Class Types
+          <NavLink tag={Link} to="/Manage/Classes">
+            Classes
           </NavLink>
         </NavItem>
       </Nav>
