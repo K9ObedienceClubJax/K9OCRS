@@ -27,6 +27,7 @@ export default handleActions(
     }),
     [actions.loggedout]: (state) => ({
       ...state,
+      refreshingUser: false,
       currentUser: null,
     }),
     [actions.loginRefreshed]: (state, { payload }) => ({
