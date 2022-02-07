@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useExpanded, useTable } from 'react-table';
+import { useTable, useExpanded, usePagination  } from 'react-table';
+import CustomPagination from '../Pagination';
 import defaultColumns from './columns';
 
 import './style.scss';
@@ -10,7 +11,9 @@ const Table = props => {
     columns,
     data,
     tableConfig,
-    expandable = false,
+    expandable,
+    withPagination,
+    pageSize,
   } = props;
 
   const plugins = [];
@@ -34,6 +37,11 @@ const Table = props => {
     initialState.expanded = initExpanded;
   }
 
+  if (withPagination) {
+    plugins.push(usePagination);
+    initialState.pageSize = pageSize;
+  }
+
   const tableInstance = useTable({
     columns: activeColumns,
     data,
@@ -43,63 +51,85 @@ const Table = props => {
   }, ...plugins);
 
   const {
+    state,
     getTableProps,
     getTableBodyProps,
+    prepareRow,
     headerGroups,
     rows,
-    prepareRow,
+    // used when pagination is on
+    page,
+    gotoPage,
   } = tableInstance;
+
+  const activeRows = withPagination ? page : rows;
 
   const cn = 'k9-table';
 
   return (
-    <table className={cn} {...getTableProps()}>
-      <thead>
-        {// Loop over the header rows
-        headerGroups.map(headerGroup => (
-          // Apply the header row props
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {// Loop over the headers in each row
-            headerGroup.headers.map(column => (
-              // Apply the header cell props
-              <th {...column.getHeaderProps()}>
-                {// Render the header
-                column.render('Header')}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      {/* Apply the table body props */}
-      <tbody {...getTableBodyProps()}>
-        {// Loop over the table rows
-        rows.map(row => {
-          // Prepare the row for display
-          prepareRow(row)
-          return (
-            // Apply the row props
-            <tr className={`${row.id}`.includes('.') ? '' : 'k9-table__top-row'} {...row.getRowProps()}>
-              {// Loop over the rows cells
-              row.cells.map(cell => {
-                // Apply the cell props
-                return (
-                  <td {...cell.getCellProps()}>
-                    {// Render the cell contents
-                    cell.render('Cell')}
-                  </td>
-                )
-              })}
+    <div className={cn}>
+      <table className={`${cn}__table`} {...getTableProps()}>
+        <thead>
+          {// Loop over the header rows
+          headerGroups.map(headerGroup => (
+            // Apply the header row props
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {// Loop over the headers in each row
+              headerGroup.headers.map(column => (
+                // Apply the header cell props
+                <th {...column.getHeaderProps()}>
+                  {// Render the header
+                  column.render('Header')}
+                </th>
+              ))}
             </tr>
-          )
-        })}
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        {/* Apply the table body props */}
+        <tbody {...getTableBodyProps()}>
+          {// Loop over the table rows
+          activeRows.map(row => {
+            // Prepare the row for display
+            prepareRow(row)
+            return (
+              // Apply the row props
+              <tr className={`${row.id}`.includes('.') ? '' : 'k9-table__top-row'} {...row.getRowProps()}>
+                {// Loop over the rows cells
+                row.cells.map(cell => {
+                  // Apply the cell props
+                  return (
+                    <td {...cell.getCellProps()}>
+                      {// Render the cell contents
+                      cell.render('Cell')}
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      { withPagination ? (
+        <div className={`${cn}__pagination-container`}>
+          <CustomPagination
+            className={`${cn}__pagination`}
+            onPageChange={gotoPage}
+            totalCount={rows.length}
+            currentPage={state.pageIndex}
+            pageSize={state.pageSize}
+            useTablePagination
+          />
+        </div>
+      ) : null }
+    </div>
   );
 };
 
 Table.defaultProps = {
   tableConfig: {},
   expandable: false,
+  withPagination: false,
+  pageSize: 8,
 };
 
 Table.propTypes = {
@@ -110,6 +140,8 @@ Table.propTypes = {
   data: PropTypes.array.isRequired,
   tableConfig: PropTypes.object,
   expandable: PropTypes.bool,
+  withPagination: PropTypes.bool,
+  pageSize: PropTypes.number,
 };
 
 export default Table;
