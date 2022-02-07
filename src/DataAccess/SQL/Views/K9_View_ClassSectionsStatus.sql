@@ -1,6 +1,8 @@
 USE k9ocrs
 GO
 
+--DROP VIEW ClassSectionsStatus;
+
 CREATE VIEW ClassSectionsStatus
 AS
 SELECT
@@ -8,8 +10,8 @@ SELECT
 	cm.StartDate,
 	cm.EndDate,
 	CASE
-		WHEN GETDATE() > StartDate THEN 'Ongoing'
-		WHEN GETDATE() < EndDate THEN 'Completed'
+		WHEN GETDATE() > StartDate AND GETDATE() < EndDate THEN 'Ongoing'
+		WHEN GETDATE() > EndDate THEN 'Completed'
 		ELSE 'Scheduled'
 	END as [Status],
 	IIF(sa.RosterActual IS NOT NULL, sa.RosterActual, 0) as RosterActual
