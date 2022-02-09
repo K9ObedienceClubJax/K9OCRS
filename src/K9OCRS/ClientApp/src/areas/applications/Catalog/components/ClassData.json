@@ -1,0 +1,125 @@
+[
+    {
+      "startTime": "0001-01-01T14:00:00",
+      "endTime": "0001-01-01T16:00:00",
+      "meetings": [
+        {
+          "id": 1,
+          "classSectionID": 1,
+          "startDate": "2022-01-13T14:00:00",
+          "endDate": "2022-01-13T16:00:00"
+        },
+        {
+          "id": 2,
+          "classSectionID": 1,
+          "startDate": "2022-01-20T14:00:00",
+          "endDate": "2022-01-20T16:00:00"
+        },
+        {
+          "id": 3,
+          "classSectionID": 1,
+          "startDate": "2022-01-27T14:00:00",
+          "endDate": "2022-01-27T16:00:00"
+        }
+      ],
+      "instructor": {
+        "id": 1,
+        "userRoleID": 1,
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "admin@test.test",
+        "password": "mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=",
+        "profilePictureFilename": "UserPlaceholder.png"
+      },
+      "id": 1,
+      "classTypeID": 1,
+      "instructorID": 1,
+      "rosterCapacity": 8,
+      "rosterActual": 1,
+      "startDate": "2022-01-13T14:00:00",
+      "endDate": "2022-01-27T16:00:00",
+      "status": "Ongoing"
+    },
+    {
+      "startTime": "0001-01-01T14:00:00",
+      "endTime": "0001-01-01T14:00:00",
+      "meetings": [
+        {
+          "id": 4,
+          "classSectionID": 2,
+          "startDate": "2022-01-13T14:00:00",
+          "endDate": "2022-01-13T14:00:00"
+        },
+        {
+          "id": 5,
+          "classSectionID": 2,
+          "startDate": "2022-01-17T14:00:00",
+          "endDate": "2022-01-17T14:00:00"
+        },
+        {
+          "id": 6,
+          "classSectionID": 2,
+          "startDate": "2022-01-20T14:00:00",
+          "endDate": "2022-01-20T14:00:00"
+        }
+      ],
+      "instructor": {
+        "id": 2,
+        "userRoleID": 2,
+        "firstName": "Peepee",
+        "lastName": "Poopoo",
+        "email": "instructor@test.test",
+        "password": "mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=",
+        "profilePictureFilename": "UserPlaceholder.png"
+      },
+      "id": 2,
+      "classTypeID": 2,
+      "instructorID": 2,
+      "rosterCapacity": 6,
+      "rosterActual": 1,
+      "startDate": "2022-01-13T14:00:00",
+      "endDate": "2022-01-20T14:00:00",
+      "status": "Ongoing"
+    },
+    {
+      "startTime": "0001-01-01T16:00:00",
+      "endTime": "0001-01-01T18:00:00",
+      "meetings": [
+        {
+          "id": 7,
+          "classSectionID": 3,
+          "startDate": "2022-01-13T16:00:00",
+          "endDate": "2022-01-13T18:00:00"
+        },
+        {
+          "id": 8,
+          "classSectionID": 3,
+          "startDate": "2022-01-17T16:00:00",
+          "endDate": "2022-01-17T18:00:00"
+        },
+        {
+          "id": 9,
+          "classSectionID": 3,
+          "startDate": "2022-01-20T16:00:00",
+          "endDate": "2022-01-20T18:00:00"
+        }
+      ],
+      "instructor": {
+        "id": 2,
+        "userRoleID": 2,
+        "firstName": "Peepee",
+        "lastName": "Poopoo",
+        "email": "instructor@test.test",
+        "password": "mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=",
+        "profilePictureFilename": "UserPlaceholder.png"
+      },
+      "id": 3,
+      "classTypeID": 3,
+      "instructorID": 2,
+      "rosterCapacity": 10,
+      "rosterActual": 0,
+      "startDate": "2022-01-13T16:00:00",
+      "endDate": "2022-01-20T18:00:00",
+      "status": "Ongoing"
+    }
+  ]
