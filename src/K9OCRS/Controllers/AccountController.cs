@@ -154,7 +154,7 @@ namespace K9OCRS.Controllers
 
             }
 
-            return Forbid();
+            return StatusCode(400, "That account does not exist. Did you put in the wrong email or password?");
         }
 
         [HttpGet("loginstatus")]
@@ -194,16 +194,24 @@ namespace K9OCRS.Controllers
         [HttpPost("forgotpassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] string email)
         {
+            //Check if email is in database
+            var accountResult = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetByEmail(conn, email);
+            });
+            if(accountResult == null)
+            {
+                return StatusCode(400, "Email does not exist");
+            }
+
             //Write token with account info
-            var token = GenerateForgotPasswordToken(email); 
+            var token = GenerateForgotPasswordToken(email, accountResult); 
+
             //Create url with token
-
-            //var callbackUrl = Url.Action("ChangePassword", "Account",
-            //new { token = token.Result }, Request.Scheme);
-
             var callbackUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "/Account/ChangePassword?token=" + token.Result;
+
             //Send email
-            var apiKey = Environment.GetEnvironmentVariable("WELOVEDOGS");
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
             var subject = "K9 Obedience Club Password Reset";
@@ -212,7 +220,7 @@ namespace K9OCRS.Controllers
             var htmlContent = "Click <a href=" + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             await client.SendEmailAsync(msg);
-            return Ok(callbackUrl);
+            return Ok("Email sent");
         }
 
         [AllowAnonymous]
@@ -276,16 +284,12 @@ namespace K9OCRS.Controllers
             }
         }
 
-        private async Task<string> GenerateForgotPasswordToken(string email)
+        private async Task<string> GenerateForgotPasswordToken(string email, User accountResult)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             {
-                var accountResult = await connectionOwner.Use(conn =>
-                {
-                    return dbOwner.Users.GetByEmail(conn, email);
-                });
 
                 var claims = new[]
                 {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Row, Col, Button, Input } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import * as accountsApi from '../../util/apiClients/userAccounts';
+import PageHeader from '../../shared/components/PageHeader';
 
 function ValidatePassword(e) {
   //Validate password requirements
@@ -36,15 +37,31 @@ function ChangePassword() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [result, setResult] = useState('');
+  const [alerts, setAlerts] = useState([]);
 
-  async function handleSubmit(token, password, history) {
+  async function handleSubmit(token, password, history, setAlerts) {
     try {
-      const response = await accountsApi.changePassword({ token, password });
+      const response = await accountsApi.changePassword({
+        token,
+        password,
+      });
       setResult(response);
+      setAlerts([
+        {
+          color: 'success',
+          message: 'Password successfuly changed.',
+        },
+      ]);
       // loginAction({ email, password });
       history.push('/');
     } catch (err) {
       setResult(err.response);
+      setAlerts([
+        {
+          color: 'danger',
+          message: 'Failed to change password.',
+        },
+      ]);
     }
   }
 
@@ -52,9 +69,10 @@ function ChangePassword() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit(token, password, history);
+        handleSubmit(token, password, history, setAlerts);
       }}
     >
+      <PageHeader title='' alerts={alerts} />
       <h1 className='d-flex justify-content-center mt-4 mb-4 font-weight-bold'>
         Change Password
       </h1>

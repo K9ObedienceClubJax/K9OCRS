@@ -4,6 +4,7 @@ import { Row, Col, Button, Input } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import * as actions from '../../areas/accounts/modules/actions';
 import selectors from '../../shared/modules/selectors';
+import PageHeader from '../../shared/components/PageHeader';
 
 const Login = (props) => {
   const { currentUser = null, loginAction } = props;
@@ -11,6 +12,7 @@ const Login = (props) => {
   let history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
     if (currentUser !== null) {
@@ -22,9 +24,10 @@ const Login = (props) => {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        loginAction({ email, password });
+        loginAction({ email, password, setAlerts });
       }}
     >
+      <PageHeader title='' alerts={alerts} />
       <h1 className='mt-4 mb-4 d-flex justify-content-center '>Login</h1>
       <Row className='mt-3'>
         <Col lg='4' className='mx-auto'>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, Button, Input } from 'reactstrap';
 import * as accountsApi from '../../util/apiClients/userAccounts';
+import PageHeader from '../../shared/components/PageHeader';
 
 function ValidateEmail(e) {
   //Validate email
@@ -14,24 +15,39 @@ function ValidateEmail(e) {
   }
 }
 
-async function handleSubmit(email) {
+async function handleSubmit(email, setAlerts) {
   try {
     await accountsApi.forgotPassword(email);
+    setAlerts([
+      {
+        color: 'info',
+        message:
+          'An email has been sent to you with a link to reset your password.',
+      },
+    ]);
   } catch (err) {
     console.log(err.response);
+    setAlerts([
+      {
+        color: 'danger',
+        message: 'Failed to send email.',
+      },
+    ]);
   }
 }
 
 function PasswordReset() {
   const [email, setEmail] = useState('');
+  const [alerts, setAlerts] = useState([]);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit(email);
+        handleSubmit(email, setAlerts);
       }}
     >
+      <PageHeader title='' alerts={alerts} />
       <h1 className='d-flex justify-content-center mt-4 font-weight-bold'>
         Password Reset
       </h1>
