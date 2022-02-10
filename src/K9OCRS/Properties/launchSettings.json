@@ -10,7 +10,6 @@
     "LocalStorage": {
       "commandName": "Project",
       "environmentVariables": {
-        "WELOVEDOGS": "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",
         "ASPNETCORE_ENVIRONMENT": "Local"
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"

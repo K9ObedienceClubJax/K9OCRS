@@ -19,6 +19,12 @@ function* login({ payload }) {
     log(`Logged in as ${response?.data.name}`);
     yield put(sharedActions.loggedin(response?.data));
   } catch (err) {
+    payload.setAlerts([
+      {
+        color: 'danger',
+        message: "We can't find a account with those credentials",
+      },
+    ]);
     log('An error ocurred on login', err);
   }
 }
