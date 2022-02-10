@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /app
 
 # Install node@15.x
-RUN curl -sL https://deb.nodesource.com/setup_15.x |  bash -
+RUN curl -sL https://deb.nodesource.com/setup_16.x |  bash -
 RUN apt-get install -y nodejs
 
 COPY ./*.sln ./

@@ -21,9 +21,9 @@ import DogDetails from './pages/DogDetails';
 import DogSetup from './pages/DogSetup';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
-import ClassTypesList from './areas/classes/ClassTypes/List';
-import ClassTypeSetup from './areas/classes/ClassTypes/Setup';
-import TestUpload from './areas/classes/ClassTypes/TestUpload';
+import ClassManagement from './areas/classes/ClassManagement';
+import ClassTypeSetup from './areas/classes/ClassTypeSetup';
+import TestUpload from './areas/classes/TestUpload';
 
 import './app.scss';
 
@@ -62,20 +62,26 @@ export default class App extends Component {
             exact
           />
           <ProtectedRoute
-            path='/Manage/ClassTypes'
-            component={ClassTypesList}
+            path='/Manage/Classes'
+            component={ClassManagement}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />
           {/* This route is just for a quick test, it will be removed */}
           <ProtectedRoute
-            path='/Manage/ClassTypes/testImageUpload'
+            path='/Manage/Classes/testImageUpload'
             component={TestUpload}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />
           <ProtectedRoute
-            path='/Manage/ClassTypes/:classTypeId'
+            path='/Manage/Classes/Types/Add'
+            component={ClassTypeSetup}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          <ProtectedRoute
+            path='/Manage/Classes/Types/:classTypeId'
             component={ClassTypeSetup}
             minimumAccess={USER_ROLES.Administrator}
             exact
