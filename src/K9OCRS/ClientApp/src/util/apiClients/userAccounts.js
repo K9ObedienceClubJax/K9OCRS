@@ -27,6 +27,9 @@ export const loginStatus = async () => axios.get(`${base}/loginstatus`);
 export const changePassword = async ({ token, password }) =>
   axios.post(`${base}/changepassword`, { token, password }, { password });
 
+export const changeInfo = async (id, firstname, lastname, email) =>
+  axios.post(`${base}/changeinfo`, { id, firstname, lastname, email });
+
 //Delete
 export const logout = async () => axios.get(`${base}/logout`);
 

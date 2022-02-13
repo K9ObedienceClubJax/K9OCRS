@@ -258,6 +258,28 @@ namespace K9OCRS.Controllers
             return Ok();
         }
 
+        [HttpPost("changeinfo")]
+        public async Task<IActionResult> ChangeInfo([FromBody] User newInfo)
+        {
+            User user = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetByID(conn, newInfo.ID);
+            });
+            user.Email = newInfo.Email;
+            user.FirstName = newInfo.FirstName;
+            user.LastName = newInfo.LastName;
+
+            var tasks = new List<Task>();
+            tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
+            {
+                await dbOwner.Users.Update(conn, tr, user);
+                tr.Commit();
+            }));
+
+            await Task.WhenAll(tasks);
+            return Ok();
+        }
+
 
         private async Task<string> GenerateToken(Login login, User loginResult)
         {
