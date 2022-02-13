@@ -107,7 +107,7 @@ namespace K9OCRS.Controllers
         }
 
         //update dog
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> UpdateDog(Dog entity)
         {
             try
