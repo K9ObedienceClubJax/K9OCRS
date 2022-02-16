@@ -44,8 +44,16 @@ $top-row-bg-color: rgba($primary, 0.16) !default;
         color: $body-color;
         background-color: $gray-100;
 
+        &:hover {
+          background-color: $gray-200;
+        }
+
         &.k9-table__top-row {
           background-color: $top-row-bg-color;
+
+          &:hover {
+            background-color: darken($top-row-bg-color, 15);
+          }
         }
       }
       tr {
