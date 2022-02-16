@@ -92,7 +92,16 @@ namespace K9OCRS.Controllers
                             agg.Add(s.ClassTypeID, new List<ClassSectionResult> {
                                 new ClassSectionResult(
                                     s,
-                                    groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null
+                                    groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null,
+                                    new UserResult(new User
+                                    {
+                                        ID = s.InstructorID,
+                                        FirstName = s.FirstName,
+                                        LastName = s.LastName,
+                                        Email = s.Email,
+                                        ProfilePictureFilename = s.ProfilePictureFilename,
+                                    },
+                                    serviceConstants.storageBasePath)
                                 )
                             });
                         }
