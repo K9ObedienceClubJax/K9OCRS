@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment-timezone';
 import { Badge } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { alignmentWrapper } from '../../../util/columns';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
 
 const statusColors = {
@@ -27,10 +28,21 @@ const classTypeTemplate = ({ value }) => {
   return <Link to={`/Manage/Classes/Types/${value.id}`}>{value.title}</Link>
 };
 
+const classSectionTemplate = ({ value }) => {
+  if (!value) return '';
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <Link to={`/Manage/Classes/Sections/${value}`}>{value}</Link>
+    </div>
+  );
+};
+
 const instructorTemplate = ({ value }) => {
   if (!value) return '';
   return <ProfileBadge {...value} imageUrl={value.profilePictureUrl} link/>
 };
+
+const statusTemplate = ({ value }) => <Badge color={statusColors[value]}>{value}</Badge>;
 
 const columns = [
   {
@@ -41,20 +53,22 @@ const columns = [
   {
     Header: 'Section',
     accessor: 'sectionId',
-    Cell: ({ value }) => <Link to={`/Manage/Classes/Sections/${value}`}>{value}</Link>
+    Cell: classSectionTemplate,
   },
   {
     Header: 'Instructor',
     accessor: 'instructor',
-    Cell: instructorTemplate,
+    Cell: alignmentWrapper('left', instructorTemplate),
   },
   {
     Header: 'Capacity',
     accessor: 'rosterCapacity',
+    Cell: alignmentWrapper('center'),
   },
   {
     Header: 'Enrolled',
     accessor: 'rosterActual',
+    Cell: alignmentWrapper('center'),
   },
   {
     Header: 'Start Date',
@@ -69,12 +83,12 @@ const columns = [
   {
     Header: 'Time*',
     accessor: (row) => ({ startTime: row.startTime, endTime: row.endTime }),
-    Cell: timeTemplate,
+    Cell: alignmentWrapper('center', timeTemplate),
   },
   {
     Header: 'Status',
     accessor: 'status',
-    Cell: ({ value }) => <Badge color={statusColors[value]}>{value}</Badge>,
+    Cell: alignmentWrapper('center', statusTemplate),
   }
 ];
 
