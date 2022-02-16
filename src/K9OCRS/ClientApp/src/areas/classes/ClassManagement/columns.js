@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment-timezone';
 import { Badge } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import ProfileBadge from '../../../shared/components/ProfileBadge';
 
 const statusColors = {
   Scheduled: 'dark',
@@ -26,6 +27,11 @@ const classTypeTemplate = ({ value }) => {
   return <Link to={`/Manage/Classes/Types/${value.id}`}>{value.title}</Link>
 };
 
+const instructorTemplate = ({ value }) => {
+  if (!value) return '';
+  return <ProfileBadge {...value} imageUrl={value.profilePictureUrl} link/>
+};
+
 const columns = [
   {
     Header: 'Class Type',
@@ -39,6 +45,8 @@ const columns = [
   },
   {
     Header: 'Instructor',
+    accessor: 'instructor',
+    Cell: instructorTemplate,
   },
   {
     Header: 'Capacity',
