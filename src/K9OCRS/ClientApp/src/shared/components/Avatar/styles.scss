@@ -1,14 +1,11 @@
 @import '../../../app.scss';
 
 .avatar {
-  &__image-container {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    clip-path: circle(40%);
-    background-color: $dark;
-    margin: .25rem;
-  }
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  clip-path: circle(40%);
+  background-color: $dark;
 
   &__image {
     clip-path: circle(40%);

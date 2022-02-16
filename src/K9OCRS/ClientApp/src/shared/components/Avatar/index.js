@@ -13,7 +13,7 @@ const Avatar = props => {
 
   return (
     <div
-      className={`${cn}__image-container`}
+      className={cn}
       style={{
         width: containerSize,
         height: containerSize,
