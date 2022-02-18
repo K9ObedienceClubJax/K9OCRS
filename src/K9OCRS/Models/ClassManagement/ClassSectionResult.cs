@@ -11,7 +11,7 @@ namespace K9OCRS.Models.ClassManagement
         public DateTime EndTime { get; set; }
         public IEnumerable<ClassMeeting> Meetings { get; set; }
         // Change the data type to a DTO when available
-        public User Instructor { get; set; }
+        public UserResult Instructor { get; set; }
 
         public ClassSectionResult(ClassSection entity) : base(entity) { }
         public ClassSectionResult(ClassSection entity, IEnumerable<ClassMeeting> meetings) : base(entity)
@@ -49,6 +49,6 @@ namespace K9OCRS.Models.ClassManagement
             StartTime = new DateTime() + mode.StartDate.TimeOfDay;
             EndTime = new DateTime() + mode.EndDate.TimeOfDay;
         }
-        public ClassSectionResult(ClassSection entity, IEnumerable<ClassMeeting> meetings, User instructor) : this(entity, meetings) => Instructor = instructor;
+        public ClassSectionResult(ClassSection entity, IEnumerable<ClassMeeting> meetings, UserResult instructor) : this(entity, meetings) => Instructor = instructor;
     }
 }

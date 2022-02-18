@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, Button, Input } from 'reactstrap';
 import createAccount from '../../util/apiClients/userAccounts';
 import { useHistory } from 'react-router-dom';
-import * as actions from '../../areas/accounts/modules/actions';
+import * as actions from './modules/actions';
 import selectors from '../../shared/modules/selectors';
 import PageHeader from '../../shared/components/PageHeader';
 
@@ -59,23 +59,20 @@ const CreateAccount = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [result, setResult] = useState('');
   const [alerts, setAlerts] = useState([]);
 
   async function handleSubmit(first, last, email, password, confirm, history) {
     try {
-      const response = await createAccount({
+      await createAccount({
         first,
         last,
         email,
         password,
         confirm,
       });
-      setResult(response);
       loginAction({ email, password });
       history.push('/');
     } catch (err) {
-      setResult(err.response);
       setAlerts([
         {
           color: 'danger',
@@ -92,7 +89,7 @@ const CreateAccount = (props) => {
         handleSubmit(first, last, email, password, confirm, history);
       }}
     >
-      <PageHeader title='Create Account' alerts={alerts} />
+      <PageHeader title='' alerts={alerts} />
       <h1 className='d-flex justify-content-center mt-4 font-weight-bold'>
         Create an Account
       </h1>

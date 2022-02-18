@@ -72,7 +72,7 @@ function ChangePassword() {
         handleSubmit(token, password, history, setAlerts);
       }}
     >
-      <PageHeader title='Change Password' alerts={alerts} />
+      <PageHeader title='' alerts={alerts} />
       <h1 className='d-flex justify-content-center mt-4 mb-4 font-weight-bold'>
         Change Password
       </h1>

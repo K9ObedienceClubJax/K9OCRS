@@ -22,7 +22,7 @@ function* login({ payload }) {
     payload.setAlerts([
       {
         color: 'danger',
-        message: "We can't find a account with those credentials",
+        message: "We can't find an account with those credentials",
       },
     ]);
     log('An error ocurred on login', err);

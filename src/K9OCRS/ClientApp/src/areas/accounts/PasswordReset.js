@@ -47,7 +47,7 @@ function PasswordReset() {
         handleSubmit(email, setAlerts);
       }}
     >
-      <PageHeader title='Password Reset' alerts={alerts} />
+      <PageHeader title='' alerts={alerts} />
       <h1 className='d-flex justify-content-center mt-4 font-weight-bold'>
         Password Reset
       </h1>
