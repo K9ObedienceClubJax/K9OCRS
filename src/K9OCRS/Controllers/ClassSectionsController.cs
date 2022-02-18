@@ -52,8 +52,8 @@ namespace K9OCRS.Controllers
                 // Get all sections
                 var sections = await dbOwner.ClassSections.GetAll(conn);
                 // Get all instructors associated to sections
-                var instructorIds = sections.Select(s => s.InstructorID);
-                var instructors = (await dbOwner.Users.GetByIDs(conn, instructorIds)).ToList();
+                //var instructorIds = sections.Select(s => s.InstructorID);
+                //var instructors = (await dbOwner.Users.GetByIDs(conn, instructorIds)).ToList();
                 // Get all meetings
                 var meetings = await dbOwner.ClassMeetings.GetAll(conn);
 
@@ -74,7 +74,13 @@ namespace K9OCRS.Controllers
                 return sections.Select(s => new ClassSectionResult(
                     s,
                     groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null,
-                    instructors.Find(u => u.ID == s.InstructorID)
+                    new UserResult(new User {
+                        ID = s.InstructorID,
+                        FirstName = s.FirstName,
+                        LastName = s.LastName,
+                        Email = s.Email,
+                        ProfilePictureFilename = s.ProfilePictureFilename,
+                    })
                 ));
             });
 
@@ -90,9 +96,15 @@ namespace K9OCRS.Controllers
                 var section = await dbOwner.ClassSections.GetByID(conn, classSectionId);
                 var meetings = await dbOwner.ClassMeetings.GetByID(conn, "ClassSectionID", section.ID);
                 var type = await dbOwner.ClassTypes.GetByID(conn, section.ClassTypeID);
-                var instructor = await dbOwner.Users.GetByID(conn, section.InstructorID);
+                var instructor = new User {
+                    ID = section.InstructorID,
+                    FirstName = section.FirstName,
+                    LastName = section.LastName,
+                    Email = section.Email,
+                    ProfilePictureFilename = section.ProfilePictureFilename,
+                };
 
-                return new ClassSectionDetails(section, meetings, instructor, new ClassTypeResult(type, serviceConstants.storageBasePath));
+                return new ClassSectionDetails(section, meetings, new UserResult(instructor), new ClassTypeResult(type, serviceConstants.storageBasePath));
             });
 
             return Ok(result);

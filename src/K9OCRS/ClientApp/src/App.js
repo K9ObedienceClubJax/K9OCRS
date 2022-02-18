@@ -11,11 +11,10 @@ import notFoundPage from './areas/management/404';
 import Catalog from './areas/applications/Catalog';
 import Confirm from './areas/applications/Confirmation';
 
-import Login from './pages/Account/Login';
-import CreatePassword from './pages/Account/Create';
-import PasswordReset from './pages/Account/PasswordReset';
-import ChangePassword from './pages/Account/ChangePassword';
-import MyAccount from './areas/accounts/index';
+import Login from './areas/accounts/Login';
+import CreatePassword from './areas/accounts/Create';
+import PasswordReset from './areas/accounts/PasswordReset';
+import ChangePassword from './areas/accounts/ChangePassword';
 
 import MyDogs from './pages/MyDogs';
 import DogDetails from './pages/DogDetails';

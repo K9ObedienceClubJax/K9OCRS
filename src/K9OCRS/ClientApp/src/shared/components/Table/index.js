@@ -14,6 +14,7 @@ const Table = props => {
     expandable,
     withPagination,
     pageSize,
+    footnotes,
   } = props;
 
   const plugins = [];
@@ -109,18 +110,25 @@ const Table = props => {
           })}
         </tbody>
       </table>
-      { withPagination ? (
-        <div className={`${cn}__pagination-container`}>
-          <CustomPagination
-            className={`${cn}__pagination`}
-            onPageChange={gotoPage}
-            totalCount={rows.length}
-            currentPage={state.pageIndex}
-            pageSize={state.pageSize}
-            useTablePagination
-          />
-        </div>
-      ) : null }
+      <div className={`${cn}__extras-container`}>
+        { footnotes?.length > 0 ? (
+          <div className={`${cn}__footnotes-container`}>
+            {footnotes.map((f, idx) => <p key={idx}>{f}</p>)}
+          </div>
+        ) : null }
+        { withPagination ? (
+          <div className={`${cn}__pagination-container`}>
+            <CustomPagination
+              className={`${cn}__pagination`}
+              onPageChange={gotoPage}
+              totalCount={rows.length}
+              currentPage={state.pageIndex}
+              pageSize={state.pageSize}
+              useTablePagination
+            />
+          </div>
+        ) : null }
+      </div>
     </div>
   );
 };

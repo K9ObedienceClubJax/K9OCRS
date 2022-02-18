@@ -9,6 +9,7 @@ $top-row-bg-color: rgba($primary, 0.16) !default;
   display: flex;
   flex-direction: column;
   justify-content: center;
+
   &__table {
     margin: 2rem 0;
     border: none;
@@ -43,8 +44,16 @@ $top-row-bg-color: rgba($primary, 0.16) !default;
         color: $body-color;
         background-color: $gray-100;
 
+        &:hover {
+          background-color: $gray-200;
+        }
+
         &.k9-table__top-row {
           background-color: $top-row-bg-color;
+
+          &:hover {
+            background-color: darken($top-row-bg-color, 15);
+          }
         }
       }
       tr {
@@ -69,8 +78,23 @@ $top-row-bg-color: rgba($primary, 0.16) !default;
     }
   }
 
+  &__extras-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
   &__pagination-container {
+    flex: 1;
     display: flex;
     justify-content: flex-end;
+  }
+
+  &__footnotes-container {
+    flex: 1;
+    p {
+      margin: 0;
+      margin-bottom: .5rem;
+      color: $text-muted;
+    }
   }
 }

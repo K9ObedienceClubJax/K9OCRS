@@ -186,7 +186,7 @@ namespace K9OCRS.Controllers
             var callbackUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "/Account/ChangePassword?token=" + token.Result;
 
             //Send email
-            var apiKey = Environment.GetEnvironmentVariable("WELOVEDOGS");
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
             var subject = "K9 Obedience Club Password Reset";
