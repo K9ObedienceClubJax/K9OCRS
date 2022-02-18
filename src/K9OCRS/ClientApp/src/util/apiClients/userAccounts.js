@@ -17,6 +17,15 @@ export const forgotPassword = async (email) =>
     },
   });
 
+export const createUser = async (email, first, last, password, role) =>
+  axios.post(`${base}/createuser`, {
+    email,
+    first,
+    last,
+    password,
+    role,
+  });
+
 //Read
 export const login = async (email, password) =>
   axios.post(`${base}/login`, { email, password });

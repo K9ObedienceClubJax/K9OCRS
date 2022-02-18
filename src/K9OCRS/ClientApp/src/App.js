@@ -15,7 +15,7 @@ import Login from './pages/Account/Login';
 import CreatePassword from './pages/Account/Create';
 import PasswordReset from './pages/Account/PasswordReset';
 import ChangePassword from './pages/Account/ChangePassword';
-import MyAccount from './pages/Account/index';
+import MyAccount from './areas/accounts/index';
 
 import MyDogs from './pages/MyDogs';
 import DogDetails from './pages/DogDetails';

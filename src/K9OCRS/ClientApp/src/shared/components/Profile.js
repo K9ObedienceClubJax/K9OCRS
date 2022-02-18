@@ -30,7 +30,17 @@ function ValidatePassword(e) {
   }
 }
 
-function handleSubmit(defaultMode, setAlerts, userId, first, last, email) {
+function handleSubmit(
+  defaultMode,
+  createMode,
+  setAlerts,
+  userId,
+  first,
+  last,
+  email,
+  password,
+  role
+) {
   if (defaultMode) {
     accountsApi.changeInfo(userId, first, last, email);
     setAlerts([
@@ -39,33 +49,44 @@ function handleSubmit(defaultMode, setAlerts, userId, first, last, email) {
         message: 'Your changes have been saved!',
       },
     ]);
+  } else if (createMode) {
+    accountsApi.createUser(email, first, last, password, role);
+    setAlerts([
+      {
+        color: 'success',
+        message: 'User created!',
+      },
+    ]);
   }
 }
 
 const Profile = (props) => {
   const { currentUser = null, mode = null } = props;
-  const [alerts, setAlerts] = useState([]);
+  const setAlerts = props.setAlerts;
   const [first, setFirst] = useState('');
   const [last, setLast] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('');
 
   var defaultMode = false;
   var createMode = false;
   var inspectMode = false;
 
-  if (mode == 'create' && currentUser.userRoleID == 1) {
+  if (mode === 'create' && currentUser.userRoleID === 1) {
     createMode = true;
-  } else if (mode == 'inspect' && currentUser.userRoleID == 1) {
+  } else if (mode === 'inspect' && currentUser.userRoleID === 1) {
     inspectMode = true;
   } else {
     defaultMode = true;
   }
 
   useEffect(() => {
-    setFirst(currentUser.firstName);
-    setLast(currentUser.lastName);
-    setEmail(currentUser.email);
+    if (defaultMode || inspectMode) {
+      setFirst(currentUser.firstName);
+      setLast(currentUser.lastName);
+      setEmail(currentUser.email);
+    }
   }, []);
 
   return (
@@ -75,18 +96,15 @@ const Profile = (props) => {
         e.preventDefault();
         handleSubmit(
           defaultMode,
+          createMode,
           setAlerts,
           currentUser.id,
           first,
           last,
-          email
+          email,
+          password,
+          role
         );
-        setAlerts([
-          {
-            color: 'success',
-            message: 'Your changes have been saved!',
-          },
-        ]);
       }}
     >
       <Col lg={{ size: 10, offset: 1 }}>
@@ -96,6 +114,7 @@ const Profile = (props) => {
             <div className='input-group mb-3'>
               <Input
                 type='text'
+                autocomplete='off'
                 className='form-control'
                 placeholder='First Name'
                 htmlFor='First'
@@ -111,6 +130,7 @@ const Profile = (props) => {
             <div className='input-group mb-3'>
               <Input
                 type='text'
+                autocomplete='off'
                 className='form-control'
                 placeholder='Last Name'
                 htmlFor='Last'
@@ -128,6 +148,7 @@ const Profile = (props) => {
             <div className='input-group mb-3'>
               <Input
                 type='email'
+                autocomplete='off'
                 className='form-control'
                 placeholder='Email Address'
                 htmlFor='Email'
@@ -148,6 +169,7 @@ const Profile = (props) => {
               <div className='input-group mb-3'>
                 <Input
                   type='password'
+                  autocomplete='off'
                   className='form-control'
                   placeholder='Password'
                   htmlFor='Password'
@@ -171,50 +193,60 @@ const Profile = (props) => {
         )}
 
         {(inspectMode === true || createMode === true) && (
-          <div className='mx-auto text-center mt-3'>
-            <input
-              type='radio'
-              className='btn-check'
-              name='options'
-              id='option1'
-              autocomplete='off'
-            />
-            <label class='btn btn-secondary' for='option1'>
-              Non-Member
-            </label>
+          <div className=' mx-auto text-center mt-3'>
+            <div className='btn-group'>
+              <input
+                type='radio'
+                className='btn-check'
+                name='role'
+                value={4}
+                id='optionNon'
+                autocomplete='off'
+                onChange={(e) => setRole(e.currentTarget.value)}
+              />
+              <label class='btn btn-outline-secondary' for='optionNon'>
+                Non-Member
+              </label>
 
-            <input
-              type='radio'
-              className='btn-check'
-              name='options'
-              id='option2'
-              autocomplete='off'
-            />
-            <label class='btn btn-secondary' for='option2'>
-              Member
-            </label>
+              <input
+                type='radio'
+                className='btn-check'
+                name='role'
+                value={3}
+                id='optionMember'
+                autocomplete='off'
+                onChange={(e) => setRole(e.currentTarget.value)}
+              />
+              <label class='btn btn-outline-secondary' for='optionMember'>
+                Member
+              </label>
 
-            <input
-              type='radio'
-              className='btn-check'
-              name='options'
-              id='option3'
-              autocomplete='off'
-            />
-            <label class='btn btn-secondary' for='option3'>
-              Instructor
-            </label>
+              <input
+                type='radio'
+                className='btn-check'
+                name='role'
+                value={2}
+                id='optionInstructor'
+                autocomplete='off'
+                onChange={(e) => setRole(e.currentTarget.value)}
+              />
+              <label class='btn btn-outline-secondary' for='optionInstructor'>
+                Instructor
+              </label>
 
-            <input
-              type='radio'
-              className='btn-check'
-              name='options'
-              id='option4'
-              autocomplete='off'
-            />
-            <label class='btn btn-secondary' for='option4'>
-              Admin
-            </label>
+              <input
+                type='radio'
+                className='btn-check'
+                name='role'
+                value={1}
+                id='optionAdmin'
+                autocomplete='off'
+                onChange={(e) => setRole(e.currentTarget.value)}
+              />
+              <label class='btn btn-outline-secondary' for='optionAdmin'>
+                Admin
+              </label>
+            </div>
           </div>
         )}
       </Col>

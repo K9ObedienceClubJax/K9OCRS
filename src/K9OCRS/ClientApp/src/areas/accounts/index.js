@@ -24,7 +24,7 @@ const MyAccount = (props) => {
           <SideNav current={0} userRoleID={currentUser.userRoleID} />
         </Col>
         <Col lg={{ size: 8, offset: 1 }}>
-          <Profile mode='default' />
+          <Profile mode='default' setAlerts={setAlerts} />
         </Col>
       </Row>
     </div>
