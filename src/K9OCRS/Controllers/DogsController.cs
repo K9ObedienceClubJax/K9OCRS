@@ -48,23 +48,23 @@ namespace K9OCRS.Controllers
         }
 
         //create dog
-        [HttpPost]
-        public async Task<IActionResult> CreateDog(Dog entity)
-        {
-            try
-            {
-                var result = await connectionOwner.Use(conn =>
-                {
-                    return dbOwner.Dogs.Add(conn, entity);
-                });
+        //[HttpPost]
+        //public async Task<IActionResult> CreateDog(Dog entity)
+        //{
+        //    try
+        //    {
+        //        var result = await connectionOwner.Use(conn =>
+        //        {
+        //            return dbOwner.Dogs.Add(conn, entity);
+        //        });
 
-                return Ok(result);
-            }
-            catch(Exception e)
-            {
-                return StatusCode(500, e.Message);
-            }
-        }
+        //        return Ok(result);
+        //    }
+        //    catch(Exception e)
+        //    {
+        //        return StatusCode(500, e.Message);
+        //    }
+        //}
 
         //get list of dogs
         [HttpGet]
@@ -107,7 +107,7 @@ namespace K9OCRS.Controllers
         }
 
         //update dog
-        [HttpPost]
+        /*[HttpPost]
         public async Task<IActionResult> UpdateDog(Dog entity)
         {
             try
@@ -123,7 +123,7 @@ namespace K9OCRS.Controllers
             {
                 return StatusCode(500, e.Message);
             }
-        }
+        }*/
 
         //delete dog
         [HttpDelete("{id}")]

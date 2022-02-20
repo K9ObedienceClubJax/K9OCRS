@@ -9,7 +9,6 @@ const ClassCard = props => {
     id,
     title,
     description,
-    requirements,
     imageUrl,
     duration,
     price,
@@ -23,7 +22,7 @@ const ClassCard = props => {
     <Col className="mb-4" sm="12" md="6" lg="4" xl="3">
       <Link to={{
         pathname: "/Classes/" + id,
-        state: {title, description, requirements, imageUrl, duration, price}
+        state: { id }
         }}>
       <Card className="classCard h-100" 
       //onClick={() => history.push(`/Classes/${id}`)}

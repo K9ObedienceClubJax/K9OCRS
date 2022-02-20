@@ -52,8 +52,8 @@ namespace K9OCRS.Controllers
                 // Get all sections
                 var sections = await dbOwner.ClassSections.GetAll(conn);
                 // Get all instructors associated to sections
-                //var instructorIds = sections.Select(s => s.InstructorID);
-                //var instructors = (await dbOwner.Users.GetByIDs(conn, instructorIds)).ToList();
+                var instructors = (await dbOwner.Users.GetByIDs(conn, instructorId)).ToList();
+                var instructorIds = sections.Select(s => s.InstructorID);
                 // Get all meetings
                 var meetings = await dbOwner.ClassMeetings.GetAll(conn);
 

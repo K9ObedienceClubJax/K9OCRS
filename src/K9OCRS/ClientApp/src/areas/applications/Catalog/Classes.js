@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import * as classTypesClient from '../../../util/apiClients/classTypes';
 import { CardImg } from "reactstrap";
+import SectionDisplay from "./components/SectionDisplay";
+import Table from "../../../shared/components/Table";
 
 const Classes = props => {
     const location = useLocation();
@@ -26,6 +28,7 @@ const Classes = props => {
         getTest();
       }, [id]);
 
+
     return (
         <>
         <h2>{classDetail.title} </h2>
@@ -41,6 +44,21 @@ const Classes = props => {
         <p>{classDetail.description}</p>
         <h5>Requirements</h5>
         {classDetail.requirements ? <p>{classDetail.requirements}</p> : <p>This class has no requirements</p>}
+        <table className="table table-hover table-sm">
+        <thead className="text-secondary">
+          <tr>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Instructor</th>
+            <th>Total Slots</th>
+            <th>Slots Filled</th>
+            <th></th>
+          </tr>
+        </thead>
+        {classDetail?.sessions?.map((props) => (
+            <SectionDisplay key={classDetail.id} {...props} />
+        ))}
+        </table>
         
         </div>
         </>
