@@ -254,6 +254,30 @@ namespace K9OCRS.Controllers
             return Ok();
         }
 
+        [HttpPost("changeinfoadmin")]
+        public async Task<IActionResult> ChangeInfoAdmin([FromBody] User newInfo)
+        {
+            User user = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetByID(conn, newInfo.ID);
+            });
+            user.Email = newInfo.Email;
+            user.FirstName = newInfo.FirstName;
+            user.LastName = newInfo.LastName;
+            user.UserRoleID = newInfo.UserRoleID;
+            user.ProfilePictureFilename = newInfo.ProfilePictureFilename;
+
+            var tasks = new List<Task>();
+            tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
+            {
+                await dbOwner.Users.Update(conn, tr, user);
+                tr.Commit();
+            }));
+
+            await Task.WhenAll(tasks);
+            return Ok();
+        }
+
         [HttpPost("createuser")] 
         public async Task<IActionResult> CreateUser([FromBody] CreateUser accountInfo)
         {
@@ -272,6 +296,18 @@ namespace K9OCRS.Controllers
                 return Ok("Account added");
             }
             return StatusCode(400, "Failed to create user");
+        }
+
+        [HttpPost("getuser")]
+        public async Task<IActionResult> GetUser([FromBody] int id)
+        {
+            User user = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetByID(conn, id);
+            });
+            user.Password = null;
+
+            return Ok(user);
         }
 
 

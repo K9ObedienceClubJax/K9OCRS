@@ -32,12 +32,53 @@ export const login = async (email, password) =>
 
 export const loginStatus = async () => axios.get(`${base}/loginstatus`);
 
+//Couldn't get response data. Inserted directly into page.
+
+// export const getUser = async (id) => {
+//   await axios({
+//     url: `${base}/getUser`,
+//     data: id,
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Accept: 'application/json',
+//     },
+//   });
+// };
+
+export const getUser = async (id) =>
+  axios
+    .post(`${base}/getuser`, id, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+    .then((response) => response.data);
+
 //Update
 export const changePassword = async ({ token, password }) =>
   axios.post(`${base}/changepassword`, { token, password }, { password });
 
 export const changeInfo = async (id, firstname, lastname, email) =>
   axios.post(`${base}/changeinfo`, { id, firstname, lastname, email });
+
+export const changeInfoAdmin = async (
+  id,
+  firstname,
+  lastname,
+  email,
+  userRoleID,
+  profilePictureFilename
+) =>
+  axios.post(`${base}/changeinfoadmin`, {
+    id,
+    firstname,
+    lastname,
+    email,
+    userRoleID,
+    profilePictureFilename,
+  });
 
 //Delete
 export const logout = async () => axios.get(`${base}/logout`);

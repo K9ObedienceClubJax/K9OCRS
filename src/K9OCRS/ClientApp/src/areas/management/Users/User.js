@@ -3,17 +3,18 @@ import { Button } from 'reactstrap';
 import PageHeader from '../../../shared/components/PageHeader/index';
 import Profile from '../../../shared/components/Profile';
 
-function Add() {
+function Users() {
   const [alerts, setAlerts] = useState([]);
   return (
     <div>
-      <PageHeader title='Create User' alerts={alerts}>
-        <Button outline>Cancel</Button>
-        <Button form='profileForm'>Create User</Button>
+      <PageHeader title='User Setup' alerts={alerts}>
+        <Button color='primary' form='profileForm'>
+          Save Changes
+        </Button>
       </PageHeader>
-      <Profile mode='create' setAlerts={setAlerts} />
+      <Profile mode='inspect' setAlerts={setAlerts} />
     </div>
   );
 }
 
-export default Add;
+export default Users;

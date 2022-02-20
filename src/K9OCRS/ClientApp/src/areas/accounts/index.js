@@ -15,7 +15,7 @@ const MyAccount = (props) => {
   return (
     <div>
       <PageHeader title='My Account' alerts={alerts}>
-        <Button color='primary' form='myForm'>
+        <Button color='primary' form='profileForm'>
           Save Changes
         </Button>
       </PageHeader>

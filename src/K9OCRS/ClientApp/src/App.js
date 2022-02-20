@@ -15,6 +15,7 @@ import Login from './areas/accounts/Login';
 import CreatePassword from './areas/accounts/Create';
 import PasswordReset from './areas/accounts/PasswordReset';
 import ChangePassword from './areas/accounts/ChangePassword';
+import MyAccount from './areas/accounts/index';
 
 import MyDogs from './pages/MyDogs';
 import DogDetails from './pages/DogDetails';
@@ -22,6 +23,7 @@ import DogSetup from './pages/DogSetup';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
 import Add from './areas/management/Users/Add';
+import User from './areas/management/Users/User';
 import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
 import TestUpload from './areas/classes/TestUpload';
@@ -60,6 +62,12 @@ export default class App extends Component {
           <ProtectedRoute
             path='/Manage'
             component={ManagementDashboard}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          <ProtectedRoute
+            path='/Manage/Users/User'
+            component={User}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />
