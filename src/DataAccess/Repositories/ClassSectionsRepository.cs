@@ -17,9 +17,19 @@ namespace DataAccess.Repositories
         public override async Task<IReadOnlyList<ClassSection>> GetAll(IDbConnection conn)
         {
             var query = @"
-                SELECT cs.*, css.RosterActual, css.StartDate, css.EndDate, css.[Status]
+                SELECT
+	                cs.*,
+	                css.RosterActual,
+	                css.StartDate,
+	                css.EndDate,
+	                css.[Status],
+	                u.FirstName,
+	                u.LastName,
+	                u.Email,
+	                u.ProfilePictureFilename
                 FROM ClassSections cs
                 JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                JOIN Users u ON cs.InstructorID = u.ID
             ";
 
             var result = await conn.QueryAsync<ClassSection>(query);
@@ -29,9 +39,19 @@ namespace DataAccess.Repositories
         public override async Task<ClassSection> GetByID(IDbConnection conn, int id)
         {
             var query = @"
-                SELECT cs.*, css.RosterActual, css.StartDate, css.EndDate, css.[Status]
+                SELECT
+                    cs.*,
+	                css.RosterActual,
+	                css.StartDate,
+	                css.EndDate,
+	                css.[Status],
+	                u.FirstName,
+	                u.LastName,
+	                u.Email,
+	                u.ProfilePictureFilename
                 FROM ClassSections cs
                 JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                JOIN Users u ON cs.InstructorID = u.ID
                 WHERE ID = @Id
             ";
 
@@ -42,9 +62,19 @@ namespace DataAccess.Repositories
         public override async Task<IReadOnlyList<ClassSection>> GetByID(IDbConnection conn, string idColumn, int id)
         {
             var query = $@"
-                SELECT cs.*, css.RosterActual, css.StartDate, css.EndDate, css.[Status]
+                SELECT
+                    cs.*,
+	                css.RosterActual,
+	                css.StartDate,
+	                css.EndDate,
+	                css.[Status],
+	                u.FirstName,
+	                u.LastName,
+	                u.Email,
+	                u.ProfilePictureFilename
                 FROM ClassSections cs
                 JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                JOIN Users u ON cs.InstructorID = u.ID
                 WHERE [{idColumn}] = @Id
             ";
 

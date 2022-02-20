@@ -7,6 +7,8 @@ import * as actions from '../modules/actions';
 import columns from './columns';
 import Table from '../../../shared/components/Table';
 
+import './styles.scss';
+
 const ClassManagement = props => {
   const {
     classesState: {
@@ -28,7 +30,7 @@ const ClassManagement = props => {
   }, []); // eslint-disable-line
 
   return (
-    <div>
+    <div className='classManagementPage'>
       <PageHeader
         title="Class Management"
         breadCrumbItems={[
@@ -41,7 +43,15 @@ const ClassManagement = props => {
         <Button tag={Link} to="/Manage/Classes/Sections/Add" color="primary">Add a Section</Button>
       </PageHeader>
       { loading ? <Spinner /> : (
-        <Table columns={columns} data={classList} tableConfig={tableConfig} pageSize={12} expandable withPagination/>
+        <Table
+          columns={columns}
+          data={classList}
+          tableConfig={tableConfig}
+          pageSize={12}
+          footnotes={['* This is the usual meeting time, but it may vary']}
+          expandable
+          withPagination
+        />
       )}
     </div>
   );

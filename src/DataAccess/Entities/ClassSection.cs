@@ -56,5 +56,16 @@ namespace DataAccess.Entities
         /// <example>Scheduled</example>
         [TransactionIgnore]
         public string Status { get; set; }
+
+        // Instructor Stuff Below
+
+        [TransactionIgnore]
+        public string FirstName { get; set; }
+        [TransactionIgnore]
+        public string LastName { get; set; }
+        [TransactionIgnore]
+        public string Email { get; set; }
+        [TransactionIgnore]
+        public string ProfilePictureFilename { get; set; }
     }
 }

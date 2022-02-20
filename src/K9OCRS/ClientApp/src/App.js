@@ -12,9 +12,10 @@ import Catalog from './areas/applications/Catalog';
 import Classes from './areas/applications/Catalog/Classes';
 import Confirm from './areas/applications/Confirmation';
 
-import Login from './pages/Account/Login';
-import CreatePassword from './pages/Account/Create';
-import PasswordReset from './pages/Account/PasswordReset';
+import Login from './areas/accounts/Login';
+import CreatePassword from './areas/accounts/Create';
+import PasswordReset from './areas/accounts/PasswordReset';
+import ChangePassword from './areas/accounts/ChangePassword';
 
 import MyDogs from './pages/MyDogs';
 import DogDetails from './pages/DogDetails';
@@ -39,14 +40,11 @@ export default class App extends Component {
           <GuestOnlyRoute path='/Account/Login' component={Login} />
           <GuestOnlyRoute path='/Account/Create' component={CreatePassword} />
           <Route path='/Account/PasswordReset' component={PasswordReset} />
+          <Route path='/Account/ChangePassword' component={ChangePassword} />
           <Route path='/Classes/Apply/Confirm' component={Confirm} />
           <Route path='/Classes' component={Classes} />
           {/* Routes available to Logged in Users */}
-          <ProtectedRoute
-            path='/Account/MyDogs'
-            component={MyDogs}
-            exact
-          />
+          <ProtectedRoute path='/Account/MyDogs' component={MyDogs} exact />
           <ProtectedRoute
             path='/Account/MyDogs/Add'
             component={DogSetup}
