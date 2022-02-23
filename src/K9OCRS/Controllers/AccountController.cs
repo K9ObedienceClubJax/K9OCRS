@@ -310,6 +310,29 @@ namespace K9OCRS.Controllers
             return Ok(user);
         }
 
+        [HttpPost("queryusers")]
+        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
+        public async Task<IActionResult> QueryUsers([FromBody] int role)
+        {
+            IEnumerable<User> users;  
+            if(role == 0)
+            {
+                users = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Users.GetAll(conn);
+                });
+            }
+            else
+            {
+                users = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Users.QueryUsers(conn, role);
+                });
+            }
+            
+            return Ok(users);
+        }
+
 
         //Non-API functions
         private async Task<string> GenerateToken(Login login, User loginResult)

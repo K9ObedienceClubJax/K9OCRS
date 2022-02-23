@@ -1,0 +1,86 @@
+import React from 'react';
+import moment from 'moment-timezone';
+import { Badge } from 'reactstrap';
+import { Link } from 'react-router-dom';
+import { alignmentWrapper } from '../../../util/columns';
+import ProfileBadge from '../../../shared/components/ProfileBadge';
+
+const statusColors = {
+  Scheduled: 'dark',
+  Ongoing: 'info',
+  Completed: 'success',
+};
+
+const idTemplate = ({ value }) => {
+  return value;
+};
+
+const userTemplate = ({ value }) => {
+  return (
+    <div>
+      {/* <a href={`/Manage/Users/User/?id=${value.id}`} target='_blank'>
+        {value.firstName} {value.lastName}
+      </a> */}
+      <ProfileBadge
+        {...value}
+        imageUrl={value.profilePictureUrl}
+        link={`/Manage/Users/User/?id=${value.id}`}
+      />
+    </div>
+  );
+};
+
+const roleTemplate = ({ value }) => {
+  switch (value) {
+    case 1:
+      return 'Admin';
+    case 2:
+      return 'Instructor';
+    case 3:
+      return 'Member';
+    default:
+      return 'Non-Member';
+  }
+};
+
+const emailTemplate = ({ value }) => {
+  return value;
+};
+
+// const dogTemplate = ({ value }) => {
+//   return value;
+// };
+
+const columns = [
+  {
+    Header: 'ID',
+    accessor: 'id',
+    Cell: idTemplate,
+  },
+  {
+    Header: 'Name',
+    accessor: (row) => ({
+      id: row.id,
+      firstName: row.firstName,
+      lastName: row.lastName,
+    }),
+    Cell: userTemplate,
+  },
+  {
+    Header: 'Email',
+    accessor: 'email',
+    Cell: emailTemplate,
+  },
+  // {
+  //   Header: 'Dogs',
+  //   accessor: '',
+  //   Cell: dogTemplate,
+  // },
+  {
+    Header: 'Role',
+    accessor: 'userRoleID',
+    Cell: roleTemplate,
+  },
+];
+
+export default columns;

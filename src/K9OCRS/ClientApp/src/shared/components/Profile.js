@@ -32,7 +32,7 @@ function ValidatePassword(e) {
 }
 
 async function getUserData(
-  setUserID,
+  id,
   setFirst,
   setLast,
   setEmail,
@@ -40,12 +40,12 @@ async function getUserData(
   setPicture
 ) {
   //Get id from url
-  const queryParams = new URLSearchParams(window.location.search);
-  const id = queryParams.get('id');
+  // const queryParams = new URLSearchParams(window.location.search);
+  // const id = queryParams.get('id');
   //API call to get user data
   const inspectedUser = await accountsApi.getUser(id);
   //Set user data
-  setUserID(inspectedUser.id);
+  // setUserID(inspectedUser.id);
   setFirst(inspectedUser.firstName);
   setLast(inspectedUser.lastName);
   setEmail(inspectedUser.email);
@@ -107,7 +107,7 @@ function handleSubmit(
 }
 
 const Profile = (props) => {
-  const { currentUser = null, mode = null } = props;
+  const { currentUser = null, mode = null, paramsId = null } = props;
   const setAlerts = props.setAlerts;
   const [userID, setUserID] = useState('');
   const [first, setFirst] = useState('');
@@ -137,7 +137,8 @@ const Profile = (props) => {
       setEmail(currentUser.email);
     }
     if (inspectMode) {
-      getUserData(setUserID, setFirst, setLast, setEmail, setRole, setPicture);
+      setUserID(paramsId);
+      getUserData(paramsId, setFirst, setLast, setEmail, setRole, setPicture);
     }
   }, []);
 
@@ -235,7 +236,7 @@ const Profile = (props) => {
               <div className='input-group mb-3'>
                 <Input
                   type='password'
-                  autoComplete='off'
+                  autoComplete='new-password'
                   className='form-control'
                   placeholder='Password'
                   htmlFor='Password'

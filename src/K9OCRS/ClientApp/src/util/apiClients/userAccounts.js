@@ -32,20 +32,6 @@ export const login = async (email, password) =>
 
 export const loginStatus = async () => axios.get(`${base}/loginstatus`);
 
-//Couldn't get response data. Inserted directly into page.
-
-// export const getUser = async (id) => {
-//   await axios({
-//     url: `${base}/getUser`,
-//     data: id,
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Accept: 'application/json',
-//     },
-//   });
-// };
-
 export const getUser = async (id) =>
   axios
     .post(`${base}/getuser`, id, {
@@ -79,6 +65,16 @@ export const changeInfoAdmin = async (
     userRoleID,
     profilePictureFilename,
   });
+
+export const queryUsers = async (role) =>
+  axios
+    .post(`${base}/queryusers`, role, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+    .then((response) => response.data);
 
 //Delete
 export const logout = async () => axios.get(`${base}/logout`);

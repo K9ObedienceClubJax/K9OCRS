@@ -22,7 +22,8 @@ import DogDetails from './pages/DogDetails';
 import DogSetup from './pages/DogSetup';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
-import Add from './areas/management/Users/Add';
+import Users from './areas/management/Users/index';
+import Create from './areas/management/Users/Create';
 import User from './areas/management/Users/User';
 import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
@@ -66,14 +67,20 @@ export default class App extends Component {
             exact
           />
           <ProtectedRoute
-            path='/Manage/Users/User'
+            path='/Manage/Users'
+            component={Users}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          <ProtectedRoute
+            path='/Manage/Users/:userId'
             component={User}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />
           <ProtectedRoute
-            path='/Manage/Users/Add'
-            component={Add}
+            path='/Manage/Users/Create'
+            component={Create}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />

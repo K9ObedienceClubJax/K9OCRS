@@ -3,7 +3,7 @@ import { Button } from 'reactstrap';
 import PageHeader from '../../../shared/components/PageHeader/index';
 import Profile from '../../../shared/components/Profile';
 
-function Add() {
+function Create() {
   const [alerts, setAlerts] = useState([]);
   return (
     <div>
@@ -16,4 +16,4 @@ function Add() {
   );
 }
 
-export default Add;
+export default Create;
