@@ -1,15 +1,6 @@
 import React from 'react';
-import moment from 'moment-timezone';
-import { Badge } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { alignmentWrapper } from '../../../util/columns';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
 
-const statusColors = {
-  Scheduled: 'dark',
-  Ongoing: 'info',
-  Completed: 'success',
-};
 
 const idTemplate = ({ value }) => {
   return value;
