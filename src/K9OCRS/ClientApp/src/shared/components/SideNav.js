@@ -27,7 +27,7 @@ const SideNav = (props) => {
       <a
         className={`nav-link ${active[1] ? 'active' : ''}`}
         data-toggle='pill'
-        href='/MyDogs'
+        href='/Account/MyDogs'
         role='tab'
       >
         My Dogs
