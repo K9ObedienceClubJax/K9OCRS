@@ -122,7 +122,6 @@ const Users = (props) => {
           data={users}
           tableConfig={tableConfig}
           pageSize={12}
-          footnotes={['* This is the usual meeting time, but it may vary']}
           withPagination
         />
       )}
