@@ -28,7 +28,7 @@ namespace DataAccess.Repositories
             return await conn.QueryFirstOrDefaultAsync<User>(query, new { Email = email, Password = password});
         }
 
-        public async Task<IEnumerable<User>> QueryUsers(IDbConnection conn, int role)
+        public async Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role)
         {
             var query = $"SELECT ID, UserRoleID, Email, FirstName, LastName, ProfilePictureFilename FROM {_tableName} WHERE UserRoleID = @Role";
             return await conn.QueryAsync<User>(query, new { Role = role });

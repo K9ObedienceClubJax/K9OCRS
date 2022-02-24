@@ -1,14 +1,10 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import * as accessEvaluator from '../../util/accessEvaluator';
 
 const SideNav = (props) => {
-  const current = props.current;
   const userRole = props.userRoleID;
-  var active = [false, false, false, false, false];
-  active[current] = true;
-  var hasSections = false;
-  if (userRole < 3) {
-    hasSections = true;
-  }
+  const location = useLocation().pathname;
 
   return (
     <div
@@ -17,7 +13,7 @@ const SideNav = (props) => {
       aria-orientation='vertical'
     >
       <a
-        className={`nav-link ${active[0] ? 'active' : ''}`}
+        className={`nav-link ${location === '/Account' ? 'active' : ''}`}
         data-toggle='pill'
         href='/Account'
         role='tab'
@@ -25,7 +21,7 @@ const SideNav = (props) => {
         Profile
       </a>
       <a
-        className={`nav-link ${active[1] ? 'active' : ''}`}
+        className={`nav-link ${location === '/MyDogs' ? 'active' : ''}`}
         data-toggle='pill'
         href='/Account/MyDogs'
         role='tab'
@@ -33,7 +29,7 @@ const SideNav = (props) => {
         My Dogs
       </a>
       <a
-        className={`nav-link ${active[2] ? 'active' : ''}`}
+        className={`nav-link ${location === '/MyClasses' ? 'active' : ''}`}
         data-toggle='pill'
         href='/Account/MyClasses'
         role='tab'
@@ -41,16 +37,16 @@ const SideNav = (props) => {
         My Classes
       </a>
       <a
-        className={`nav-link ${active[3] ? 'active' : ''}`}
+        className={`nav-link ${location === '/MyMembership' ? 'active' : ''}`}
         data-toggle='pill'
         href='/Account/MyMembership'
         role='tab'
       >
         Membership
       </a>
-      {hasSections === true && (
+      {userRole < accessEvaluator.USER_ROLES.Member && (
         <a
-          className={`nav-link ${active[4] ? 'active' : ''}`}
+          className={`nav-link ${location === '/MySections' ? 'active' : ''}`}
           data-toggle='pill'
           href='/Account/MySections'
           role='tab'

@@ -10,6 +10,6 @@ namespace DataAccess.Repositories.Contracts
     {
         Task<User> GetByEmail(IDbConnection conn, string email);
         Task<User> GetIdByLogin(IDbConnection conn, string email, string password);
-        Task<IEnumerable<User>> QueryUsers(IDbConnection conn, int role);
+        Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role);
     }
 }

@@ -305,13 +305,13 @@ namespace K9OCRS.Controllers
             {
                 return dbOwner.Users.GetByID(conn, id);
             });
-            user.Password = null;
+            UserResult userResult = new UserResult(user);
 
-            return Ok(user);
+            return Ok(userResult);
         }
 
         [HttpPost("queryusers")]
-        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public async Task<IActionResult> QueryUsers([FromBody] int role)
         {
             IEnumerable<User> users;  
@@ -326,7 +326,7 @@ namespace K9OCRS.Controllers
             {
                 users = await connectionOwner.Use(conn =>
                 {
-                    return dbOwner.Users.QueryUsers(conn, role);
+                    return dbOwner.Users.QueryUsersByRole(conn, role);
                 });
             }
             

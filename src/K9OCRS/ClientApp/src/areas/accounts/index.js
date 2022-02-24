@@ -19,7 +19,7 @@ const MyAccount = (props) => {
       </PageHeader>
       <Row>
         <Col lg='2'>
-          <SideNav current={0} userRoleID={currentUser.userRoleID} />
+          <SideNav userRoleID={currentUser.userRoleID} />
         </Col>
         <Col lg={{ size: 8, offset: 1 }}>
           <Profile mode='default' setAlerts={setAlerts} />
