@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import selectors from '../../shared/modules/selectors';
-import { Row, Col, Button, Input } from 'reactstrap';
+import { Row, Col, Button } from 'reactstrap';
 import PageHeader from '../../shared/components/PageHeader';
 import SideNav from '../../shared/components/SideNav';
 import Profile from '../../shared/components/Profile';
-// import image from '../../../public/K9Storage/profilepictures/UserPlaceholder.png';
 
 const MyAccount = (props) => {
   const { currentUser = null } = props;
