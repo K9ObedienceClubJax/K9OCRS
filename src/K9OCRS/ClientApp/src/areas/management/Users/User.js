@@ -7,7 +7,6 @@ import Profile from '../../../shared/components/Profile';
 function Users() {
   const [alerts, setAlerts] = useState([]);
   const { userId } = useParams();
-  console.log(userId);
   return (
     <div>
       <PageHeader title='User Setup' alerts={alerts}>
