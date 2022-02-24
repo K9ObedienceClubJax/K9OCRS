@@ -59,11 +59,6 @@ const columns = [
     accessor: 'email',
     Cell: emailTemplate,
   },
-  // {
-  //   Header: 'Dogs',
-  //   accessor: '',
-  //   Cell: dogTemplate,
-  // },
   {
     Header: 'Role',
     accessor: 'userRoleID',
