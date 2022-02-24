@@ -50,6 +50,7 @@ const columns = [
       id: row.id,
       firstName: row.firstName,
       lastName: row.lastName,
+      profilePictureUrl: row.profilePictureUrl,
     }),
     Cell: userTemplate,
   },
