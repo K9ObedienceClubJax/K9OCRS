@@ -330,7 +330,9 @@ namespace K9OCRS.Controllers
                 });
             }
             
-            return Ok(users);
+            var userResults = users.Select(u => new UserResult(u, serviceConstants.storageBasePath));
+            
+            return Ok(userResults);
         }
 
 
