@@ -8,7 +8,6 @@ import Profile from '../../shared/components/Profile';
 
 const MyAccount = (props) => {
   const { currentUser = null } = props;
-  console.log(currentUser.userRoleID);
   const [alerts, setAlerts] = useState([]);
 
   return (
