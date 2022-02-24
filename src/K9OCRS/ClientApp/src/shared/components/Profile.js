@@ -139,7 +139,7 @@ const Profile = (props) => {
       setUserID(paramsId);
       getUserData(paramsId, setFirst, setLast, setEmail, setRole, setPicture);
     }
-  }, []);
+  }, []); // eslint-disable-line
 
   return (
     <form
