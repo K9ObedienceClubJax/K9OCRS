@@ -305,7 +305,7 @@ namespace K9OCRS.Controllers
             {
                 return dbOwner.Users.GetByID(conn, id);
             });
-            UserResult userResult = new UserResult(user);
+            UserResult userResult = new UserResult(user, serviceConstants.storageBasePath);
 
             return Ok(userResult);
         }
