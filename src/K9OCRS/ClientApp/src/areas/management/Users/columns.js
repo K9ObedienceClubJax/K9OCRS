@@ -9,9 +9,6 @@ const idTemplate = ({ value }) => {
 const userTemplate = ({ value }) => {
   return (
     <div>
-      {/* <a href={`/Manage/Users/User/?id=${value.id}`} target='_blank'>
-        {value.firstName} {value.lastName}
-      </a> */}
       <ProfileBadge
         {...value}
         imageUrl={value.profilePictureUrl}
