@@ -3,7 +3,6 @@ import { Row, Col, Input } from 'reactstrap';
 import { connect } from 'react-redux';
 import selectors from '../../shared/modules/selectors';
 import * as accountsApi from '../../util/apiClients/userAccounts';
-import axios from 'axios';
 
 function ValidateEmail(e) {
   //Validate email
