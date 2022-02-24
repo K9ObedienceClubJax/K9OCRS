@@ -218,6 +218,7 @@ const Profile = (props) => {
         </Row>
         {inspectMode === true && (
           <Row className='text-center'>
+            {/* eslint-disable-next-line */}
             <a
               style={{
                 cursor: 'pointer',
