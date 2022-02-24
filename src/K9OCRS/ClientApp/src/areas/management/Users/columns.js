@@ -12,7 +12,6 @@ const userTemplate = ({ value }) => {
       <ProfileBadge
         {...value}
         imageUrl={value.profilePictureUrl}
-        link={`/Manage/Users/User/?id=${value.id}`}
       />
     </div>
   );
