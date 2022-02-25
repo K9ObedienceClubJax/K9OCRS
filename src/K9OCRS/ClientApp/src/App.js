@@ -41,9 +41,11 @@ export default class App extends Component {
           <GuestOnlyRoute path='/Account/Create' component={CreatePassword} />
           <Route path='/Account/PasswordReset' component={PasswordReset} />
           <Route path='/Account/ChangePassword' component={ChangePassword} />
-          <Route path='/Classes/Apply/Confirm' component={Confirm} />
-          <Route path='/Classes' component={Classes} />
+          <Route path='/Classes/:classTypeId' component={Classes} exact/>
           {/* Routes available to Logged in Users */}
+          <ProtectedRoute 
+            path='/Classes/Apply/:sectionId' 
+            component={Confirm} />
           <ProtectedRoute path='/Account/MyDogs' component={MyDogs} exact />
           <ProtectedRoute
             path='/Account/MyDogs/Add'
