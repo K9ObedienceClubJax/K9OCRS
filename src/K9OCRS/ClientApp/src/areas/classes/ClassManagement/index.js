@@ -9,19 +9,17 @@ import Table from '../../../shared/components/Table';
 
 import './styles.scss';
 
-const ClassManagement = props => {
+const ClassManagement = (props) => {
   const {
-    classesState: {
-      classList,
-    },
+    classesState: { classList },
     fetchClassList,
   } = props;
 
   const [loading, setLoading] = useState(true);
-  const [alerts, setAlerts] = useState(c => c,[]);
+  const [alerts, setAlerts] = useState((c) => c, []);
 
   const tableConfig = {
-    getSubRows: row => row?.sections?.map(s => ({ sectionId: s.id, ...s })),
+    getSubRows: (row) => row?.sections?.map((s) => ({ sectionId: s.id, ...s })),
     autoResetExpanded: false,
   };
 
@@ -32,17 +30,23 @@ const ClassManagement = props => {
   return (
     <div className='classManagementPage'>
       <PageHeader
-        title="Class Management"
+        title='Class Management'
         breadCrumbItems={[
           { label: 'Management', path: '/Manage' },
           { label: 'Classes', active: true },
         ]}
         alerts={alerts}
       >
-        <Button tag={Link} to="/Manage/Classes/Types/Add" color="primary">Add a Type</Button>
-        <Button tag={Link} to="/Manage/Classes/Sections/Add" color="primary">Add a Section</Button>
+        <Button tag={Link} to='/Manage/Classes/Types/Add' color='primary'>
+          Add a Type
+        </Button>
+        <Button tag={Link} to='/Manage/Classes/Sections/Add' color='primary'>
+          Add a Section
+        </Button>
       </PageHeader>
-      { loading ? <Spinner /> : (
+      {loading ? (
+        <Spinner />
+      ) : (
         <Table
           columns={columns}
           data={classList}
@@ -57,8 +61,11 @@ const ClassManagement = props => {
   );
 };
 
-export default connect(state => ({
-  classesState: state.classes,
-}),{
-  fetchClassList: actions.fetchClassList,
-})(ClassManagement);
+export default connect(
+  (state) => ({
+    classesState: state.classes,
+  }),
+  {
+    fetchClassList: actions.fetchClassList,
+  }
+)(ClassManagement);
