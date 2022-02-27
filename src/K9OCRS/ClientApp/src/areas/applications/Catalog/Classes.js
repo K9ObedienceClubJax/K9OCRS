@@ -54,13 +54,18 @@ const Classes = props => {
         <p>{classDetail.description}</p>
         <h5>Requirements</h5>
         {classDetail.requirements ? <p>{classDetail.requirements}</p> : <p>This class has no requirements</p>}
-        {loading ? <Spinner /> : <Table
+        <h5>Sections</h5>
+        {classDetail.sections?.length > 0 ?  
+        <div>Choose one of the sections below to start the application process!</div>
+        :  <div>There are currently no sections available for this course. Please check back soon!</div>}
+        
+        {loading ? <Spinner /> : (classDetail.sections?.length > 0)? <Table
             columns={sectionColumns}
             data={classDetail.sections}
             pageSize={12}
             footnotes={['* This is the usual meeting time, but it may vary']}
             withPagination
-        /> }
+        /> : <></> }
         <Row className="my-4">
         {
           photoArr?.length > 0 ? photoArr.map(sectImg => (
