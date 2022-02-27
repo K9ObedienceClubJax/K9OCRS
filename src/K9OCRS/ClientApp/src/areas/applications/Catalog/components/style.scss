@@ -16,3 +16,16 @@
     transform: translate(0,-.2rem);
   }
 }
+
+.classThumbnails {
+  height: 250px;
+  width: 100%;
+  object-fit: cover;
+  box-shadow: $box-shadow;
+}
+
+.heroImg {
+  height: 50vh;
+  width: 100%;
+  object-fit: cover;
+}
