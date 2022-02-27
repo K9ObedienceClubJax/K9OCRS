@@ -24,7 +24,7 @@ const Classes = props => {
               setLoading(false);
               setAlerts([{ color: 'danger', message: 'We\'re having issues getting the details for this class' }]);
             }
-          }   
+          }
         }
         getTest();
       }, [classTypeId]);
@@ -41,6 +41,7 @@ const Classes = props => {
             { label: 'Class Catalog', path: '/' },
             { label: classDetail.title ?? 'Class Details', active: true },
           ]}
+          setAlerts={setAlerts}
         />
         <Container className="px-sm-5 container-sm" fluid>
         <img
@@ -53,12 +54,12 @@ const Classes = props => {
         <p>{classDetail.description}</p>
         <h5>Requirements</h5>
         {classDetail.requirements ? <p>{classDetail.requirements}</p> : <p>This class has no requirements</p>}
-        {loading ? <Spinner /> : <Table 
-            columns={sectionColumns} 
+        {loading ? <Spinner /> : <Table
+            columns={sectionColumns}
             data={classDetail.sections}
             pageSize={12}
             footnotes={['* This is the usual meeting time, but it may vary']}
-            withPagination 
+            withPagination
         /> }
         <Row className="my-4">
         {

@@ -27,7 +27,7 @@ const Login = (props) => {
         loginAction({ email, password, setAlerts });
       }}
     >
-      <PageHeader title='' alerts={alerts} />
+      <PageHeader title='' alerts={alerts} setAlerts={setAlerts} />
       <h1 className='mt-4 mb-4 d-flex justify-content-center '>Login</h1>
       <Row className='mt-3'>
         <Col lg='4' className='mx-auto'>

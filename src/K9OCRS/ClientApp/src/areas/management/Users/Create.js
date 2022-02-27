@@ -7,7 +7,7 @@ function Create() {
   const [alerts, setAlerts] = useState([]);
   return (
     <div>
-      <PageHeader title='Create User' alerts={alerts}>
+      <PageHeader title='Create User' alerts={alerts} setAlerts={setAlerts}>
         <Button outline>Cancel</Button>
         <Button form='profileForm'>Create User</Button>
       </PageHeader>

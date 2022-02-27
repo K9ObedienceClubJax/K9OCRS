@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
-import { Col, Breadcrumb, BreadcrumbItem, UncontrolledAlert } from 'reactstrap';
+import { Col, Breadcrumb, BreadcrumbItem, Alert } from 'reactstrap';
 
 import './styles.scss';
 
@@ -10,12 +10,24 @@ const PageHeader = props => {
     title,
     breadCrumbItems,
     alerts,
-    children
+    setAlerts,
+    children,
   } = props;
 
   const cn = 'pageHeader';
 
   const { pathname: currentPath } = useLocation();
+
+  const handleAlertDismiss = alertIdx => {
+    // Must make a copy of the alerts array or else
+    // React won't re-render the component when we set
+    // the new value of alerts
+    const alertsCopy = [...alerts];
+    // Splice returns the deleted elements
+    // so we shouldn't setAlerts to the return value of splice
+    alertsCopy.splice(alertIdx, 1);
+    setAlerts(alertsCopy);
+  };
 
   return (
     <>
@@ -47,9 +59,13 @@ const PageHeader = props => {
       <div className={`${cn}__alerts mb-4`}>
 
         { Array.isArray(alerts) && alerts.map((a, idx) => (
-          <UncontrolledAlert key={`${a}_${idx}`}  color={a.color}>
+          <Alert
+            key={`${a}_${idx}`}
+            color={a.color}
+            toggle={() => handleAlertDismiss(idx)}
+          >
             {a.message}
-          </UncontrolledAlert>
+          </Alert>
         ))}
       </div>
     </>
@@ -60,6 +76,7 @@ PageHeader.defaultProps = {
   breadCrumbItems: [],
   children: [],
   alerts: [],
+  setAlerts: () => {},
 };
 
 PageHeader.propTypes = {
@@ -77,6 +94,7 @@ PageHeader.propTypes = {
       message: PropTypes.string,
     }),
   ),
+  setAlerts: PropTypes.func,
   children: PropTypes.oneOfType([
     PropTypes.array,
     PropTypes.object,
