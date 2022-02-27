@@ -42,8 +42,6 @@ const Classes = props => {
             { label: classDetail.title ?? 'Class Details', active: true },
           ]}
         />
-        
-        <p>Class Catalog / {classDetail.title}</p>
         <Container className="px-sm-5 container-sm" fluid>
         <img
           className="pb-4 heroImg"
