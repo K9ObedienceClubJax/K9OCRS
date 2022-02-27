@@ -59,12 +59,15 @@ const Classes = props => {
         <div>Choose one of the sections below to start the application process!</div>
         :  <div>There are currently no sections available for this course. Please check back soon!</div>}
         
-        {loading ? <Spinner /> : (classDetail.sections?.length > 0)? <Table
-            columns={sectionColumns}
-            data={classDetail.sections}
-            pageSize={12}
-            footnotes={['* This is the usual meeting time, but it may vary']}
-            withPagination
+        { loading ? <Spinner /> : null }
+        { (!loading && classDetail.sections?.length > 0) ? (
+          <Table
+              columns={sectionColumns}
+              data={classDetail.sections}
+              pageSize={12}
+              footnotes={['* This is the usual meeting time, but it may vary']}
+              withPagination
+          />
         /> : <></> }
         <Row className="my-4">
         {
