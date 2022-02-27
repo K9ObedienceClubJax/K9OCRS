@@ -12,10 +12,10 @@ namespace K9OCRS.Models.ClassManagement
 
         public ClassSectionDetails(ClassSection entity) : base(entity) { }
         public ClassSectionDetails(ClassSection entity, IEnumerable<ClassMeeting> meetings) : base(entity, meetings) { }
-        public ClassSectionDetails(ClassSection entity, IEnumerable<ClassMeeting> meetings, User instructor) : base(entity, meetings, instructor) { }
-        public ClassSectionDetails(ClassSection entity, IEnumerable<ClassMeeting> meetings, User instructor, ClassTypeResult classType)
+        public ClassSectionDetails(ClassSection entity, IEnumerable<ClassMeeting> meetings, UserResult instructor) : base(entity, meetings, instructor) { }
+        public ClassSectionDetails(ClassSection entity, IEnumerable<ClassMeeting> meetings, UserResult instructor, ClassTypeResult classType)
             : base(entity, meetings, instructor) => ClassType = classType;
-        public ClassSectionDetails(ClassSection entity, IEnumerable<ClassMeeting> meetings, User instructor, ClassTypeResult classType, IEnumerable<User> roster)
+        public ClassSectionDetails(ClassSection entity, IEnumerable<ClassMeeting> meetings, UserResult instructor, ClassTypeResult classType, IEnumerable<User> roster)
             : this(entity, meetings, instructor, classType) => Roster = roster;
     }
 }

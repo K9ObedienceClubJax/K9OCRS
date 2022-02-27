@@ -1,0 +1,14 @@
+@import '../MyDogs/style.scss';
+
+.dogName{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    width: auto;
+    height: 48px;
+}
+
+.labelValue{
+    font-size: 23px;
+}

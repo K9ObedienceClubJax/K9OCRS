@@ -1,4 +1,3 @@
-
 @import './colors.scss';
 
 // Variables
@@ -14,11 +13,27 @@ $spacers: () !default; // need this declared so I can override it under
 $spacers: map-merge(
   (
     0: 0,
-    1: ($spacer * .25),   // = 4px
-    2: ($spacer * .5),    // = 8px
-    3: $spacer,           // = 16px
-    4: ($spacer * 1.25),  // = 20px
-    5: ($spacer *2.5)     // = 40px
+    1: (
+      $spacer * 0.25,
+    ),
+    // = 4px
+    2:
+      (
+        $spacer * 0.5,
+      ),
+    // = 8px
+    3: $spacer,
+    // = 16px
+    4:
+      (
+        $spacer * 1.25,
+      ),
+    // = 20px
+    5:
+      (
+        $spacer * 2.5,
+      )
+      // = 40px,
   ),
   $spacers
 );

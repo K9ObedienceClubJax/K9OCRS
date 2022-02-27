@@ -9,7 +9,7 @@ const CustomPagination = props => {
     siblingCount = 1,
     currentPage,
     pageSize,
-    className
+    className,
   } = props;
 
   const paginationRange = usePagination({
@@ -20,7 +20,7 @@ const CustomPagination = props => {
   });
 
   // If there are less than 2 times in pagination range we shall not render the component
-  if (currentPage === 0 || paginationRange.length < 2) {
+  if (paginationRange.length < 2) {
     return null;
   }
 
@@ -43,17 +43,17 @@ const CustomPagination = props => {
 
   return (
     <Pagination className={className} >
-      <PaginationItem disabled={currentPage === 1}>
+      <PaginationItem disabled={currentPage === 0}>
         <PaginationLink onClick={onPrevious} previous>
           {'<'}
         </PaginationLink>
       </PaginationItem>
       {
-        paginationRange?.map(page => {
+        paginationRange?.map((page, idx) => {
           // If the pageItem is a DOT, render the DOTS unicode character
           if (page === DOTS) {
             return (
-              <PaginationItem disabled>
+              <PaginationItem key={`${idx}_${page}`} disabled>
                 <PaginationLink>
                   &#8230;
                 </PaginationLink>
@@ -63,9 +63,9 @@ const CustomPagination = props => {
 
           // Render our Page Links
           return (
-            <PaginationItem active={page === currentPage}>
+            <PaginationItem key={`${idx}_${page}`} active={page === currentPage}>
               <PaginationLink onClick={() => onChange(page)}>
-                {page}
+                {page + 1}
               </PaginationLink>
             </PaginationItem>
           );
