@@ -9,7 +9,7 @@ function Users() {
   const { userId } = useParams();
   return (
     <div>
-      <PageHeader title='User Setup' alerts={alerts}>
+      <PageHeader title='User Setup' alerts={alerts} setAlerts={setAlerts}>
         <Button color='primary' form='profileForm'>
           Save Changes
         </Button>
