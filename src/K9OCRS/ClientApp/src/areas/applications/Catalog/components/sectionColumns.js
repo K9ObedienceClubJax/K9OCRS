@@ -7,7 +7,7 @@ import ProfileBadge from '../../../../shared/components/ProfileBadge';
 
 const dateTemplate = ({ value }) => {
   if (!value) return '';
-  return moment(value).format(`MMM Do, YY`);
+  return moment(value).format(`MMM Do, YYYY`);
 };
 
 const timeTemplate = ({ value }) => {
