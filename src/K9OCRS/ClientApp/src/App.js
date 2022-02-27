@@ -9,6 +9,7 @@ import Layout from './shared/components/Layout';
 import notFoundPage from './areas/management/404';
 
 import Catalog from './areas/applications/Catalog';
+import Classes from './areas/applications/Catalog/Classes';
 import Confirm from './areas/applications/Confirmation';
 
 import Login from './areas/accounts/Login';
@@ -44,8 +45,11 @@ export default class App extends Component {
           <GuestOnlyRoute path='/Account/Create' component={CreatePassword} />
           <Route path='/Account/PasswordReset' component={PasswordReset} />
           <Route path='/Account/ChangePassword' component={ChangePassword} />
-          <Route path='/Classes/Apply/Confirm' component={Confirm} />
+          <Route path='/Classes/:classTypeId' component={Classes} exact/>
           {/* Routes available to Logged in Users */}
+          <ProtectedRoute 
+            path='/Classes/Apply/:sectionId' 
+            component={Confirm} />
           <ProtectedRoute path='/Account' component={MyAccount} exact />
           <ProtectedRoute path='/Account/MyDogs' component={MyDogs} exact />
           <ProtectedRoute
