@@ -20,10 +20,6 @@ const ClassCard = props => {
 
   return (
     <Col className="mb-4" sm="12" md="6" lg="4" xl="3">
-      {/* <Link to={{
-        pathname: "/Classes/" + id,
-        state: { id }
-        }}> */}
       <Card className="classCard h-100" 
       onClick={() => linkHistory.push(`/Classes/${id}`)}
       >
@@ -47,7 +43,6 @@ const ClassCard = props => {
           </Row>
         </CardBody>
       </Card>
-      {/* </Link> */}
     </Col>
   );
 };

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import * as classTypesClient from '../../../util/apiClients/classTypes';
-import { Container, CardImg, Spinner, Row, Col } from "reactstrap";
+import { Container, Spinner, Row, Col } from "reactstrap";
 import Table from "../../../shared/components/Table";
 import sectionColumns from './components/sectionColumns';
+import PageHeader from '../../../shared/components/PageHeader';
 import './components/style.scss';
 
 const Classes = props => {
@@ -11,9 +12,6 @@ const Classes = props => {
     const [classDetail, setClassDetail] = useState([]);
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
-    
-    // const description = location.state.description;
-    // const requirements = location.state.requirements;
 
     useEffect(() => {
         async function getTest() {
@@ -26,8 +24,7 @@ const Classes = props => {
               setLoading(false);
               setAlerts([{ color: 'danger', message: 'We\'re having issues getting the details for this class' }]);
             }
-          }
-      
+          }   
         }
         getTest();
       }, [classTypeId]);
@@ -37,13 +34,20 @@ const Classes = props => {
 
     return (
         <>
-        <h2>{classDetail.title} </h2>
+        <PageHeader
+          title={classDetail.title ?? 'Class Details'}
+          alerts={alerts}
+          breadCrumbItems={[
+            { label: 'Class Catalog', path: '/' },
+            { label: classDetail.title ?? 'Class Details', active: true },
+          ]}
+        />
         
         <p>Class Catalog / {classDetail.title}</p>
         <Container className="px-sm-5 container-sm" fluid>
-        <CardImg
+        <img
           className="pb-4 heroImg"
-          alt={`Image for the ${classDetail.title} class`}
+          alt={`The ${classDetail.title} class`}
           src={classDetail.imageUrl}
           top
         />
@@ -54,7 +58,6 @@ const Classes = props => {
         {loading ? <Spinner /> : <Table 
             columns={sectionColumns} 
             data={classDetail.sections}
-            // tableConfig={tableConfig}
             pageSize={12}
             footnotes={['* This is the usual meeting time, but it may vary']}
             withPagination 
@@ -63,21 +66,17 @@ const Classes = props => {
         {
           photoArr?.length > 0 ? photoArr.map(sectImg => (
           <Col className="mb-4" sm="12" md="6" lg="4" xl="3">
-            <div key={sectImg.id}
-            className="cropped">
-          <CardImg 
-            //className="pb-4"
-            //className="classThumbnails"
-            alt={`Image for the ${sectImg.fileName} class`}
-            src={sectImg.imageUrl}
-           top
-        />
-          </div></Col>
+          <img
+              key={sectImg.id}
+              className="classThumbnails"
+              alt={`The ${sectImg.fileName} class`}
+              src={sectImg.imageUrl}
+              top
+            />
+          </Col>
           )) : <></>
             }
             </Row>
-    
-        
         </Container>
         </>
     )

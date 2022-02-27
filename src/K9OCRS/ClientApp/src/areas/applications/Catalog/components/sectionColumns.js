@@ -5,12 +5,6 @@ import { Link } from 'react-router-dom';
 import { alignmentWrapper } from '../../../../util/columns';
 import ProfileBadge from '../../../../shared/components/ProfileBadge';
 
-const statusColors = {
-  Scheduled: 'dark',
-  Ongoing: 'info',
-  Completed: 'success',
-};
-
 const dateTemplate = ({ value }) => {
   if (!value) return '';
   return moment(value).format(`MMM Do, YY`);
