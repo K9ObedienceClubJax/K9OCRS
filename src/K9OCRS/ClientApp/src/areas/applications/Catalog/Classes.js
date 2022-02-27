@@ -68,7 +68,7 @@ const Classes = props => {
               footnotes={['* This is the usual meeting time, but it may vary']}
               withPagination
           />
-        /> : <></> }
+        ) : null }
         <Row className="my-4">
         {
           photoArr?.length > 0 ? photoArr.map(sectImg => (
