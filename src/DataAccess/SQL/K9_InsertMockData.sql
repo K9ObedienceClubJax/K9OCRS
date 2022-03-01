@@ -14,9 +14,9 @@ VALUES
 INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], ProfilePictureFilename)
 VALUES
 	(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-	(2, 'Peepee', 'Poopoo', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-	(3, 'zig', 'zag', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-	(4, 'lmao', 'rofl', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png');
+	(2, 'Darude', 'Sandstorm', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
+	(3, 'Jack', 'Sparrow', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
+	(4, 'Tom', 'Riddle', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png');
 
 -- Dogs
 INSERT INTO Dogs ([Name], [Breed], [DateOfBirth], [ProfilePictureFilename])
