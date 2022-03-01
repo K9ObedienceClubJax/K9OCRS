@@ -67,36 +67,12 @@ namespace K9OCRS.Controllers
                 Console.WriteLine("Last valid");
             }
 
-            //Validate email
-            // TODO: Check if email is in database
-            pattern = @"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+";
-            String email = account.Email;
-            if (Regex.Match(email, pattern).Success)
+            if (await ValidateEmailPassword(account.Email, account.Password))
             {
-                Console.WriteLine("Email valid");
-            }
-            try {
-                var emailResult = await connectionOwner.Use(conn =>
-                {
-                    return dbOwner.Users.GetByEmail(conn, account.Email);
-                });
-                 if (emailResult.Email.Contains(account.Email))
-                {
-                    return StatusCode(400, "An account with that email already exists");
-                }
-            }
-            catch (Exception e){
+                //Validate password
+                String password = account.Password;
+                String confirm = account.Confirm;
 
-            }           
-           
-
-            //Validate password
-            pattern = @"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$";
-            String password = account.Password;
-            String confirm = account.Confirm;
-            //Password requires 8 characters, should contain at least one upper case, lower case, and digit.
-            if (Regex.Match(password, pattern).Success)
-            {
                 //Passwords do not match
                 if (password != confirm)
                 {
@@ -104,25 +80,24 @@ namespace K9OCRS.Controllers
                     return StatusCode(400, "Passwords do not match");
                     //return StatusCode(400, "User already exists");
                 }
-            }
-            else
-            {
-                //Display: requirements
-                return StatusCode(400, "Password requires at least 8 characters, should contain at least one upper case, lower case, and digit");
-            }
 
-            var result = await connectionOwner.Use(conn =>
-            {
-                User user = new();
-                user.UserRoleID = 4;
-                user.FirstName = account.First;
-                user.LastName = account.Last;
-                user.Email = account.Email;
-                user.Password = GetHashedPassword(account.Password);
-                return dbOwner.Users.Add(conn, user);
-            });
 
-            return Ok(result);
+                var result = await connectionOwner.Use(conn =>
+                {
+                    User user = new();
+                    user.UserRoleID = 4;
+                    user.FirstName = account.First;
+                    user.LastName = account.Last;
+                    user.Email = account.Email;
+                    user.Password = GetHashedPassword(account.Password);
+                    return dbOwner.Users.Add(conn, user);
+                });
+
+                return Ok(result);
+            }
+            return StatusCode(400, "Failed to create account.");
+
+               
         }
 
         [AllowAnonymous]
@@ -254,11 +229,114 @@ namespace K9OCRS.Controllers
 
                 await Task.WhenAll(tasks);
             }
-            //Create another controller that uses Request.QueryString to read token. If valid, load page, reset password.
             return Ok();
         }
 
+        [HttpPost("changeinfo")]
+        public async Task<IActionResult> ChangeInfo([FromBody] User newInfo)
+        {
+            User user = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetByID(conn, newInfo.ID);
+            });
+            user.Email = newInfo.Email;
+            user.FirstName = newInfo.FirstName;
+            user.LastName = newInfo.LastName;
 
+            var tasks = new List<Task>();
+            tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
+            {
+                await dbOwner.Users.Update(conn, tr, user);
+                tr.Commit();
+            }));
+
+            await Task.WhenAll(tasks);
+            return Ok();
+        }
+
+        [HttpPost("changeinfoadmin")]
+        public async Task<IActionResult> ChangeInfoAdmin([FromBody] User newInfo)
+        {
+            User user = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetByID(conn, newInfo.ID);
+            });
+            user.Email = newInfo.Email;
+            user.FirstName = newInfo.FirstName;
+            user.LastName = newInfo.LastName;
+            user.UserRoleID = newInfo.UserRoleID;
+            user.ProfilePictureFilename = newInfo.ProfilePictureFilename;
+
+            var tasks = new List<Task>();
+            tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
+            {
+                await dbOwner.Users.Update(conn, tr, user);
+                tr.Commit();
+            }));
+
+            await Task.WhenAll(tasks);
+            return Ok();
+        }
+
+        [HttpPost("createuser")] 
+        public async Task<IActionResult> CreateUser([FromBody] CreateUser accountInfo)
+        {
+            if(await ValidateEmailPassword(accountInfo.Email, accountInfo.Password))
+            {
+                var result = await connectionOwner.Use(conn =>
+                {
+                    User user = new();
+                    user.FirstName = accountInfo.First;
+                    user.LastName = accountInfo.Last;
+                    user.Email = accountInfo.Email;
+                    user.Password = GetHashedPassword(accountInfo.Password);
+                    user.UserRoleID = accountInfo.Role;
+                    return dbOwner.Users.Add(conn, user);
+                });
+                return Ok("Account added");
+            }
+            return StatusCode(400, "Failed to create user");
+        }
+
+        [HttpPost("getuser")]
+        public async Task<IActionResult> GetUser([FromBody] int id)
+        {
+            User user = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.Users.GetByID(conn, id);
+            });
+            UserResult userResult = new UserResult(user, serviceConstants.storageBasePath);
+
+            return Ok(userResult);
+        }
+
+        [HttpPost("queryusers")]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        public async Task<IActionResult> QueryUsers([FromBody] int role)
+        {
+            IEnumerable<User> users;  
+            if(role == 0)
+            {
+                users = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Users.GetAll(conn);
+                });
+            }
+            else
+            {
+                users = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Users.QueryUsersByRole(conn, role);
+                });
+            }
+            
+            var userResults = users.Select(u => new UserResult(u, serviceConstants.storageBasePath));
+            
+            return Ok(userResults);
+        }
+
+
+        //Non-API functions
         private async Task<string> GenerateToken(Login login, User loginResult)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -307,6 +385,51 @@ namespace K9OCRS.Controllers
                 return new JwtSecurityTokenHandler().WriteToken(token);
             }
 
+        }
+
+        public async Task<bool> ValidateEmailPassword(string email, string password)
+        {
+            //Validate email
+            var pattern = @"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+";
+
+            if (Regex.Match(email, pattern).Success)
+            {
+                Console.WriteLine("Email valid");
+            }
+            else
+            {
+                return false;
+            }
+            try
+            {
+                var emailResult = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Users.GetByEmail(conn, email);
+                });
+                if (emailResult.Email.Contains(email))
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+
+
+            //Validate password
+            pattern = @"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$";
+   
+            //Password requires 8 characters, should contain at least one upper case, lower case, and digit.
+            if (Regex.Match(password, pattern).Success)
+            {
+                return true;
+            }
+            else
+            {
+                //Display: requirements
+                return false;
+            }
         }
 
         public static string GetHashedPassword(string password)

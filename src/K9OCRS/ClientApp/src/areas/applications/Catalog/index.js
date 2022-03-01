@@ -51,6 +51,7 @@ const Catalog = () => {
       <PageHeader
         title="Class Catalog"
         alerts={alerts}
+        setAlerts={setAlerts}
       />
       <Container className="px-lg-5" fluid>
         { loading && <Spinner /> }

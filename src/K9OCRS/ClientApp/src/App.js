@@ -9,18 +9,23 @@ import Layout from './shared/components/Layout';
 import notFoundPage from './areas/management/404';
 
 import Catalog from './areas/applications/Catalog';
+import Classes from './areas/applications/Catalog/Classes';
 import Confirm from './areas/applications/Confirmation';
 
 import Login from './areas/accounts/Login';
 import CreatePassword from './areas/accounts/Create';
 import PasswordReset from './areas/accounts/PasswordReset';
 import ChangePassword from './areas/accounts/ChangePassword';
+import MyAccount from './areas/accounts/index';
 
 import MyDogs from './pages/MyDogs';
 import DogDetails from './pages/DogDetails';
 import DogSetup from './pages/DogSetup';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
+import Users from './areas/management/Users/index';
+import Create from './areas/management/Users/Create';
+import User from './areas/management/Users/User';
 import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
 import TestUpload from './areas/classes/TestUpload';
@@ -40,8 +45,12 @@ export default class App extends Component {
           <GuestOnlyRoute path='/Account/Create' component={CreatePassword} />
           <Route path='/Account/PasswordReset' component={PasswordReset} />
           <Route path='/Account/ChangePassword' component={ChangePassword} />
-          <Route path='/Classes/Apply/Confirm' component={Confirm} />
+          <Route path='/Classes/:classTypeId' component={Classes} exact/>
           {/* Routes available to Logged in Users */}
+          <ProtectedRoute 
+            path='/Classes/Apply/:sectionId' 
+            component={Confirm} />
+          <ProtectedRoute path='/Account' component={MyAccount} exact />
           <ProtectedRoute path='/Account/MyDogs' component={MyDogs} exact />
           <ProtectedRoute
             path='/Account/MyDogs/Add'
@@ -58,6 +67,24 @@ export default class App extends Component {
           <ProtectedRoute
             path='/Manage'
             component={ManagementDashboard}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          <ProtectedRoute
+            path='/Manage/Users'
+            component={Users}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          <ProtectedRoute
+            path='/Manage/Users/:userId'
+            component={User}
+            minimumAccess={USER_ROLES.Administrator}
+            exact
+          />
+          <ProtectedRoute
+            path='/Manage/Users/Create'
+            component={Create}
             minimumAccess={USER_ROLES.Administrator}
             exact
           />

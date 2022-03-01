@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import {  useHistory } from 'react-router-dom';
 import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, CardHeader } from 'reactstrap';
 
 import './style.scss';
@@ -14,13 +14,15 @@ const ClassCard = props => {
     price,
   } = props;
 
-  const history = useHistory();
+  const linkHistory = useHistory();
 
   const trimmedDesc = description.length > 125 ? description.substring(0, 125) + '...' : description;
 
   return (
     <Col className="mb-4" sm="12" md="6" lg="4" xl="3">
-      <Card className="classCard h-100" onClick={() => history.push(`/Classes/${id}`)}>
+      <Card className="classCard h-100" 
+      onClick={() => linkHistory.push(`/Classes/${id}`)}
+      >
         <CardImg
           alt={`Image for the ${title} class`}
           src={imageUrl}
