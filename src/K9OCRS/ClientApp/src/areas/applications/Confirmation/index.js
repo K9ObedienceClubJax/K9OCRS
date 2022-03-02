@@ -1,9 +1,35 @@
-import React from "react";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { ClassificationType } from "typescript";
+
 
 const Confirm = () => {
+
+  const { sectionId } = useParams();
+  const [sectionDetail, setSectionDetail] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [alerts, setAlerts] = useState([]);
+
+  useEffect(() => {
+      async function getTest() {
+        if (sectionId) {
+          try {
+            const res = await axios.get(`/api/ClassSections/ ${sectionId}`);
+            setSectionDetail(res?.data);
+            setLoading(false);
+          } catch(err) {
+            setLoading(false);
+            setAlerts([{ color: 'danger', message: 'We\'re having issues getting the details for this class' }]);
+          }
+        }
+      }
+      getTest();
+    }, [sectionId]);
+    
   return (
     <div className="container">
-      <h3>Thank you for choosing "selected class:"</h3>
+      <h3>Thank you for choosing {sectionDetail.title}</h3>
       <div className="mt-3 mb-3">
         <div className="card">
           <div className="card-header">
