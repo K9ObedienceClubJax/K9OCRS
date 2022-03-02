@@ -48,7 +48,6 @@ const Classes = props => {
           className="pb-4 heroImg"
           alt={`The ${classDetail.title} class`}
           src={classDetail.imageUrl}
-          top='true'
         />
         <h5>Description</h5>
         <p>{classDetail.description}</p>
