@@ -45,7 +45,7 @@ const Confirm = props => {
           <div className="card-footer">
             <span className="text-center font-weight-bold">
               Section: {sectionDetail?.id} | Day: Monday | Time: 6PM | Start: {sectionDetail?.startDate} |
-              Duration: 7 weeks | Instructor: {sectionDetail?.instructor?.firstName} {sectionDetail?.instructor?.lastName} | Available Seats: {z}
+              Duration: 7 weeks | Instructor: {sectionDetail?.instructor?.firstName} {sectionDetail?.instructor?.lastName} | Available Seats: {availableSeats}
             </span>
           </div>
         </div>
