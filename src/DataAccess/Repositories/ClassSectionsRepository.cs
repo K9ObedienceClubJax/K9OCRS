@@ -52,7 +52,7 @@ namespace DataAccess.Repositories
                 FROM ClassSections cs
                 JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
                 JOIN Users u ON cs.InstructorID = u.ID
-                WHERE ID = @Id
+                WHERE cs.ID = @Id
             ";
 
             var result = await conn.QuerySingleOrDefaultAsync<ClassSection>(query, new { Id = id });
@@ -75,7 +75,7 @@ namespace DataAccess.Repositories
                 FROM ClassSections cs
                 JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
                 JOIN Users u ON cs.InstructorID = u.ID
-                WHERE [{idColumn}] = @Id
+                WHERE cs.[{idColumn}] = @Id
             ";
 
             var result = await conn.QueryAsync<ClassSection>(query, new { Id = id });
