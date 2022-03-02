@@ -76,7 +76,6 @@ const Classes = props => {
               className="classThumbnails"
               alt={`The ${sectImg.fileName} class`}
               src={sectImg.imageUrl}
-              top='true'
             />
           </Col>
           )) : <></>
