@@ -30,7 +30,6 @@ namespace DataAccess.Repositories
                 FROM ClassSections cs
                 JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
                 JOIN Users u ON cs.InstructorID = u.ID
-                WHERE cs.ID = @Id
             ";
 
             var result = await conn.QueryAsync<ClassSection>(query);
