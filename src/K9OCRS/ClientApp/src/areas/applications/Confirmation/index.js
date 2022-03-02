@@ -9,8 +9,9 @@ const Confirm = props => {
 
   const { sectionId } = useParams();
   const [sectionDetail, setSectionDetail] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [alerts, setAlerts] = useState([]);
+  // TODO: remove the eslint comments from the lines below and actually use the loading and alerts variables.
+  const [loading, setLoading] = useState(true); // eslint-disable-line
+  const [alerts, setAlerts] = useState([]); // eslint-disable-line
   const { currentUser } = props;
 
   useEffect(() => {
