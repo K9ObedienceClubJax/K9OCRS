@@ -29,9 +29,7 @@ const Confirm = props => {
       getTest();
     }, [sectionId]);
 
-    let x = sectionDetail?.rosterCapacity;
-    let y = sectionDetail?.rosterActual;
-    let z = x-y;
+    const availableSeats = sectionDetail?.rosterCapacity - sectionDetail?.rosterActual;
     
   return (
     <div className="container">
