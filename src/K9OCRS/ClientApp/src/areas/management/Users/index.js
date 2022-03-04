@@ -18,7 +18,6 @@ const Users = (props) => {
 
   async function getUsers(setUsers, setLoading, role) {
     const response = await accountsApi.queryUsers(role);
-    console.log(response);
     setUsers(response);
     setLoading(false);
   }
@@ -125,7 +124,6 @@ const Users = (props) => {
           withPagination
         />
       )}
-      ;
     </div>
   );
 };
