@@ -105,13 +105,27 @@ namespace DataAccess.Repositories
 
         private IEnumerable<PropertyInfo> GetProperties => typeof(T).GetProperties();
 
-        private static List<string> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties)
+        private static List<string> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false)
         {
             return (from prop in listOfProperties
-                    let attributes = prop.GetCustomAttributes(typeof(TransactionIgnoreAttribute), false)
+                    let attributes = getIgnoredAttributes(prop, isUpdate)
                     //where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "RepoIgnore"
                     where attributes.Length <= 0
                     select prop.Name).ToList();
+        }
+
+        private static object[] getIgnoredAttributes(PropertyInfo prop, bool isUpdate = false)
+        {
+            var transactionIgnored = prop.GetCustomAttributes(typeof(TransactionIgnoreAttribute), false);
+            
+            if (isUpdate)
+            {
+                var updateIgnored = prop.GetCustomAttributes(typeof(UpdateIgnoreAttribute), false);
+                return transactionIgnored.Concat(updateIgnored).ToArray();
+            }
+
+            var insertIgnored = prop.GetCustomAttributes(typeof(InsertIgnoreAttribute), false);
+            return transactionIgnored.Concat(insertIgnored).ToArray();
         }
 
         private string GenerateInsertQuery()
@@ -150,7 +164,7 @@ namespace DataAccess.Repositories
         private string GenerateUpdateQuery()
         {
             var updateQuery = new StringBuilder($"UPDATE {_tableName} SET ");
-            var properties = GenerateListOfProperties(GetProperties);
+            var properties = GenerateListOfProperties(GetProperties, true);
 
             properties.ForEach(property =>
             {
