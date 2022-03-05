@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DataAccess.Entities;
+using K9OCRS.Models.ClassManagement;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -23,6 +25,11 @@ namespace K9OCRS.Extensions
             }
 
             throw new ArgumentNullException();
+        }
+
+        public static ClassSectionResult ToClassSectionResult(this ClassSection section, string storageBasePath)
+        {
+            return new ClassSectionResult(section, storageBasePath);
         }
     }
 }

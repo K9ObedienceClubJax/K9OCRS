@@ -7,8 +7,10 @@ CREATE VIEW ClassSectionsStatus
 AS
 SELECT
 	cs.ID as ClassSectionID,
-	cm.StartDate,
-	cm.EndDate,
+	CAST(cm.StartDate as date) as StartDate,
+	CAST(cm.EndDate as date) as EndDate,
+	t.StartTime,
+	t.EndTime,
 	CASE
 		WHEN GETDATE() > StartDate AND GETDATE() < EndDate THEN 'Ongoing'
 		WHEN GETDATE() > EndDate THEN 'Completed'
@@ -25,6 +27,16 @@ JOIN (
 	FROM ClassMeetings cm
 	GROUP BY cm.ClassSectionID
 ) as cm ON cs.ID = cm.ClassSectionID
+-- Get the start and end times for the section for each class meeting
+OUTER APPLY (
+	SELECT TOP 1
+		CAST(StartDate as time) as StartTime,
+		CAST(EndDate as time) as EndTime
+	FROM ClassMeetings cm
+	WHERE cm.ClassSectionID = cs.ID
+	GROUP BY CAST(StartDate as time), CAST(EndDate as time)
+	ORDER  BY COUNT(*) DESC
+) as t
 -- Get the count of how many student applications are active or completed
 LEFT JOIN (
 	SELECT

@@ -61,48 +61,18 @@ namespace K9OCRS.Controllers
                 if (includeSections)
                 {
                     var sections = await dbOwner.ClassSections.GetAll(conn);
-                    var meetings = await dbOwner.ClassMeetings.GetAll(conn);
-
-                    // Group meetings by classSectionID
-                    var groupedMeetings = meetings.Aggregate(new Dictionary<int, List<ClassMeeting>>(), (agg, m) =>
-                    {
-                        if (agg.ContainsKey(m.ClassSectionID))
-                        {
-                            agg[m.ClassSectionID].Add(m);
-                        }
-                        else
-                        {
-                            agg.Add(m.ClassSectionID, new List<ClassMeeting> { m });
-                        }
-                        return agg;
-                    });
 
                     // Group sections by classTypeID
                     _groupedSections = sections.Aggregate(new Dictionary<int, List<ClassSectionResult>>(), (agg, s) =>
                     {
                         if (agg.ContainsKey(s.ClassTypeID))
                         {
-                            agg[s.ClassTypeID].Add(new ClassSectionResult(
-                                s,
-                                groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null
-                            ));
+                            agg[s.ClassTypeID].Add(s.ToClassSectionResult(serviceConstants.storageBasePath));
                         }
                         else
                         {
                             agg.Add(s.ClassTypeID, new List<ClassSectionResult> {
-                                new ClassSectionResult(
-                                    s,
-                                    groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null,
-                                    new UserResult(new User
-                                    {
-                                        ID = s.InstructorID,
-                                        FirstName = s.FirstName,
-                                        LastName = s.LastName,
-                                        Email = s.Email,
-                                        ProfilePictureFilename = s.ProfilePictureFilename,
-                                    },
-                                    serviceConstants.storageBasePath)
-                                )
+                                s.ToClassSectionResult(serviceConstants.storageBasePath)
                             });
                         }
                         return agg;
@@ -143,17 +113,8 @@ namespace K9OCRS.Controllers
                 // Get the list of sections related to the class type
                 var sections = await dbOwner.ClassSections.GetByID(conn, "ClassTypeID", id);
 
-                // Get the list of meetings for each section
-                Dictionary<int, List<ClassMeeting>> meetings = new Dictionary<int, List<ClassMeeting>>();
-                
-                foreach (var section in sections.ToList())
-                {
-                    var sectionMeetings = await dbOwner.ClassMeetings.GetByID(conn, "ClassSectionID", section.ID);
-                    meetings.Add(section.ID, sectionMeetings.ToList());
-                }
-
                 // Combine the data using the Models
-                var sectionResults = sections.Select(s => new ClassSectionResult(s, meetings[s.ID]));
+                var sectionResults = sections.Select(s => s.ToClassSectionResult(serviceConstants.storageBasePath));
                 var photoResults = photos.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
 
                 var details = new ClassTypeDetails(entity, serviceConstants.storageBasePath, photoResults, sectionResults);

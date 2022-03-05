@@ -49,62 +49,21 @@ namespace K9OCRS.Controllers
         {
             var result = await connectionOwner.Use(async conn =>
             {
-                // Get all sections
                 var sections = await dbOwner.ClassSections.GetAll(conn);
-                // Get all instructors associated to sections
-                //var instructorIds = sections.Select(s => s.InstructorID);
-                //var instructors = (await dbOwner.Users.GetByIDs(conn, instructorIds)).ToList();
-                // Get all meetings
-                var meetings = await dbOwner.ClassMeetings.GetAll(conn);
-
-                // Group meetings by classSectionID
-                var groupedMeetings = meetings.Aggregate(new Dictionary<int, List<ClassMeeting>>(), (agg, m) =>
-                {
-                    if (agg.ContainsKey(m.ClassSectionID))
-                    {
-                        agg[m.ClassSectionID].Add(m);
-                    }
-                    else
-                    {
-                        agg.Add(m.ClassSectionID, new List<ClassMeeting> { m });
-                    }
-                    return agg;
-                });
-
-                return sections.Select(s => new ClassSectionResult(
-                    s,
-                    groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null,
-                    new UserResult(new User {
-                        ID = s.InstructorID,
-                        FirstName = s.FirstName,
-                        LastName = s.LastName,
-                        Email = s.Email,
-                        ProfilePictureFilename = s.ProfilePictureFilename,
-                    })
-                ));
+                return sections.Select(s => s.ToClassSectionResult(serviceConstants.storageBasePath));
             });
 
             return Ok(result);
         }
 
         [HttpGet("{classSectionId}")]
-        [ProducesResponseType(typeof(ClassSectionDetails), 200)]
+        [ProducesResponseType(typeof(ClassSectionResult), 200)]
         public async Task<IActionResult> GetByID(int classSectionId)
         {
             var result = await connectionOwner.Use(async conn =>
             {
                 var section = await dbOwner.ClassSections.GetByID(conn, classSectionId);
-                var meetings = await dbOwner.ClassMeetings.GetByID(conn, "ClassSectionID", section.ID);
-                var type = await dbOwner.ClassTypes.GetByID(conn, section.ClassTypeID);
-                var instructor = new User {
-                    ID = section.InstructorID,
-                    FirstName = section.FirstName,
-                    LastName = section.LastName,
-                    Email = section.Email,
-                    ProfilePictureFilename = section.ProfilePictureFilename,
-                };
-
-                return new ClassSectionDetails(section, meetings, new UserResult(instructor), new ClassTypeResult(type, serviceConstants.storageBasePath));
+                return section.ToClassSectionResult(serviceConstants.storageBasePath);
             });
 
             return Ok(result);
