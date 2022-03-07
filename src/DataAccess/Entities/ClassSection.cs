@@ -13,10 +13,17 @@ namespace DataAccess.Entities
             ClassTypeID = entity.ClassTypeID;
             InstructorID = entity.InstructorID;
             RosterCapacity = entity.RosterCapacity;
+
             RosterActual = entity.RosterActual;
             StartDate = entity.StartDate;
             EndDate = entity.EndDate;
+            StartTime = entity.StartTime;
+            EndTime = entity.EndTime;
             Status = entity.Status;
+
+            Instructor = entity.Instructor;
+            ClassType = entity.ClassType;
+            Meetings = entity.Meetings;
         }
 
         /// <example>1</example>

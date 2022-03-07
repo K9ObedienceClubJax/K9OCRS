@@ -246,12 +246,12 @@ namespace K9OCRS.Controllers
                                 Filename = "creating",
                             };
 
-                            var classPhotoId = await dbOwner.ClassPhotos.Add(conn, tr, photo);
+                            var photoResult = await dbOwner.ClassPhotos.Add(conn, tr, photo);
 
                             var filePath = String.Concat(
                                 StorageContainers.GetWithParams(UploadType.ClassPhoto, classTypeId),
                                 "/",
-                                classPhotoId,
+                                photoResult.ID,
                                 ext
                             );
 
@@ -259,7 +259,7 @@ namespace K9OCRS.Controllers
 
                             await storageClient.UploadFile(UploadType.ClassPicture, filePath, contType, data);
 
-                            photo.ID = classPhotoId;
+                            photo.ID = photoResult.ID;
                             photo.Filename = filename;
 
                             await dbOwner.ClassPhotos.Update(conn, tr, photo);

@@ -9,8 +9,11 @@ namespace K9OCRS.Models.ClassManagement
 
         public ClassSectionResult(ClassSection entity, string storageBasePath) : base(entity)
         {
-            Instructor = entity.Instructor != null ? new UserResult(entity.Instructor, storageBasePath) : null;
-            ClassType = entity.ClassType != null ? new ClassTypeResult(entity.ClassType, storageBasePath) : null;
+            if (entity.Instructor != null)
+                Instructor = new UserResult(entity.Instructor, storageBasePath);
+
+            if (entity.ClassType != null)
+                ClassType = new ClassTypeResult(entity.ClassType, storageBasePath);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using DataAccess.Extensions;
 using DataAccess.Repositories.Contracts;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -69,16 +71,30 @@ namespace DataAccess.Repositories
             return result.ToList();
         }
 
-        public virtual async Task<int> Add(IDbConnection conn, T entity)
+        public virtual async Task<T> Add(IDbConnection conn, T entity)
         {
             var insertQuery = GenerateInsertQuery();
-            return await conn.QueryFirstOrDefaultAsync<int>(insertQuery, entity);
+            return await conn.QueryFirstOrDefaultAsync<T>(insertQuery, entity);
         }
 
-        public virtual async Task<int> Add(IDbConnection conn, IDbTransaction tr, T entity)
+        public virtual async Task<T> Add(IDbConnection conn, IDbTransaction tr, T entity)
         {
             var insertQuery = GenerateInsertQuery();
-            return await conn.QueryFirstOrDefaultAsync<int>(insertQuery, entity, tr);
+            return await conn.QueryFirstOrDefaultAsync<T>(insertQuery, entity, tr);
+        }
+
+        public virtual async Task<IReadOnlyList<T>> AddMany(IDbConnection conn, IDbTransaction tr, List<T> entities)
+        {
+            var insertQuery = GenerateInsertQuery();
+            var results = new List<T>();
+
+            foreach (var entity in entities)
+            {
+                var result = await conn.QuerySingleAsync<T>(insertQuery, entity, tr);
+                results.Add(result);
+            }
+
+            return results;
         }
 
         public virtual async Task<int> Update(IDbConnection conn, T entity)
@@ -103,15 +119,29 @@ namespace DataAccess.Repositories
             return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id }, tr);
         }
 
+        public virtual async Task<int> DeleteMany(IDbConnection conn, IDbTransaction tr, IEnumerable<int> ids)
+        {
+            return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID IN @Ids", new { Ids = ids }, tr);
+        }
+
+        #region Private Methods
+
         private IEnumerable<PropertyInfo> GetProperties => typeof(T).GetProperties();
 
-        private static List<string> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false)
+        private static List<string> GenerateListOfPropertyNames(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false)
         {
             return (from prop in listOfProperties
                     let attributes = getIgnoredAttributes(prop, isUpdate)
-                    //where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "RepoIgnore"
                     where attributes.Length <= 0
                     select prop.Name).ToList();
+        }
+
+        private static List<PropertyInfo> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false)
+        {
+            return (from prop in listOfProperties
+                    let attributes = getIgnoredAttributes(prop, isUpdate)
+                    where attributes.Length <= 0
+                    select prop).ToList();
         }
 
         private static object[] getIgnoredAttributes(PropertyInfo prop, bool isUpdate = false)
@@ -128,13 +158,58 @@ namespace DataAccess.Repositories
             return transactionIgnored.Concat(insertIgnored).ToArray();
         }
 
+        private DynamicParameters GenerateParametersFromList(IEnumerable<T> entities, bool isUpdate = false)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+
+            var properties = GenerateListOfProperties(GetProperties, isUpdate);
+
+            foreach (var entity in entities)
+            {
+                foreach (var property in properties)
+                {
+                    var paramName = $"@{property.Name}";
+
+                    // Generate a type for the List of "x property's type"
+                    Type listType = typeof(List<>).MakeGenericType(new[] { property.PropertyType });
+                    // Generate the parameter value getter for our dynamically generated type
+                    MethodInfo paramValueGetter = typeof(DynamicParameters).GetMethod(nameof(DynamicParameters.Get)).MakeGenericMethod(listType);
+
+                    var propertyValue = property.GetValue(entity);
+
+                    object parameterList;
+
+                    try
+                    {
+                        // This is equal to parameters.Get<List<[propType]>>(paramName)
+                        parameterList = paramValueGetter.Invoke(parameters, new[] { paramName });
+                    }
+                    // If we got this exception it means the list doesn't exist yet
+                    catch (TargetInvocationException ex)
+                    {
+                        // Add new List<[propType]>
+                        parameters.Add(paramName, (IList)Activator.CreateInstance(listType));
+
+                        // This is equal to parameters.Get<List<[propType]>>(paramName)
+                        parameterList = paramValueGetter.Invoke(parameters, new[] { paramName });
+                    }
+
+                    var addMethod = listType.GetMethod(nameof(IList.Add));
+
+                    addMethod.Invoke(parameterList, new[] { propertyValue });
+                }
+            }
+
+            return parameters;
+        }
+
         private string GenerateInsertQuery()
         {
             var insertQuery = new StringBuilder($"INSERT INTO {_tableName} ");
 
             insertQuery.Append("(");
 
-            var properties = GenerateListOfProperties(GetProperties);
+            var properties = GenerateListOfPropertyNames(GetProperties);
             properties.ForEach(prop => {
                 if (prop != "ID")
                 {
@@ -145,7 +220,7 @@ namespace DataAccess.Repositories
 
             insertQuery
                 .Remove(insertQuery.Length - 1, 1)
-                .Append(") OUTPUT INSERTED.ID VALUES (");
+                .Append(") OUTPUT INSERTED.* VALUES (");
 
             properties.ForEach(prop => {
                 if (prop != "ID")
@@ -164,7 +239,7 @@ namespace DataAccess.Repositories
         private string GenerateUpdateQuery()
         {
             var updateQuery = new StringBuilder($"UPDATE {_tableName} SET ");
-            var properties = GenerateListOfProperties(GetProperties, true);
+            var properties = GenerateListOfPropertyNames(GetProperties, true);
 
             properties.ForEach(property =>
             {
@@ -179,5 +254,7 @@ namespace DataAccess.Repositories
 
             return updateQuery.ToString();
         }
+
+        #endregion
     }
 }

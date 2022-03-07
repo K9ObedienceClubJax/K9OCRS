@@ -14,6 +14,7 @@ using K9OCRS.Models;
 using K9OCRS.Models.ClassManagement;
 using K9OCRS.Configuration;
 using System.Linq;
+using System.Data.SqlClient;
 
 namespace K9OCRS.Controllers
 {
@@ -69,44 +70,135 @@ namespace K9OCRS.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Add()
+        [HttpGet("roster/{classSectionId}")]
+        //[ProducesResponseType(typeof(ClassSectionResult), 200)]
+        public async Task<IActionResult> GetRoster(int classSectionId)
         {
             throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> Add(ClassSectionAddRequest request)
+        {
+            var result = await connectionOwner.UseTransaction(async (conn, tr) =>
+            {
+                var section = await dbOwner.ClassSections.Add(conn, tr, new ClassSection
+                {
+                    ClassTypeID = request.ClassTypeID,
+                    InstructorID = request.InstructorID,
+                    RosterCapacity = request.RosterCapacity,
+                });
+
+                // Update meetings to have the correct section id
+                var assignedMeetings = request.Meetings.Select(m =>
+                {
+                    m.ClassSectionID = section.ID;
+                    return m;
+                }).ToList();
+
+                var meetings = await dbOwner.ClassMeetings.AddMany(conn, tr, assignedMeetings);
+
+                section.Meetings = meetings.ToList();
+
+                tr.Commit();
+
+                return section;
+            });
+
+            return Ok(result.ID);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update()
+        public async Task<IActionResult> Update(ClassSectionUpdateRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await connectionOwner.UseTransaction(async (conn, tr) =>
+                {
+                    var updatedCount = await dbOwner.ClassSections.Update(conn, tr, new ClassSection
+                    {
+                        ID = request.ID,
+                        ClassTypeID = request.ClassTypeID,
+                        InstructorID = request.InstructorID,
+                        RosterCapacity = request.RosterCapacity,
+                    });
+
+                    if (updatedCount < 1) throw new KeyNotFoundException();
+
+                    int deletedCount = 0;
+                    int insertedCount = 0;
+
+                    if (request.MeetingIdsToDelete.Count() > 0)
+                    {
+                        deletedCount = await dbOwner.ClassMeetings.DeleteMany(conn, tr, request.MeetingIdsToDelete);
+                    }
+
+                    if (request.MeetingsToInsert.Count() > 0)
+                    {
+                        // Update meetings to have the correct section id
+                        var assignedMeetings = request.MeetingsToInsert.Select(m =>
+                        {
+                            m.ClassSectionID = request.ID;
+                            return m;
+                        }).ToList();
+
+                        insertedCount = (await dbOwner.ClassMeetings.AddMany(conn, tr, assignedMeetings)).Count();
+                    }
+
+                    if (
+                        request.MeetingIdsToDelete.Count() != deletedCount ||
+                        request.MeetingsToInsert.Count() != insertedCount
+                    )
+                    {
+                        throw new Exception();
+                    }
+
+                    tr.Commit();
+                });
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException)
+                {
+                    return NotFound();
+                }
+
+                logger.Error(ex, ex.Message);
+                return StatusCode(500);
+            }
         }
 
         [HttpDelete("{classSectionId}")]
-        public async Task<IActionResult> Delete(int classSectionId, [FromQuery] bool hardDelete = false)
+        public async Task<IActionResult> Delete(int classSectionId)
         {
-            throw new NotImplementedException();
+            // Prevent deletion of placeholder section
+            if (classSectionId <= 1) return BadRequest("ID must be greater than 1");
+            try
+            {
+                await connectionOwner.UseTransaction(async (conn, tr) =>
+                {
+                    var deletedCount = await dbOwner.ClassSections.Delete(conn, tr, classSectionId);
+
+                    if (deletedCount < 1) throw new KeyNotFoundException();
+
+                    tr.Commit();
+                });
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException)
+                {
+                    return NotFound();
+                }
+
+                logger.Error(ex, ex.Message);
+                return StatusCode(500);
+            }
         }
-
-        #region Class Meetings
-
-        [HttpPost("/meetings")]
-        public async Task<IActionResult> AddMeetings()
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPut("/meetings")]
-        public async Task<IActionResult> UpdateMeeting()
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpDelete("/meetings/{classMeetingId}")]
-        public async Task<IActionResult> DeleteMeeting(int classMeetingId)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 }
