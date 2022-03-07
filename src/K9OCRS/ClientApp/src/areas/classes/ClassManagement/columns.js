@@ -4,6 +4,7 @@ import { Badge } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { alignmentWrapper } from '../../../util/columns';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
+import { timespanToMoment } from '../../../util/dates';
 
 const statusColors = {
   Scheduled: 'dark',
@@ -18,8 +19,8 @@ const dateTemplate = ({ value }) => {
 
 const timeTemplate = ({ value }) => {
   if (!value?.startTime) return '';
-  const startTime = moment(value.startTime).format('ha');
-  const endTime = moment(value.endTime).format('ha');
+  const startTime = timespanToMoment(value.startTime).format('ha');
+  const endTime = timespanToMoment(value.endTime).format('ha');
   return `${startTime} - ${endTime}`;
 };
 
