@@ -1,5 +1,6 @@
 ﻿using DataAccess.Entities;
 using K9OCRS.Models.ClassManagement;
+using K9OCRS.Models.DogManagement;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
@@ -27,9 +28,18 @@ namespace K9OCRS.Extensions
             throw new ArgumentNullException();
         }
 
+        #region Entity to Model Conversions
+
         public static ClassSectionResult ToClassSectionResult(this ClassSection section, string storageBasePath)
         {
             return new ClassSectionResult(section, storageBasePath);
         }
+
+        public static DogResult ToDogResult(this Dog dog, string storageBasePath)
+        {
+            return new DogResult(dog, storageBasePath);
+        }
+
+        #endregion
     }
 }

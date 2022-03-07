@@ -5,15 +5,12 @@ using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
 using DataAccess.Clients.Contracts;
 using System;
-using DataAccess.Constants;
-using System.Collections.Generic;
-using System.IO;
-using K9OCRS.Extensions;
 using Serilog;
-using K9OCRS.Models;
-using K9OCRS.Models.ClassManagement;
 using K9OCRS.Configuration;
 using System.Linq;
+using K9OCRS.Extensions;
+using System.Collections.Generic;
+using K9OCRS.Models.DogManagement;
 
 namespace K9OCRS.Controllers
 {
@@ -47,38 +44,42 @@ namespace K9OCRS.Controllers
             this.serviceConstants = serviceConstants;
         }
 
+        #region Dogs
         //create dog
-        //[HttpPost]
-        //public async Task<IActionResult> CreateDog(Dog entity)
-        //{
-        //    try
-        //    {
-        //        var result = await connectionOwner.Use(conn =>
-        //        {
-        //            return dbOwner.Dogs.Add(conn, entity);
-        //        });
+        [HttpPost]
+        public async Task<IActionResult> CreateDog(Dog entity)
+        {
+            try
+            {
+                var result = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Dogs.Add(conn, entity);
+                });
 
-        //        return Ok(result);
-        //    }
-        //    catch(Exception e)
-        //    {
-        //        return StatusCode(500, e.Message);
-        //    }
-        //}
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
 
         //get list of dogs
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<DogResult>), 200)]
         public async Task<IActionResult> GetDogs()
         {
             try
             {
-                var entities = await connectionOwner.Use(conn =>
+                var dogs = await connectionOwner.Use(conn =>
                 {
                     return dbOwner.Dogs.GetAll(conn);
                 });
 
+                var dogResults = dogs.Select(d => d.ToDogResult(serviceConstants.storageBasePath));
+
                 //returns list of dogs
-                return Ok(entities);
+                return Ok(dogResults);
             }
             catch(Exception e)
             {
@@ -88,17 +89,20 @@ namespace K9OCRS.Controllers
 
         //get a dog by Id
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(IEnumerable<DogResult>), 200)]
         public async Task<IActionResult> GetDog(int Id)
         {
             try
             {
-                var entities = await connectionOwner.Use(conn =>
+                var dog = await connectionOwner.Use(conn =>
                 {
                     return dbOwner.Dogs.GetByID(conn, Id);
                 });
 
-                //returns list of dogs
-                return Ok(entities);
+                var dogResult = dog.ToDogResult(serviceConstants.storageBasePath);
+
+                //returns a dog
+                return Ok(dogResult);
             }
             catch (Exception e)
             {
@@ -107,7 +111,7 @@ namespace K9OCRS.Controllers
         }
 
         //update dog
-        /*[HttpPost]
+        [HttpPut]
         public async Task<IActionResult> UpdateDog(Dog entity)
         {
             try
@@ -123,7 +127,7 @@ namespace K9OCRS.Controllers
             {
                 return StatusCode(500, e.Message);
             }
-        }*/
+        }
 
         //delete dog
         [HttpDelete("{id}")]
@@ -143,7 +147,6 @@ namespace K9OCRS.Controllers
                 return StatusCode(500, e.Message);
             }
         }
-
-
+        #endregion
     }
 }
