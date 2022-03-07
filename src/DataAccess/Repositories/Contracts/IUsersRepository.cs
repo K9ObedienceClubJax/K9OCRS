@@ -8,7 +8,8 @@ namespace DataAccess.Repositories.Contracts
 {
     public interface IUsersRepository : IRepository<User>
     {
-        Task<string> GetByEmail(IDbConnection conn, string email);
+        Task<User> GetByEmail(IDbConnection conn, string email);
         Task<User> GetIdByLogin(IDbConnection conn, string email, string password);
+        Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role);
     }
 }

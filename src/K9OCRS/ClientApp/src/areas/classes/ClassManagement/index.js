@@ -1,60 +1,72 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button } from 'reactstrap';
+import { Button, Spinner } from 'reactstrap';
 import PageHeader from '../../../shared/components/PageHeader';
-import ClassTypeCard from './ClassTypeCard';
-import CardGrid from '../../../shared/components/CardGrid';
 import * as actions from '../modules/actions';
+import columns from './columns';
+import Table from '../../../shared/components/Table';
 
-const ClassManagement = props => {
+import './styles.scss';
+
+const ClassManagement = (props) => {
   const {
-    classesState: {
-      classList,
-    },
+    classesState: { classList },
     fetchClassList,
   } = props;
 
   const [loading, setLoading] = useState(true);
-  const [alerts, setAlerts] = useState([]);
+  const [alerts, setAlerts] = useState((c) => c, []);
+
+  const tableConfig = {
+    getSubRows: (row) => row?.sections?.map((s) => ({ sectionId: s.id, ...s })),
+    autoResetExpanded: false,
+  };
 
   useEffect(() => {
     fetchClassList({ setLoading, setAlerts });
   }, []); // eslint-disable-line
 
-  const emptyStateComponent = useMemo(() => (
-    <p>There's no Class Types to show at the moment. Lets <Link to="/Manage/ClassTypes/Add">add the first one</Link>!</p>
-  ), []);
-
-  const items = useMemo(() => classList?.length > 0 ? classList.map(classItem => (
-    <ClassTypeCard key={classItem.id} {...classItem} />
-  )) : [], [JSON.stringify(classList)]); // eslint-disable-line
-
   return (
-    <div>
+    <div className='classManagementPage'>
       <PageHeader
-        title="Class Management"
+        title='Class Management'
         breadCrumbItems={[
           { label: 'Management', path: '/Manage' },
           { label: 'Classes', active: true },
         ]}
         alerts={alerts}
+        setAlerts={setAlerts}
       >
-        <Button tag={Link} to="/Manage/ClassTypes/Add" color="primary">Add a Type</Button>
-        <Button tag={Link} to="/Manage/ClassSections/Add" color="primary">Add a Section</Button>
+        <Button tag={Link} to='/Manage/Classes/Types/Add' color='primary'>
+          Add a Type
+        </Button>
+        <Button tag={Link} to='/Manage/Classes/Sections/Add' color='primary'>
+          Add a Section
+        </Button>
       </PageHeader>
-      <CardGrid
-        loading={loading}
-        errored={alerts?.length > 0}
-        emptyStateComponent={emptyStateComponent}
-        items={items}
-      />
+      {loading ? (
+        <Spinner />
+      ) : (
+        <Table
+          columns={columns}
+          data={classList}
+          tableConfig={tableConfig}
+          pageSize={12}
+          footnotes={['* This is the usual meeting time, but it may vary']}
+          expandable
+          withPagination
+        />
+      )}
     </div>
   );
 };
 
-export default connect(state => ({
-  classesState: state.classes,
-}),{
-  fetchClassList: actions.fetchClassList,
-})(ClassManagement);
+export default connect(
+  (state) => ({
+    classesState: state.classes,
+  }),
+  {
+    fetchClassList: actions.fetchClassList,
+  }
+)(ClassManagement);

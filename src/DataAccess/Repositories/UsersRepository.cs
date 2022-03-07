@@ -16,17 +16,22 @@ namespace DataAccess.Repositories
         // passing in the Db table name that is associated to it by using this syntax
         public UsersRepository() : base(DbTables.Get(nameof(User))) { }
 
-        public async Task<string> GetByEmail(IDbConnection conn, string email)
+        public async Task<User> GetByEmail(IDbConnection conn, string email)
         {
-            var query = $"SELECT Email FROM {_tableName} WHERE Email = @Email";
-            string result = conn.QueryFirstOrDefault<string>(query, new { Email = email });
-            return result;
+            var query = $"SELECT Email, Password FROM {_tableName} WHERE Email = @Email";
+            return conn.QueryFirstOrDefault<User>(query, new { Email = email });
         }
 
         public async Task<User> GetIdByLogin(IDbConnection conn, string email, string password)
         {
             var query = $"SELECT ID, UserRoleID, Email, FirstName, LastName, ProfilePictureFilename FROM {_tableName} WHERE Email = @Email AND Password = @Password";
             return await conn.QueryFirstOrDefaultAsync<User>(query, new { Email = email, Password = password});
+        }
+
+        public async Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role)
+        {
+            var query = $"SELECT ID, UserRoleID, Email, FirstName, LastName, ProfilePictureFilename FROM {_tableName} WHERE UserRoleID = @Role";
+            return await conn.QueryAsync<User>(query, new { Role = role });
         }
     }
 }

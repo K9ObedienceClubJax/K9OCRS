@@ -14,9 +14,9 @@ VALUES
 INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], ProfilePictureFilename)
 VALUES
 	(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-	(2, 'Peepee', 'Poopoo', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-	(3, 'zig', 'zag', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-	(4, 'lmao', 'rofl', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png');
+	(2, 'Darude', 'Sandstorm', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
+	(3, 'Jack', 'Sparrow', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
+	(4, 'Tom', 'Riddle', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png');
 
 -- Dogs
 INSERT INTO Dogs ([Name], [Breed], [DateOfBirth], [ProfilePictureFilename])
@@ -69,15 +69,16 @@ VALUES
 -- Class Meetings
 INSERT INTO ClassMeetings ([ClassSectionID], [StartDate], [EndDate])
 VALUES
-	(1, '2022-01-13 14:00:00.000', '2022-01-13 16:00:00.000'),
+	(1, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
 	(1, '2022-01-20 14:00:00.000', '2022-01-20 16:00:00.000'),
 	(1, '2022-01-27 14:00:00.000', '2022-01-27 16:00:00.000'),
-	(2, '2022-01-13 14:00:00.000', '2022-01-13 14:00:00.000'),
-	(2, '2022-01-17 14:00:00.000', '2022-01-17 14:00:00.000'),
-	(2, '2022-01-20 14:00:00.000', '2022-01-20 14:00:00.000'),
-	(3, '2022-01-13 16:00:00.000', '2022-01-13 18:00:00.000'),
-	(3, '2022-01-17 16:00:00.000', '2022-01-17 18:00:00.000'),
-	(3, '2022-01-20 16:00:00.000', '2022-01-20 18:00:00.000');
+	(2, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
+	(2, '2022-02-17 14:00:00.000', '2022-02-17 16:00:00.000'),
+	(2, '2022-04-20 15:00:00.000', '2022-04-20 17:00:00.000'),
+	(3, '2022-07-13 16:00:00.000', '2022-07-13 18:00:00.000'),
+	(3, '2022-07-17 16:00:00.000', '2022-07-17 18:00:00.000'),
+	(3, '2022-07-20 14:00:00.000', '2022-07-20 16:00:00.000'),
+	(3, '2022-07-24 14:00:00.000', '2022-07-24 16:00:00.000');
 
 -- Section Applications
 INSERT INTO SectionApplications (ClassSectionID, DogID, [Status], [Refunded])

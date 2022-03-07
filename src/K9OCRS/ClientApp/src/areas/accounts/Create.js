@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { Row, Col, Button, Input } from 'reactstrap';
 import createAccount from '../../util/apiClients/userAccounts';
 import { useHistory } from 'react-router-dom';
-import * as actions from '../../areas/accounts/modules/actions';
+import * as actions from './modules/actions';
 import selectors from '../../shared/modules/selectors';
+import PageHeader from '../../shared/components/PageHeader';
 
 function ValidateEmail(e) {
   //Validate email
@@ -58,22 +59,26 @@ const CreateAccount = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [result, setResult] = useState('');
+  const [alerts, setAlerts] = useState([]);
 
   async function handleSubmit(first, last, email, password, confirm, history) {
     try {
-      const response = await createAccount({
+      await createAccount({
         first,
         last,
         email,
         password,
         confirm,
       });
-      setResult(response);
       loginAction({ email, password });
       history.push('/');
     } catch (err) {
-      setResult(err.response);
+      setAlerts([
+        {
+          color: 'danger',
+          message: 'An account with that email already exists.',
+        },
+      ]);
     }
   }
 
@@ -84,12 +89,13 @@ const CreateAccount = (props) => {
         handleSubmit(first, last, email, password, confirm, history);
       }}
     >
+      <PageHeader title='' alerts={alerts} setAlerts={setAlerts} />
       <h1 className='d-flex justify-content-center mt-4 font-weight-bold'>
         Create an Account
       </h1>
 
       <Row className='mt-3'>
-        <Col lg='2' className='offset-lg-4'>
+        <Col lg={{ size: 2, offset: 4 }}>
           <div className='input-group mb-3'>
             <Input
               type='text'
@@ -141,7 +147,7 @@ const CreateAccount = (props) => {
       </Row>
 
       <Row>
-        <Col lg='4' className='mx-auto'>
+        <Col lg={{ size: 2, offset: 4 }}>
           <div className='input-group mb-3'>
             <Input
               type='password'
@@ -158,10 +164,7 @@ const CreateAccount = (props) => {
             />
           </div>
         </Col>
-      </Row>
-
-      <Row>
-        <Col lg='4' className='mx-auto'>
+        <Col lg='2' className=''>
           <div className='input-group mb-3'>
             <Input
               type='password'
@@ -182,9 +185,14 @@ const CreateAccount = (props) => {
 
       <Row>
         <Col lg='4' className='mx-auto'>
-          <p className='text-danger d-flex justify-content-center mb-3'>
-            {result?.data}
+          <p className='align-center'>
+            Use 8 or more characters with a mix of letters, numbers, and symbols
           </p>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col lg='4' className='mx-auto'>
           <Button
             className='btn btn-secondary btn-lg mx-auto d-flex justify-content-center'
             type='submit'
