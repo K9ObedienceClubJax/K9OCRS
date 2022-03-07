@@ -92,7 +92,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassMeetings' and xtype='U'
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='SectionApplications' and xtype='U')
 	CREATE TABLE SectionApplications (
 		ID INTEGER IDENTITY NOT NULL,
-		ClassSectionID INTEGER NOT NULL,
+		ClassSectionID INTEGER NOT NULL DEFAULT(1),
 		DogID INTEGER NOT NULL,
 		[Status] VARCHAR(15) NOT NULL CHECK ([Status] IN ('Pending', 'Active', 'Completed', 'Cancelled')),
 		Refunded BIT NOT NULL,
@@ -108,6 +108,6 @@ ALTER TABLE VaccinationRecords ADD FOREIGN KEY (DogID) REFERENCES Dogs(ID);
 ALTER TABLE ClassPhotos ADD FOREIGN KEY (ClassTypeID) REFERENCES ClassTypes(ID);
 ALTER TABLE ClassSections ADD FOREIGN KEY (InstructorID) REFERENCES Users(ID);
 ALTER TABLE ClassSections ADD FOREIGN KEY (ClassTypeID) REFERENCES ClassTypes(ID);
-ALTER TABLE ClassMeetings ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID);
-ALTER TABLE SectionApplications ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID);
+ALTER TABLE ClassMeetings ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID) ON DELETE CASCADE;
+ALTER TABLE SectionApplications ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID) ON DELETE SET DEFAULT;
 ALTER TABLE SectionApplications ADD FOREIGN KEY (DogID) REFERENCES Dogs(ID);

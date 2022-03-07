@@ -44,9 +44,19 @@ namespace DataAccess.Modules
             {
                 await cnxn.OpenAsync().ConfigureAwait(false);
                 var transaction = cnxn.BeginTransaction();
-                var result = await func(cnxn, transaction).ConfigureAwait(false);
-                transaction.Dispose(); // This makes sure that we always dispose of the transactions we begin
-                return result;
+                
+                try
+                {
+                    var result = await func(cnxn, transaction).ConfigureAwait(false);
+                    transaction.Dispose();
+                    return result;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    transaction.Dispose();
+                    throw;
+                }
             }
         }
 
@@ -56,8 +66,18 @@ namespace DataAccess.Modules
             {
                 await cnxn.OpenAsync().ConfigureAwait(false);
                 var transaction = cnxn.BeginTransaction();
-                await func(cnxn, transaction).ConfigureAwait(false);
-                transaction.Dispose();
+
+                try
+                {
+                    await func(cnxn, transaction).ConfigureAwait(false);
+                    transaction.Dispose();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    transaction.Dispose();
+                    throw;
+                }
             }
         }
     }
