@@ -11,7 +11,6 @@ using System.IO;
 using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
-using K9OCRS.Models.ClassManagement;
 using K9OCRS.Configuration;
 using System.Linq;
 
@@ -47,6 +46,7 @@ namespace K9OCRS.Controllers
             this.serviceConstants = serviceConstants;
         }
 
+        #region Dogs
         //create dog
         [HttpPost]
         public async Task<IActionResult> CreateDog(Dog entity)
@@ -143,7 +143,6 @@ namespace K9OCRS.Controllers
                 return StatusCode(500, e.Message);
             }
         }
-
-
+        #endregion
     }
 }
