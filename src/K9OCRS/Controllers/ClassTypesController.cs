@@ -7,12 +7,11 @@ using DataAccess.Clients.Contracts;
 using System;
 using DataAccess.Constants;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using System.IO;
 using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
-using Microsoft.Extensions.Configuration;
+using K9OCRS.Models.ClassManagement;
 using K9OCRS.Configuration;
 using System.Linq;
 
@@ -44,21 +43,64 @@ namespace K9OCRS.Controllers
             this.serviceConstants = serviceConstants;
         }
 
+        #region ClassTypes
+
         [HttpGet]
-        public async Task<IActionResult> GetAllClassTypes()
+        [ProducesResponseType(typeof(IEnumerable<ClassTypeResult>), 200)]
+        public async Task<IActionResult> GetClassesList([FromQuery] bool includeSections)
         {
-            var entities = await connectionOwner.Use(conn =>
+            IEnumerable<ClassTypeResult> result = null;
+
+            var (types, groupedSections) = await connectionOwner.Use(async conn =>
             {
-                return dbOwner.ClassTypes.GetAll(conn);
+                IEnumerable<ClassType> _types = null;
+                Dictionary<int, List<ClassSectionResult>> _groupedSections = null;
+
+                _types = await dbOwner.ClassTypes.GetAll(conn);
+
+                if (includeSections)
+                {
+                    var sections = await dbOwner.ClassSections.GetAll(conn);
+
+                    // Group sections by classTypeID
+                    _groupedSections = sections.Aggregate(new Dictionary<int, List<ClassSectionResult>>(), (agg, s) =>
+                    {
+                        if (agg.ContainsKey(s.ClassTypeID))
+                        {
+                            agg[s.ClassTypeID].Add(s.ToClassSectionResult(serviceConstants.storageBasePath));
+                        }
+                        else
+                        {
+                            agg.Add(s.ClassTypeID, new List<ClassSectionResult> {
+                                s.ToClassSectionResult(serviceConstants.storageBasePath)
+                            });
+                        }
+                        return agg;
+                    });
+                }
+
+                return (_types, _groupedSections);
             });
 
-            var result = entities.Select(e => new ClassTypeResult(e, serviceConstants.storageBasePath));
+            if (includeSections)
+            {
+                result = types.Select(e => new ClassTypeResult(
+                    e,
+                    serviceConstants.storageBasePath,
+                    groupedSections.ContainsKey(e.ID) ? groupedSections[e.ID] : null
+                ));
+            }
+            else
+            {
+                result = types.Select(e => new ClassTypeResult(e, serviceConstants.storageBasePath));
+            }
 
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetClassTypeByID(int id)
+        [ProducesResponseType(typeof(ClassTypeResult), 200)]
+        public async Task<IActionResult> GetClassTypeDetails(int id)
         {
             var result = await connectionOwner.Use(async conn =>
             {
@@ -68,10 +110,16 @@ namespace K9OCRS.Controllers
                 // Get the list of photos related to the class type
                 var photos = await dbOwner.ClassPhotos.GetByClassTypeID(conn, id);
 
-                // Combine the data using the Model
-                var result = new ClassTypeResult(entity, serviceConstants.storageBasePath);
-                result.Photos = photos;
-                return result;
+                // Get the list of sections related to the class type
+                var sections = await dbOwner.ClassSections.GetByID(conn, "ClassTypeID", id);
+
+                // Combine the data using the Models
+                var sectionResults = sections.Select(s => s.ToClassSectionResult(serviceConstants.storageBasePath));
+                var photoResults = photos.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
+
+                var details = new ClassTypeDetails(entity, serviceConstants.storageBasePath, photoResults, sectionResults);
+
+                return details;
             });
 
             return Ok(result);
@@ -110,16 +158,9 @@ namespace K9OCRS.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{classTypeId}/photos")]
-        public async Task<IActionResult> GetPhotosByClassTypeID(int classTypeId)
-        {
-            var result = await connectionOwner.Use(conn =>
-            {
-                return dbOwner.ClassPhotos.GetByClassTypeID(conn, classTypeId);
-            });
+        #endregion
 
-            return Ok(result);
-        }
+        #region ClassType_Image
 
         [HttpPut("{classTypeId}/image")]
         public async Task<IActionResult> UpdateImage(int classTypeId, [FromForm] FileUpload upload)
@@ -164,6 +205,24 @@ namespace K9OCRS.Controllers
             return BadRequest();
         }
 
+        #endregion
+
+        #region ClassType_Photos
+
+        [HttpGet("{classTypeId}/photos")]
+        [ProducesResponseType(typeof(IEnumerable<ClassPhotoResult>), 200)]
+        public async Task<IActionResult> GetPhotosByClassTypeID(int classTypeId)
+        {
+            var result = await connectionOwner.Use(conn =>
+            {
+                return dbOwner.ClassPhotos.GetByClassTypeID(conn, classTypeId);
+            });
+
+            var photoResults = result.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
+
+            return Ok(photoResults);
+        }
+
         [HttpPost("{classTypeId}/photos")]
         public async Task<ActionResult> UploadPhotos(int classTypeId, [FromForm] FileUpload upload)
         {
@@ -187,12 +246,12 @@ namespace K9OCRS.Controllers
                                 Filename = "creating",
                             };
 
-                            var classPhotoId = await dbOwner.ClassPhotos.Add(conn, tr, photo);
+                            var photoResult = await dbOwner.ClassPhotos.Add(conn, tr, photo);
 
                             var filePath = String.Concat(
                                 StorageContainers.GetWithParams(UploadType.ClassPhoto, classTypeId),
                                 "/",
-                                classPhotoId,
+                                photoResult.ID,
                                 ext
                             );
 
@@ -200,7 +259,7 @@ namespace K9OCRS.Controllers
 
                             await storageClient.UploadFile(UploadType.ClassPicture, filePath, contType, data);
 
-                            photo.ID = classPhotoId;
+                            photo.ID = photoResult.ID;
                             photo.Filename = filename;
 
                             await dbOwner.ClassPhotos.Update(conn, tr, photo);
@@ -210,6 +269,7 @@ namespace K9OCRS.Controllers
                         catch (Exception ex)
                         {
                             tr.Rollback();
+                            throw new Exception(ex.Message);
                         }
                     }));
                 }
@@ -274,5 +334,7 @@ namespace K9OCRS.Controllers
 
             return BadRequest();
         }
+
+        #endregion
     }
 }

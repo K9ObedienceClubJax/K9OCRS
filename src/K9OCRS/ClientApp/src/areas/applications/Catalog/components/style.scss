@@ -1,0 +1,31 @@
+@import '../../../../app.scss';
+
+.classCard {
+  cursor: pointer;
+  box-shadow: $box-shadow-sm;
+  transition: box-shadow .2s, transform .2s;
+
+  .card-img-top {
+    height: max(30vh,15rem);
+    object-fit: cover;
+    object-position: center;
+  }
+
+  &:hover {
+    box-shadow: $box-shadow;
+    transform: translate(0,-.2rem);
+  }
+}
+
+.classThumbnails {
+  height: 250px;
+  width: 100%;
+  object-fit: cover;
+  box-shadow: $box-shadow;
+}
+
+.heroImg {
+  height: 50vh;
+  width: 100%;
+  object-fit: cover;
+}

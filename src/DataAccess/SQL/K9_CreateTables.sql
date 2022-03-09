@@ -74,26 +74,27 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassSections' and xtype='U'
 		ID INTEGER IDENTITY NOT NULL,
 		ClassTypeID INTEGER NOT NULL,
 		InstructorID INTEGER NOT NULL,
-		StartDate DATE NOT NULL,
-		EndDate DATE NOT NULL,
-		RosterSize INTEGER NOT NULL,
+		RosterCapacity INTEGER NOT NULL,
 		PRIMARY KEY (ID)
 	);
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassMeetings' and xtype='U')
 	CREATE TABLE ClassMeetings (
 		ID INTEGER IDENTITY NOT NULL,
-		Date DATETIME NOT NULL,
-		PRIMARY KEY (ID)
+		ClassSectionID INTEGER NOT NULL,
+		StartDate DATETIME NOT NULL,
+		EndDate DATETIME NOT NULL,
+		PRIMARY KEY (ID),
+		-- Start and End should be on the same day
+		CONSTRAINT CHK_Dates CHECK (DATEDIFF(Day, StartDate, EndDate) = 0)
 	);
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='SectionApplications' and xtype='U')
 	CREATE TABLE SectionApplications (
 		ID INTEGER IDENTITY NOT NULL,
-		ClassSectionID INTEGER NOT NULL,
+		ClassSectionID INTEGER NOT NULL DEFAULT(1),
 		DogID INTEGER NOT NULL,
-		Status VARCHAR(15) NOT NULL,
-		Approved BIT NOT NULL,
+		[Status] VARCHAR(15) NOT NULL CHECK ([Status] IN ('Pending', 'Active', 'Completed', 'Cancelled')),
 		Refunded BIT NOT NULL,
 		ReviewedBy INTEGER,
 		ReviewedDate DATE,
@@ -107,5 +108,6 @@ ALTER TABLE VaccinationRecords ADD FOREIGN KEY (DogID) REFERENCES Dogs(ID);
 ALTER TABLE ClassPhotos ADD FOREIGN KEY (ClassTypeID) REFERENCES ClassTypes(ID);
 ALTER TABLE ClassSections ADD FOREIGN KEY (InstructorID) REFERENCES Users(ID);
 ALTER TABLE ClassSections ADD FOREIGN KEY (ClassTypeID) REFERENCES ClassTypes(ID);
-ALTER TABLE SectionApplications ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID);
+ALTER TABLE ClassMeetings ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID) ON DELETE CASCADE;
+ALTER TABLE SectionApplications ADD FOREIGN KEY (ClassSectionID) REFERENCES ClassSections(ID) ON DELETE SET DEFAULT;
 ALTER TABLE SectionApplications ADD FOREIGN KEY (DogID) REFERENCES Dogs(ID);

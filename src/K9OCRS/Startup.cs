@@ -14,6 +14,10 @@ using System.Diagnostics;
 using DataAccess;
 using K9OCRS.Configuration;
 using System.IO;
+using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace K9OCRS
 {
@@ -34,6 +38,20 @@ namespace K9OCRS
             services.AddControllersWithViews();
             services.AddRazorPages().WithRazorPagesRoot("/Views");
             services.AddHttpContextAccessor();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+              
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -68,6 +86,19 @@ namespace K9OCRS
                         Description = "API for the K9 Obedience Club Registration System",
                         Version = "v1"
                     });
+
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
+                {
+
+                    var srcPath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, "..", "..", "..", ".."));
+                    var dataAccessPath = Path.Combine(srcPath, "DataAccess", "bin", "Debug");
+
+                    var mainName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+                    var dataAccessName = typeof(ModuleBuilder).GetTypeInfo().Assembly.GetName().Name;
+
+                    options.IncludeXmlComments("bin/Debug/" + mainName + ".xml");
+                    options.IncludeXmlComments(Path.Combine(dataAccessPath, dataAccessName + ".xml"));
+                }
             });
         }
 
@@ -152,6 +183,8 @@ namespace K9OCRS
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseSwagger();
 
