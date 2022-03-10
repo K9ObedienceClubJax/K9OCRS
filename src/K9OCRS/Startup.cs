@@ -48,7 +48,7 @@ namespace K9OCRS
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = Configuration["Jwt:Issuer"],
                     ValidAudience = Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWT_KEY")))
                 };
               
             });
@@ -152,6 +152,7 @@ namespace K9OCRS
 
             builder.RegisterType<ServiceConstants>()
                     .WithParameter("storageBasePath", storageBasePath)
+                    .WithParameter("jwtKey", Configuration.GetValue<string>("JWT_KEY"))
                     .SingleInstance()
                     .AsSelf();
         }

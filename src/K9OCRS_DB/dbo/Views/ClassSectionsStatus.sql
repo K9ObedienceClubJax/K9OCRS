@@ -1,8 +1,4 @@
-USE k9ocrs
-GO
-
---DROP VIEW ClassSectionsStatus;
-
+﻿
 CREATE VIEW ClassSectionsStatus
 AS
 SELECT
