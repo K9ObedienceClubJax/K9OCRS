@@ -339,7 +339,7 @@ namespace K9OCRS.Controllers
         //Non-API functions
         private async Task<string> GenerateToken(Login login, User loginResult)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(serviceConstants.jwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             {
@@ -364,7 +364,7 @@ namespace K9OCRS.Controllers
 
         private async Task<string> GenerateForgotPasswordToken(string email, User accountResult)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(serviceConstants.jwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             {
