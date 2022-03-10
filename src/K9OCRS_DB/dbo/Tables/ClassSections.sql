@@ -3,9 +3,9 @@
     [ClassTypeID]    INT NOT NULL,
     [InstructorID]   INT NOT NULL,
     [RosterCapacity] INT NOT NULL,
-    PRIMARY KEY CLUSTERED ([ID] ASC),
-    FOREIGN KEY ([ClassTypeID]) REFERENCES [dbo].[ClassTypes] ([ID]),
-    FOREIGN KEY ([InstructorID]) REFERENCES [dbo].[Users] ([ID])
+    CONSTRAINT [PK_ClassSections] PRIMARY KEY CLUSTERED ([ID] ASC),
+    CONSTRAINT [FK_ClassSections_ClassTypes] FOREIGN KEY ([ClassTypeID]) REFERENCES [dbo].[ClassTypes] ([ID]),
+    CONSTRAINT [FK_ClassSections_Users] FOREIGN KEY ([InstructorID]) REFERENCES [dbo].[Users] ([ID])
 );
 
 

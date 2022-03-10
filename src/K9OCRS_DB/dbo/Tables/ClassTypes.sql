@@ -6,7 +6,7 @@
     [ImageFilename] VARCHAR (70)   DEFAULT ('ClassPlaceholder.png') NULL,
     [Duration]      VARCHAR (128)  NOT NULL,
     [Price]         MONEY          NOT NULL,
-    PRIMARY KEY CLUSTERED ([ID] ASC),
-    UNIQUE NONCLUSTERED ([Title] ASC)
+    CONSTRAINT [PK_ClassTypes] PRIMARY KEY CLUSTERED ([ID] ASC),
+    CONSTRAINT [UQ_ClassTypes_Title] UNIQUE NONCLUSTERED ([Title] ASC)
 );
 

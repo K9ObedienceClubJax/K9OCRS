@@ -1,6 +1,4 @@
 ﻿
---DROP VIEW ClassSectionsStatus;
-
 CREATE VIEW ClassSectionsStatus
 AS
 SELECT

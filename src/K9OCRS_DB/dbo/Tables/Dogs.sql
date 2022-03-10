@@ -4,6 +4,6 @@
     [Breed]                  NVARCHAR (35) NOT NULL,
     [DateOfBirth]            DATE          NOT NULL,
     [ProfilePictureFilename] VARCHAR (70)  DEFAULT ('DogPlaceholder.png') NULL,
-    PRIMARY KEY CLUSTERED ([ID] ASC)
+    CONSTRAINT [PK_Dogs] PRIMARY KEY CLUSTERED ([ID] ASC)
 );
 

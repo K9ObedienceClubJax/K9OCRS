@@ -6,7 +6,7 @@
     [Email]                  NVARCHAR (128) NOT NULL,
     [Password]               NVARCHAR (256) NOT NULL,
     [ProfilePictureFilename] VARCHAR (70)   DEFAULT ('UserPlaceholder.png') NULL,
-    PRIMARY KEY CLUSTERED ([ID] ASC),
-    FOREIGN KEY ([UserRoleID]) REFERENCES [dbo].[UserRoles] ([ID])
+    CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([ID] ASC),
+    CONSTRAINT [FK_Users_UserRoles] FOREIGN KEY ([UserRoleID]) REFERENCES [dbo].[UserRoles] ([ID])
 );
 

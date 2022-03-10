@@ -77,6 +77,7 @@
     <Folder Include="Compares" />
     <Folder Include="Scripts" />
     <Folder Include="Scripts\PostDeploymentScripts" />
+    <Folder Include="Scripts\Seeding" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\UserRoles.sql" />
@@ -94,6 +95,7 @@
   <ItemGroup>
     <None Include="PublishProfiles\LocalDB.publish.xml" />
     <None Include="Compares\LocalDB_Compare.scmp" />
+    <None Include="Scripts\Seeding\InsertTestData.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\PostDeploymentScripts\Dummy.Script.PostDeployment.sql" />
