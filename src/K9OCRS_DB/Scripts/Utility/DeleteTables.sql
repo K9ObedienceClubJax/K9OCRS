@@ -1,7 +1,4 @@
-USE k9ocrs
-GO
-
-DROP TABLE ClassMeetings;
+﻿DROP TABLE ClassMeetings;
 DROP TABLE VaccinationRecords;
 DROP TABLE SectionApplications;
 DROP TABLE UserDogs;
