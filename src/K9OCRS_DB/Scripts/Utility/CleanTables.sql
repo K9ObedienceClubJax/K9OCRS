@@ -1,7 +1,4 @@
-USE k9ocrs
-GO
-
-DELETE FROM ClassMeetings;
+﻿DELETE FROM ClassMeetings;
 DBCC CHECKIDENT ('[ClassMeetings]', RESEED, 0);
 
 DELETE FROM VaccinationRecords;

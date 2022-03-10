@@ -78,6 +78,7 @@
     <Folder Include="Scripts" />
     <Folder Include="Scripts\PostDeploymentScripts" />
     <Folder Include="Scripts\Seeding" />
+    <Folder Include="Scripts\Utility" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\UserRoles.sql" />
@@ -96,6 +97,8 @@
     <None Include="PublishProfiles\LocalDB.publish.xml" />
     <None Include="Compares\LocalDB_Compare.scmp" />
     <None Include="Scripts\Seeding\InsertTestData.sql" />
+    <None Include="Scripts\Utility\DeleteTables.sql" />
+    <None Include="Scripts\Utility\CleanTables.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\PostDeploymentScripts\Dummy.Script.PostDeployment.sql" />
