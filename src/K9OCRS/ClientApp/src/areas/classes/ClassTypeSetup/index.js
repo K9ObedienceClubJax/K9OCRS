@@ -1,38 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Row, Button, Input, Spinner } from 'reactstrap';
-import * as classTypesClient from '../../../util/apiClients/classTypes';
-import PageHeader from '../../../shared/components/PageHeader';
 import { Link } from 'react-router-dom';
+import PageHeader from '../../../shared/components/PageHeader';
+import * as actions from '../modules/actions';
 
-const ClassTypeSetup = () => {
+const ClassTypeSetup = (props) => {
+    const { classType, fetchClassDetails } = props;
+
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
-    const [classType, setClassType] = useState([]);
 
     const { classTypeId } = useParams();
 
     useEffect(() => {
-        async function getTest() {
-            try {
-                const res = await classTypesClient.getClassTypeByID(
-                    classTypeId
-                );
-                setClassType(res?.data);
-                setLoading(false);
-            } catch (err) {
-                setLoading(false);
-                setAlerts([
-                    {
-                        color: 'danger',
-                        message:
-                            "We're having issues retrieving the requested class type.",
-                    },
-                ]);
-            }
-        }
-        getTest();
-    }, [classTypeId]);
+        fetchClassDetails({ classTypeId, setLoading, setAlerts });
+    }, [classTypeId]); // eslint-disable-line
 
     return (
         <div>
@@ -102,4 +86,11 @@ const ClassTypeSetup = () => {
     );
 };
 
-export default ClassTypeSetup;
+export default connect(
+    (state) => ({
+        classType: state.classes?.classDetails,
+    }),
+    {
+        fetchClassDetails: actions.fetchClassDetails,
+    }
+)(ClassTypeSetup);
