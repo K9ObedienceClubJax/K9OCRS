@@ -84,15 +84,15 @@ namespace K9OCRS.Controllers
 
             if (includeSections)
             {
-                result = types.Select(e => new ClassTypeResult(
-                    e,
-                    serviceConstants.storageBasePath,
-                    groupedSections.ContainsKey(e.ID) ? groupedSections[e.ID] : null
-                ));
+                result = types.Select(e => {
+                    var r = e.ToClassTypeResult(serviceConstants.storageBasePath);
+                    r.Sections = groupedSections.ContainsKey(e.ID) ? groupedSections[e.ID] : null;
+                    return r;
+                });
             }
             else
             {
-                result = types.Select(e => new ClassTypeResult(e, serviceConstants.storageBasePath));
+                result = types.Select(e => e.ToClassTypeResult(serviceConstants.storageBasePath));
             }
 
             return Ok(result);
@@ -105,7 +105,7 @@ namespace K9OCRS.Controllers
             var result = await connectionOwner.Use(async conn =>
             {
                 // Get the data from the ClassTypes table
-                var entity = await dbOwner.ClassTypes.GetByID(conn, id);
+                var entity = (await dbOwner.ClassTypes.GetByID(conn, id)).ToClassTypeResult(serviceConstants.storageBasePath);
 
                 // Get the list of photos related to the class type
                 var photos = await dbOwner.ClassPhotos.GetByClassTypeID(conn, id);
@@ -115,14 +115,24 @@ namespace K9OCRS.Controllers
 
                 // Combine the data using the Models
                 var sectionResults = sections.Select(s => s.ToClassSectionResult(serviceConstants.storageBasePath));
-                var photoResults = photos.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
+                var photoResults = photos.Select(p => p.ToClassPhotoResult(serviceConstants.storageBasePath));
 
-                var details = new ClassTypeDetails(entity, serviceConstants.storageBasePath, photoResults, sectionResults);
+                entity.Photos = photoResults;
+                entity.Sections = sectionResults;
 
-                return details;
+                return entity;
             });
 
             return Ok(result);
+        }
+
+        [HttpGet("placeholderImageUrl")]
+        [ProducesResponseType(typeof(string), 200)]
+        public IActionResult GetPlaceholderImageUrl()
+        {
+            return Ok((new ClassType { ImageFilename = "ClassPlaceholder.png" })
+                .ToClassTypeResult(serviceConstants.storageBasePath)
+                .ImageUrl);
         }
 
         [HttpPost]
