@@ -17,6 +17,10 @@ export default handleActions(
             ...state,
             classDetails: payload,
         }),
+        [actions.clearedClassDetails]: (state) => ({
+            ...state,
+            classDetails: null,
+        }),
         [actions.fetchedSectionDetails]: (state, { payload }) => ({
             ...state,
             sectionDetails: payload,

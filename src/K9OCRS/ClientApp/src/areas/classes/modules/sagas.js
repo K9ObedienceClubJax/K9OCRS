@@ -42,9 +42,15 @@ function* fetchClassDetails({ payload }) {
     }
 }
 
+function* initializeTypeAddition({ payload }) {
+    payload.setLoading(false);
+    yield put(actions.clearedClassDetails());
+}
+
 const sagas = [
     takeEvery(actions.fetchClassList, fetchClassList),
     takeEvery(actions.fetchClassDetails, fetchClassDetails),
+    takeEvery(actions.initializeTypeAddition, initializeTypeAddition),
 ];
 
 export default sagas;

@@ -17,18 +17,18 @@ const ClassTypeEditor = (props) => {
     const { classType, setData, addingNewType } = props;
 
     const initialState = {
-        title: classType.title,
-        duration: classType.duration,
-        price: classType.price,
-        requirements: classType.requirements,
-        description: classType.description,
+        title: addingNewType ? '' : classType.title,
+        duration: addingNewType ? '' : classType.duration,
+        price: addingNewType ? '' : classType.price,
+        requirements: addingNewType ? '' : classType.requirements,
+        description: addingNewType ? '' : classType.description,
     };
 
     const [classTypeDetails, dispatch] = useReducer(reducer, initialState);
 
     const [photos, setPhotos] = useState(classType?.photos);
 
-    const [imageToUpdate, setImageToUpdate] = useState();
+    const [imageToUpdate, setImageToUpdate] = useState(null);
     const [photosToAdd, setPhotosToAdd] = useState([]);
     const [photosToRemove, setPhotosToRemove] = useState([]);
 
@@ -183,7 +183,7 @@ const ClassTypeEditor = (props) => {
 };
 
 ClassTypeEditor.propTypes = {
-    classType: PropTypes.object.isRequired,
+    classType: PropTypes.object,
     setData: PropTypes.func.isRequired,
 };
 

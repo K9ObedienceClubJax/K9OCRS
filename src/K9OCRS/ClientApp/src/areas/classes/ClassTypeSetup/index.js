@@ -10,7 +10,7 @@ import * as actions from '../modules/actions';
 import './styles.scss';
 
 const ClassTypeSetup = (props) => {
-    const { classType, fetchClassDetails } = props;
+    const { classType, fetchClassDetails, init } = props;
 
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
@@ -22,7 +22,9 @@ const ClassTypeSetup = (props) => {
     const addingNewType = !classTypeId;
 
     useEffect(() => {
-        if (!addingNewType) {
+        if (addingNewType) {
+            init({ setLoading });
+        } else {
             fetchClassDetails({ classTypeId, setLoading, setAlerts });
         }
     }, [classTypeId]); // eslint-disable-line
@@ -32,14 +34,18 @@ const ClassTypeSetup = (props) => {
     return (
         <div className={cn}>
             <PageHeader
-                title={`Class Type: ${classType?.title ?? 'Loading...'}`}
+                title={
+                    !addingNewType
+                        ? `Class Type: ${classType?.title ?? 'Loading...'}`
+                        : 'Class Type Setup'
+                }
                 breadCrumbItems={[
                     { label: 'Management', path: '/Manage' },
                     { label: 'Classes', path: '/Manage/Classes' },
                     {
-                        label: `Class Type: ${
-                            classType?.title ?? 'Loading...'
-                        }`,
+                        label: !addingNewType
+                            ? `Class Type: ${classType?.title ?? 'Loading...'}`
+                            : 'Class Type Setup',
                         active: true,
                     },
                 ]}
@@ -78,5 +84,6 @@ export default connect(
     }),
     {
         fetchClassDetails: actions.fetchClassDetails,
+        init: actions.initializeTypeAddition,
     }
 )(ClassTypeSetup);
