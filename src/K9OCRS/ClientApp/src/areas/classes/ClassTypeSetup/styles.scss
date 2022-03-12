@@ -1,5 +1,14 @@
 .classTypeSetup {
     &__editor {
+        &__top {
+            display: flex;
+            align-items: center;
+
+            form {
+                flex: 1;
+                margin-left: 2rem;
+            }
+        }
         &__photos {
             &-header {
                 display: flex;

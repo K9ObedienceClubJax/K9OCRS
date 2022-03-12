@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Button, Col, Row } from 'reactstrap';
 import Input from '../../../shared/components/FloatingLabelInput';
 import FileDropzone from '../../../shared/components/FileDropzone';
+import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
 import FileThumbnail from '../../../shared/components/FileThumbnail';
 import { useReducer } from 'react';
 
@@ -27,6 +28,7 @@ const ClassTypeEditor = (props) => {
 
     const [photos, setPhotos] = useState(classType?.photos);
 
+    const [imageToUpdate, setImageToUpdate] = useState();
     const [photosToAdd, setPhotosToAdd] = useState([]);
     const [photosToRemove, setPhotosToRemove] = useState([]);
 
@@ -37,11 +39,12 @@ const ClassTypeEditor = (props) => {
     // Update the data object that will be saved
     useEffect(() => {
         setData({
+            image: imageToUpdate,
             ...classTypeDetails,
             photosToAdd,
             photosToRemove,
         });
-    }, [setData, classTypeDetails, photosToAdd, photosToRemove]);
+    }, [setData, imageToUpdate, classTypeDetails, photosToAdd, photosToRemove]);
 
     const handleRemove = (photo, idx) => {
         setPhotos((currentPhotos) => currentPhotos.filter((p, i) => i !== idx));
@@ -50,11 +53,24 @@ const ClassTypeEditor = (props) => {
 
     return (
         <>
-            <div>
-                <div></div>
-                <form className="d-flex flex-column">
+            <Row className={`${cn}__top`}>
+                <Col className="d-flex" xs="12" md="5" lg="4" xl="3">
+                    <ProfileFileDropzone
+                        maxSize="5MB"
+                        maxFiles={1}
+                        onChange={(files) => setImageToUpdate(files[0])}
+                        currentImage={classType?.imageUrl}
+                    />
+                </Col>
+                <Col
+                    className="d-flex flex-column"
+                    xs="12"
+                    md="7"
+                    lg="8"
+                    xl="9"
+                >
                     <Row className="g-2" xs="1" sm="1" md="3">
-                        <Col md="7">
+                        <Col md="5" lg="7">
                             <Input
                                 type="text"
                                 label="Title"
@@ -69,7 +85,7 @@ const ClassTypeEditor = (props) => {
                                 }
                             />
                         </Col>
-                        <Col md="3">
+                        <Col md="5" lg="3">
                             <Input
                                 type="text"
                                 label="Session Length"
@@ -84,7 +100,7 @@ const ClassTypeEditor = (props) => {
                                 }
                             />
                         </Col>
-                        <Col md="2">
+                        <Col md="2" lg="2">
                             <Input
                                 type="number"
                                 label="Price"
@@ -132,8 +148,8 @@ const ClassTypeEditor = (props) => {
                             style={{ minHeight: '250px' }}
                         />
                     </Row>
-                </form>
-            </div>
+                </Col>
+            </Row>
             <section className={`${cn}__photos`}>
                 <div className={`${cn}__photos-header`}>
                     <h3>Photos</h3>
