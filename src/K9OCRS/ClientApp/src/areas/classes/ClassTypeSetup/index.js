@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Row, Button, Input, Spinner } from 'reactstrap';
+import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import ClassTypeEditor from './ClassTypeEditor';
 import PageHeader from '../../../shared/components/PageHeader';
 import * as actions from '../modules/actions';
+
+import './styles.scss';
 
 const ClassTypeSetup = (props) => {
     const { classType, fetchClassDetails } = props;
@@ -12,14 +15,22 @@ const ClassTypeSetup = (props) => {
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
 
+    const [data, setData] = useState(null);
+
     const { classTypeId } = useParams();
 
+    const addingNewType = !classTypeId;
+
     useEffect(() => {
-        fetchClassDetails({ classTypeId, setLoading, setAlerts });
+        if (!addingNewType) {
+            fetchClassDetails({ classTypeId, setLoading, setAlerts });
+        }
     }, [classTypeId]); // eslint-disable-line
 
+    const cn = 'classTypeSetup';
+
     return (
-        <div>
+        <div className={cn}>
             <PageHeader
                 title={`Class Type: ${classType?.title ?? 'Loading...'}`}
                 breadCrumbItems={[
@@ -50,38 +61,13 @@ const ClassTypeSetup = (props) => {
             {loading ? (
                 <Spinner />
             ) : (
-                <form className="d-flex flex-column">
-                    <Row className="g-2">
-                        <Input
-                            type="text"
-                            placeholder="Title"
-                            className="mb-2"
-                            value={classType?.title}
-                        />
-                        <Input
-                            type="text"
-                            placeholder="Session Length"
-                            className="mb-2"
-                            value={classType?.duration}
-                        />
-                        <Input
-                            type="text"
-                            placeholder="Price"
-                            className="mb-2"
-                            value={classType?.price}
-                        />
-                    </Row>
-                    <Row className="g-2">
-                        <Input
-                            type="textarea"
-                            placeholder="Description"
-                            className="mb-2"
-                            rows="8"
-                            value={classType?.description}
-                        />
-                    </Row>
-                </form>
+                <ClassTypeEditor
+                    classType={classType}
+                    setData={setData}
+                    addingNewType={addingNewType}
+                />
             )}
+            <pre>{JSON.stringify(data, null, 4)}</pre>
         </div>
     );
 };

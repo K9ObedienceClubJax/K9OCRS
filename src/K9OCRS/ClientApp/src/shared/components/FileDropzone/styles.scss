@@ -1,0 +1,67 @@
+@import '../../../app.scss';
+
+.fileDropZone {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.75rem;
+    background-color: $gray-100;
+    border: 2px dashed $gray-300;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition-duration: 200ms;
+    transition-property: background-color, border-color;
+
+    &:hover {
+        cursor: pointer;
+        background-color: $gray-200;
+        border-color: $gray-400;
+    }
+
+    &-container--bordered {
+        border: 1px solid $gray-300;
+        border-radius: 4px;
+        padding: 0.25rem;
+    }
+
+    &__icon {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    &__cta-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    &__cta {
+        margin-bottom: 0.25rem;
+        font-weight: bold;
+        color: rgba($gray-900, 0.8);
+    }
+    &__accept-text {
+        color: rgba($gray-900, 0.75);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+    }
+}
+
+@include media-breakpoint-up(sm) {
+    .fileDropZone {
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+        padding: 2rem;
+
+        &__accept-text {
+            font-size: 0.75rem;
+        }
+
+        &-container--bordered {
+            padding: 1rem;
+        }
+    }
+}
