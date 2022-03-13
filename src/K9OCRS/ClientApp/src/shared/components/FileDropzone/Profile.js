@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import numbro from 'numbro';
 import { useDropzone } from 'react-dropzone';
 import { BsCloudUpload } from 'react-icons/bs';
@@ -32,15 +32,21 @@ const ProfileFileDropzone = (props) => {
 
     const cn = 'fileDropZone-profile';
 
+    // If this isn't memoized, the image will flicker
+    // everytime the component re-renders
+    const imageUrl = useMemo(() => {
+        return acceptedFiles[0]
+            ? `url(${URL.createObjectURL(acceptedFiles[0])})`
+            : `url(${currentImage})`;
+    }, [acceptedFiles, currentImage]);
+
     return (
         <div
             {...getRootProps({
                 className: `${cn} ${round ? `${cn}--round` : ''}`,
             })}
             style={{
-                backgroundImage: acceptedFiles[0]
-                    ? `url(${URL.createObjectURL(acceptedFiles[0])})`
-                    : `url(${currentImage})`,
+                backgroundImage: imageUrl,
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',

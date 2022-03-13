@@ -17,9 +17,9 @@ export default handleActions(
             ...state,
             classDetails: payload,
         }),
-        [actions.clearedClassDetails]: (state) => ({
+        [actions.initializedClassDetails]: (state, { payload }) => ({
             ...state,
-            classDetails: null,
+            classDetails: { imageUrl: payload },
         }),
         [actions.fetchedSectionDetails]: (state, { payload }) => ({
             ...state,

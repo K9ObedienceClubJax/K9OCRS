@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import ClassTypeEditor from './ClassTypeEditor';
@@ -10,14 +10,22 @@ import * as actions from '../modules/actions';
 import './styles.scss';
 
 const ClassTypeSetup = (props) => {
-    const { classType, fetchClassDetails, init } = props;
+    const {
+        classType,
+        fetchClassDetails,
+        init,
+        saveNewClassType,
+        updateClassType,
+    } = props;
+
+    const historyInstance = useHistory();
+    const { classTypeId } = useParams();
 
     const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
     const [alerts, setAlerts] = useState([]);
 
     const [data, setData] = useState(null);
-
-    const { classTypeId } = useParams();
 
     const addingNewType = !classTypeId;
 
@@ -30,6 +38,28 @@ const ClassTypeSetup = (props) => {
     }, [classTypeId]); // eslint-disable-line
 
     const cn = 'classTypeSetup';
+
+    const formRef = useRef(null);
+
+    const handleSubmit = () => {
+        setSubmitting(true);
+        if (addingNewType) {
+            saveNewClassType({
+                ...data,
+                setSubmitting,
+                setAlerts,
+                redirect: (created) =>
+                    historyInstance.push(`/Manage/Classes/Types/${created.id}`),
+            });
+        } else {
+            updateClassType({
+                ...data,
+                setSubmitting,
+                setLoading,
+                setAlerts,
+            });
+        }
+    };
 
     return (
         <div className={cn}>
@@ -60,8 +90,19 @@ const ClassTypeSetup = (props) => {
                 >
                     Cancel
                 </Button>
-                <Button onClick={() => {}} color="primary">
-                    Save Changes
+                <Button
+                    onClick={() => formRef.current.requestSubmit()}
+                    color="primary"
+                    disabled={submitting}
+                >
+                    {submitting ? (
+                        <>
+                            Saving Changes
+                            <Spinner className="ms-3" size="sm" />
+                        </>
+                    ) : (
+                        'Save Changes'
+                    )}
                 </Button>
             </PageHeader>
             {loading ? (
@@ -71,9 +112,10 @@ const ClassTypeSetup = (props) => {
                     classType={classType}
                     setData={setData}
                     addingNewType={addingNewType}
+                    formRef={formRef}
+                    handleSubmit={handleSubmit}
                 />
             )}
-            <pre>{JSON.stringify(data, null, 4)}</pre>
         </div>
     );
 };
@@ -85,5 +127,7 @@ export default connect(
     {
         fetchClassDetails: actions.fetchClassDetails,
         init: actions.initializeTypeAddition,
+        saveNewClassType: actions.saveNewClassType,
+        updateClassType: actions.updateClassType,
     }
 )(ClassTypeSetup);

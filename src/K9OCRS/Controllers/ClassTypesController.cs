@@ -136,6 +136,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(ClassType), 200)]
         public async Task<IActionResult> CreateClassType([FromForm] ClassTypeAddRequest request)
         {
             var result = await connectionOwner.UseTransaction(async (conn, tr) =>
@@ -181,6 +182,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> UpdateClassType([FromForm] ClassTypeUpdateRequest request)
         {
             var result = await connectionOwner.UseTransaction(async (conn, tr) => {
@@ -233,6 +235,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> DeleteClassType(int id)
         {
             var photos = await GetPhotosByClassType(id);

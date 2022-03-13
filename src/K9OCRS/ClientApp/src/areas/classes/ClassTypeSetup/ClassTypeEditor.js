@@ -14,7 +14,7 @@ const reducer = (state, action) => ({
 });
 
 const ClassTypeEditor = (props) => {
-    const { classType, setData, addingNewType } = props;
+    const { classType, formRef, handleSubmit, setData, addingNewType } = props;
 
     const initialState = {
         title: addingNewType ? '' : classType.title,
@@ -38,13 +38,30 @@ const ClassTypeEditor = (props) => {
 
     // Update the data object that will be saved
     useEffect(() => {
-        setData({
-            image: imageToUpdate,
-            ...classTypeDetails,
-            photosToAdd,
-            photosToRemove,
-        });
-    }, [setData, imageToUpdate, classTypeDetails, photosToAdd, photosToRemove]);
+        if (addingNewType) {
+            setData({
+                image: imageToUpdate,
+                ...classTypeDetails,
+                photos: photosToAdd,
+            });
+        } else {
+            setData({
+                id: classType.id,
+                imageUpdate: imageToUpdate,
+                ...classTypeDetails,
+                photosToAdd,
+                photosToRemove,
+            });
+        }
+    }, [
+        setData,
+        addingNewType,
+        imageToUpdate,
+        classTypeDetails,
+        photosToAdd,
+        photosToRemove,
+        classType,
+    ]);
 
     const handleRemove = (photo, idx) => {
         setPhotos((currentPhotos) => currentPhotos.filter((p, i) => i !== idx));
@@ -52,7 +69,13 @@ const ClassTypeEditor = (props) => {
     };
 
     return (
-        <>
+        <form
+            ref={formRef}
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+            }}
+        >
             <Row className={`${cn}__top`}>
                 <Col className="d-flex" xs="12" md="5" lg="4" xl="3">
                     <ProfileFileDropzone
@@ -83,6 +106,7 @@ const ClassTypeEditor = (props) => {
                                         payload: e.target.value,
                                     })
                                 }
+                                required
                             />
                         </Col>
                         <Col md="5" lg="3">
@@ -98,6 +122,7 @@ const ClassTypeEditor = (props) => {
                                         payload: e.target.value,
                                     })
                                 }
+                                required
                             />
                         </Col>
                         <Col md="2" lg="2">
@@ -113,6 +138,7 @@ const ClassTypeEditor = (props) => {
                                         payload: e.target.value,
                                     })
                                 }
+                                required
                             />
                         </Col>
                     </Row>
@@ -146,6 +172,7 @@ const ClassTypeEditor = (props) => {
                                 })
                             }
                             style={{ minHeight: '250px' }}
+                            required
                         />
                     </Row>
                 </Col>
@@ -178,7 +205,7 @@ const ClassTypeEditor = (props) => {
                     />
                 ))}
             </section>
-        </>
+        </form>
     );
 };
 
