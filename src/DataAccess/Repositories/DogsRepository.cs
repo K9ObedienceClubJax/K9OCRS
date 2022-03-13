@@ -1,14 +1,14 @@
-﻿using DataAccess.Constants;
+﻿using Dapper;
+using DataAccess.Constants;
 using DataAccess.Entities;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
+using DataAccess.Repositories.Contracts;
 using System.Data;
-using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 
 namespace DataAccess.Repositories
 {
-    public class DogsRepository : BaseRepository<Dog>
+    public class DogsRepository : BaseRepository<Dog>, IDogRepository
     {
 
         // Everytime that you create a repository, make sure you include a constructor that calls the "base constructor"
