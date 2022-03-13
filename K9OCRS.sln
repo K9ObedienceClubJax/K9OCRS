@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "K9OCRS", "src\K9OCRS\K9OCRS.csproj", "{5EB9B47E-F2D8-461D-9EB9-76E62CB9D7A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "src\DataAccess\DataAccess.csproj", "{04DC06DD-0574-4E49-9D7A-77447BB1670C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "src\DataAccess\DataAccess.csproj", "{04DC06DD-0574-4E49-9D7A-77447BB1670C}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "K9OCRS_DB", "src\K9OCRS_DB\K9OCRS_DB.sqlproj", "{843D5585-709B-4C99-929C-6172FA587301}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{04DC06DD-0574-4E49-9D7A-77447BB1670C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04DC06DD-0574-4E49-9D7A-77447BB1670C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04DC06DD-0574-4E49-9D7A-77447BB1670C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{843D5585-709B-4C99-929C-6172FA587301}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{843D5585-709B-4C99-929C-6172FA587301}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{843D5585-709B-4C99-929C-6172FA587301}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{843D5585-709B-4C99-929C-6172FA587301}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

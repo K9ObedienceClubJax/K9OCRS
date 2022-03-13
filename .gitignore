@@ -4,6 +4,8 @@
 obj
 bin
 .vs/
+*.jfm
+*.dbmdl
 .env
 
 # Front-end build stuff

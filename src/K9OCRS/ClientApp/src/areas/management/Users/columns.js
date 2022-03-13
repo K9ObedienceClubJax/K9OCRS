@@ -1,5 +1,6 @@
 import React from 'react';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
+import { alignmentWrapper } from '../../../util/columns';
 
 
 const idTemplate = ({ value }) => {
@@ -12,6 +13,7 @@ const userTemplate = ({ value }) => {
       <ProfileBadge
         {...value}
         imageUrl={value.profilePictureUrl}
+        link
       />
     </div>
   );
@@ -52,7 +54,7 @@ const columns = [
       lastName: row.lastName,
       profilePictureUrl: row.profilePictureUrl,
     }),
-    Cell: userTemplate,
+    Cell: alignmentWrapper('left', userTemplate),
   },
   {
     Header: 'Email',

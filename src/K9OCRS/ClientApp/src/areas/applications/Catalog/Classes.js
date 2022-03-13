@@ -48,7 +48,6 @@ const Classes = props => {
           className="pb-4 heroImg"
           alt={`The ${classDetail.title} class`}
           src={classDetail.imageUrl}
-          top
         />
         <h5>Description</h5>
         <p>{classDetail.description}</p>
@@ -72,13 +71,11 @@ const Classes = props => {
         <Row className="my-4">
         {
           photoArr?.length > 0 ? photoArr.map(sectImg => (
-          <Col className="mb-4" sm="12" md="6" lg="4" xl="3">
+          <Col key={sectImg.id} className="mb-4" sm="12" md="6" lg="4" xl="3">
           <img
-              key={sectImg.id}
               className="classThumbnails"
               alt={`The ${sectImg.fileName} class`}
               src={sectImg.imageUrl}
-              top
             />
           </Col>
           )) : <></>
