@@ -14,6 +14,8 @@ using K9OCRS.Models;
 using K9OCRS.Models.ClassManagement;
 using K9OCRS.Configuration;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 
 namespace K9OCRS.Controllers
 {
@@ -42,8 +44,6 @@ namespace K9OCRS.Controllers
 
             this.serviceConstants = serviceConstants;
         }
-
-        #region ClassTypes
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ClassTypeResult>), 200)]
@@ -136,23 +136,98 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateClassType(ClassType entity)
+        public async Task<IActionResult> CreateClassType([FromForm] ClassTypeAddRequest request)
         {
-            var result = await connectionOwner.Use(conn =>
+            var result = await connectionOwner.UseTransaction(async (conn, tr) =>
             {
-                return dbOwner.ClassTypes.Add(conn, entity);
+                try
+                {
+                    var type = await dbOwner.ClassTypes.Add(conn, tr, new ClassType
+                    {
+                        Title = request.Title,
+                        Description = request.Description,
+                        Requirements = request.Requirements,
+                        Duration = request.Duration,
+                        Price = request.Price,
+                    });
+
+                    tr.Commit();
+                    return type;
+                }
+                catch
+                {
+                    tr.Rollback();
+                    throw;
+                }
             });
+
+            if (request.Image != null)
+            {
+                await UpdateImage(result.ID, new FileUpload
+                {
+                    Files = new List<IFormFile> { request.Image },
+                });
+            }
+
+            if (request.Photos != null)
+            {
+                await UploadPhotos(result.ID, new FileUpload
+                {
+                    Files = request.Photos,
+                });
+            }
 
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateClassType(ClassType entity)
+        public async Task<IActionResult> UpdateClassType([FromForm] ClassTypeUpdateRequest request)
         {
-            var result = await connectionOwner.Use(conn =>
-            {
-                return dbOwner.ClassTypes.Update(conn, entity);
+            var result = await connectionOwner.UseTransaction(async (conn, tr) => {
+                try
+                {
+                    var type = await dbOwner.ClassTypes.Update(conn, tr, new ClassType
+                    {
+                        ID = request.ID,
+                        Title = request.Title,
+                        Description = request.Description,
+                        Requirements = request.Requirements,
+                        Duration = request.Duration,
+                        Price = request.Price,
+                    });
+
+                    tr.Commit();
+                    return type;
+                }
+                catch
+                {
+                    tr.Rollback();
+                    throw;
+                }
             });
+
+            if (request.ImageUpdate != null)
+            {
+                await UpdateImage(request.ID, new FileUpload
+                {
+                    Files = new List<IFormFile> { request.ImageUpdate },
+                });
+            }
+
+            if (request.PhotosToAdd != null)
+            {
+                await UploadPhotos(request.ID, new FileUpload
+                {
+                    Files = request.PhotosToAdd,
+                });
+            }
+
+            if (request.PhotosToRemove != null)
+            {
+                var photosToRemove = JsonSerializer.Deserialize<IEnumerable<ClassPhoto>>(request.PhotosToRemove);
+                var fileNames = photosToRemove.Select(p => p.Filename).ToList();
+                await DeletePhotos(request.ID, fileNames);
+            }
 
             return Ok(result);
         }
@@ -160,20 +235,43 @@ namespace K9OCRS.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClassType(int id)
         {
-            var result = await connectionOwner.Use(conn =>
+            var photos = await GetPhotosByClassType(id);
+
+            if (photos.Count > 0)
             {
-                return dbOwner.ClassTypes.Delete(conn, id);
+                var fileNames = photos.Select(p => p.Filename).ToList();
+                await DeletePhotos(id, fileNames);
+            }
+
+            var type = await connectionOwner.Use(conn =>
+                dbOwner.ClassTypes.GetByID(conn, id));
+
+            var result = await connectionOwner.UseTransaction(async (conn, tr) =>
+            {
+                try
+                {
+                    if (!type.ImageFilename.Contains("Placeholder"))
+                    {
+                        await DeleteImage(id, type.ImageFilename);
+                    }
+
+                    var affectedRows = await dbOwner.ClassTypes.Delete(conn, tr, id);
+
+                    tr.Commit();
+                    return affectedRows;
+                }
+                catch
+                {
+                    throw;
+                }
             });
 
             return Ok(result);
         }
 
-        #endregion
-
         #region ClassType_Image
 
-        [HttpPut("{classTypeId}/image")]
-        public async Task<IActionResult> UpdateImage(int classTypeId, [FromForm] FileUpload upload)
+        private async Task<int> UpdateImage(int classTypeId, FileUpload upload)
         {
             if (upload.Files != null && upload.Files.Count > 0)
             {
@@ -184,19 +282,17 @@ namespace K9OCRS.Controllers
 
                 await storageClient.UploadFile(UploadType.ClassPicture, filePath, upload.Files[0].ContentType, data);
 
-                await connectionOwner.Use(conn =>
+                return await connectionOwner.Use(conn =>
                 {
                     return dbOwner.ClassTypes.UpdateImage(conn, classTypeId, filename);
                 });
-
-                return Ok();
             }
 
-            return BadRequest();
+            throw new ArgumentException();
         }
 
-        [HttpDelete("{classTypeId}/image/{filename}")]
-        public async Task<IActionResult> DeleteImage(int classTypeId, string fileName)
+
+        private async Task<int> DeleteImage(int classTypeId, string fileName)
         {
             if (!String.IsNullOrEmpty(fileName) && !String.IsNullOrWhiteSpace(fileName))
             {
@@ -204,37 +300,25 @@ namespace K9OCRS.Controllers
 
                 await storageClient.DeleteFile(UploadType.ClassPicture, filename);
 
-                await connectionOwner.Use(conn =>
+                return await connectionOwner.Use(conn =>
                 {
                     return dbOwner.ClassTypes.UpdateImage(conn, classTypeId, "ClassPlaceholder.png");
                 });
-
-                return Ok();
             }
 
-            return BadRequest();
+            throw new ArgumentException();
         }
 
         #endregion
 
         #region ClassType_Photos
 
-        [HttpGet("{classTypeId}/photos")]
-        [ProducesResponseType(typeof(IEnumerable<ClassPhotoResult>), 200)]
-        public async Task<IActionResult> GetPhotosByClassTypeID(int classTypeId)
-        {
-            var result = await connectionOwner.Use(conn =>
-            {
+        private async Task<List<ClassPhoto>> GetPhotosByClassType(int classTypeId) =>
+            (await connectionOwner.Use(conn => {
                 return dbOwner.ClassPhotos.GetByClassTypeID(conn, classTypeId);
-            });
+            })).ToList();
 
-            var photoResults = result.Select(p => new ClassPhotoResult(p, serviceConstants.storageBasePath));
-
-            return Ok(photoResults);
-        }
-
-        [HttpPost("{classTypeId}/photos")]
-        public async Task<ActionResult> UploadPhotos(int classTypeId, [FromForm] FileUpload upload)
+        private async Task<ActionResult> UploadPhotos(int classTypeId, FileUpload upload)
         {
             var tasks = new List<Task>();
 
@@ -298,8 +382,7 @@ namespace K9OCRS.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("{classTypeId}/photos")]
-        public async Task<ActionResult> DeletePhotos(int classTypeId, [FromBody] List<string> fileNames)
+        private async Task<ActionResult> DeletePhotos(int classTypeId, List<string> fileNames)
         {
             var tasks = new List<Task>();
 
