@@ -1,4 +1,5 @@
 ﻿using DataAccess.Extensions;
+using System.Text.Json.Serialization;
 
 namespace DataAccess.Entities
 {
@@ -14,10 +15,13 @@ namespace DataAccess.Entities
 
         /// <example>1</example>
         [TransactionIgnore]
+        [JsonPropertyName("id")]
         public int ID { get; set; }
         /// <example>1</example>
+        [JsonPropertyName("classTypeID")]
         public int ClassTypeID { get; set; }
         /// <example>1.jpg</example>
+        [JsonPropertyName("filename")]
         public string Filename { get; set; }
     }
 }

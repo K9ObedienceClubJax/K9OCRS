@@ -30,15 +30,17 @@ namespace K9OCRS.Extensions
 
         #region Entity to Model Conversions
 
-        public static ClassSectionResult ToClassSectionResult(this ClassSection section, string storageBasePath)
-        {
-            return new ClassSectionResult(section, storageBasePath);
-        }
+        public static ClassPhotoResult ToClassPhotoResult(this ClassPhoto photo, string storageBasePath) =>
+            new ClassPhotoResult(photo, storageBasePath);
 
-        public static DogResult ToDogResult(this Dog dog, string storageBasePath)
-        {
-            return new DogResult(dog, storageBasePath);
-        }
+        public static ClassTypeResult ToClassTypeResult(this ClassType type, string storageBasePath) =>
+            new ClassTypeResult(type, storageBasePath);
+
+        public static ClassSectionResult ToClassSectionResult(this ClassSection section, string storageBasePath) =>
+            new ClassSectionResult(section, storageBasePath);
+
+        public static DogResult ToDogResult(this Dog dog, string storageBasePath) =>
+            new DogResult(dog, storageBasePath);
 
         #endregion
     }

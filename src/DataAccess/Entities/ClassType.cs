@@ -1,5 +1,6 @@
 ﻿
 using DataAccess.Extensions;
+using System.Collections.Generic;
 
 namespace DataAccess.Entities
 {
@@ -15,6 +16,9 @@ namespace DataAccess.Entities
             ImageFilename = entity.ImageFilename;
             Duration = entity.Duration;
             Price = entity.Price;
+
+            Photos = entity.Photos;
+            Sections = entity.Sections;
         }
 
         /// <example>1</example>
@@ -34,5 +38,14 @@ namespace DataAccess.Entities
         public string Duration { get; set; }
         /// <example>140</example>
         public decimal Price { get; set; }
+
+        #region Data Optionally Hydrated
+
+        [TransactionIgnore]
+        public List<ClassPhoto> Photos { get; set; }
+        [TransactionIgnore]
+        public List<ClassSection> Sections { get; set; }
+
+        #endregion
     }
 }
