@@ -30,9 +30,12 @@ export const classTypeAddRequestToFormData = ({
 
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('requirements', requirements);
     formData.append('duration', duration);
     formData.append('price', price);
+
+    if (requirements) {
+        formData.append('requirements', requirements);
+    }
 
     if (image) {
         formData.append('image', image, image.name);
@@ -63,9 +66,12 @@ export const classTypeUpdateRequestToFormData = ({
     formData.append('id', id);
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('requirements', requirements);
     formData.append('duration', duration);
     formData.append('price', price);
+
+    if (requirements) {
+        formData.append('requirements', requirements);
+    }
 
     if (imageUpdate) {
         formData.append('imageUpdate', imageUpdate, imageUpdate.name);

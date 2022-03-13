@@ -17,3 +17,4 @@ export const initializeTypeAddition = makeAction('INIT_TYPE_ADD');
 
 export const saveNewClassType = makeAction('SAVE_NEW_CLASS_TYPE');
 export const updateClassType = makeAction('UPDATE_CLASS_TYPE');
+export const deleteClassType = makeAction('DELETE_CLASS_TYPE');

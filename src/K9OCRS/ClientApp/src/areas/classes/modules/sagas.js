@@ -85,21 +85,13 @@ function* updateClassType({ payload }) {
         var res = yield call(classTypesClient.updateClassType, formData);
         log('Class Type changes saved!', res?.data);
         payload.setSubmitting(false);
-        log('Reloading Class Type');
-        yield call(fetchClassDetails, {
-            payload: {
-                classTypeId: payload.id,
-                setLoading: payload.setLoading,
-                setAlerts: payload.setAlerts,
-            },
-        });
-        log('Reloaded Class Type');
         payload.setAlerts([
             {
                 color: 'success',
                 message: 'Your changes are saved!',
             },
         ]);
+        setTimeout(() => window.location.reload(), 2000);
     } catch (err) {
         log(
             'An error ocurred while saving changes to an existing class type.',
@@ -115,12 +107,33 @@ function* updateClassType({ payload }) {
     }
 }
 
+function* deleteClassType({ payload }) {
+    log(`Deleting Class Type id: ${payload.id}`);
+    try {
+        yield call(classTypesClient.deleteClassType, payload.id);
+        log(`Class Type deleted with id: ${payload.id}`);
+        payload.redirect();
+    } catch (err) {
+        log(
+            `An error ocurred while deleting the class type with id ${payload.id}`,
+            err
+        );
+        payload.setAlerts([
+            {
+                color: 'danger',
+                message: 'Failed to delete the class type.',
+            },
+        ]);
+    }
+}
+
 const sagas = [
     takeEvery(actions.fetchClassList, fetchClassList),
     takeEvery(actions.fetchClassDetails, fetchClassDetails),
     takeEvery(actions.initializeTypeAddition, initializeTypeAddition),
     takeLatest(actions.saveNewClassType, saveNewClassType),
     takeLatest(actions.updateClassType, updateClassType),
+    takeLatest(actions.deleteClassType, deleteClassType),
 ];
 
 export default sagas;

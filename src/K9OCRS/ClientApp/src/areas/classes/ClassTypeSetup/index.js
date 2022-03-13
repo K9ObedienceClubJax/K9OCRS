@@ -16,6 +16,7 @@ const ClassTypeSetup = (props) => {
         init,
         saveNewClassType,
         updateClassType,
+        deleteClassType,
     } = props;
 
     const historyInstance = useHistory();
@@ -61,6 +62,13 @@ const ClassTypeSetup = (props) => {
         }
     };
 
+    const handleDelete = () =>
+        deleteClassType({
+            id: classTypeId,
+            setAlerts,
+            redirect: (created) => historyInstance.push('/Manage/Classes'),
+        });
+
     return (
         <div className={cn}>
             <PageHeader
@@ -90,10 +98,19 @@ const ClassTypeSetup = (props) => {
                 >
                     Cancel
                 </Button>
+                {!addingNewType && (
+                    <Button
+                        color="danger"
+                        onClick={() => handleDelete()}
+                        outline
+                    >
+                        Delete
+                    </Button>
+                )}
                 <Button
-                    onClick={() => formRef.current.requestSubmit()}
                     color="primary"
                     disabled={submitting}
+                    onClick={() => formRef.current.requestSubmit()}
                 >
                     {submitting ? (
                         <>
@@ -129,5 +146,6 @@ export default connect(
         init: actions.initializeTypeAddition,
         saveNewClassType: actions.saveNewClassType,
         updateClassType: actions.updateClassType,
+        deleteClassType: actions.deleteClassType,
     }
 )(ClassTypeSetup);
