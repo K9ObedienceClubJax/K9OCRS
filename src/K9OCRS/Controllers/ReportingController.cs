@@ -14,6 +14,7 @@ using System.IO;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.IO.Compression;
+using K9OCRS.Extensions;
 
 namespace K9OCRS.Controllers
 {
@@ -66,9 +67,9 @@ namespace K9OCRS.Controllers
                 var userDogs = await dbOwner.UserDogs.GetTableExport(conn);
                 var vaccinationRecords = await dbOwner.VaccinationRecords.GetTableExport(conn);
 
-                var classTypes = await dbOwner.ClassTypes.GetTableExport(conn);
+                var classTypes = (await dbOwner.ClassTypes.GetTableExport(conn)).Select(t => t.ToClassTypeExport());
                 var classPhotos = await dbOwner.ClassPhotos.GetTableExport(conn);
-                var classSections = await dbOwner.ClassSections.GetTableExport(conn);
+                var classSections = (await dbOwner.ClassSections.GetTableExport(conn)).Select(s => s.ToClassSectionExport());
                 var classMeetings = await dbOwner.ClassMeetings.GetTableExport(conn);
                 var sectionApplications = await dbOwner.SectionApplications.GetTableExport(conn);
 
