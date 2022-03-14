@@ -13,6 +13,7 @@ namespace DataAccess
         public readonly IRepository<UserRole> UserRoles;
         public readonly IUsersRepository Users;
         public readonly IRepository<Dog> Dogs;
+        public readonly IRepository<UserDog> UserDogs;
         public readonly IRepository<VaccinationRecord> VaccinationRecords;
         public readonly IClassPhotosRepository ClassPhotos;
         public readonly IClassTypesRepository ClassTypes;
@@ -25,6 +26,7 @@ namespace DataAccess
             UserRoles = new UserRolesRepository();
             Users = new UsersRepository();
             Dogs = new DogsRepository();
+            UserDogs = new UserDogsRepository();
             VaccinationRecords = new VaccinationRecordsRepository();
             ClassPhotos = new ClassPhotosRepository();
             ClassTypes = new ClassTypesRepository();

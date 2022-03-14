@@ -71,6 +71,12 @@ namespace DataAccess.Repositories
             return result.ToList();
         }
 
+        public virtual async Task<IReadOnlyList<T>> GetTableExport(IDbConnection conn)
+        {
+            var exportQuery = GenerateExportQuery();
+            return (await conn.QueryAsync<T>(exportQuery)).ToList();
+        }
+
         public virtual async Task<T> Add(IDbConnection conn, T entity)
         {
             var insertQuery = GenerateInsertQuery();
@@ -128,41 +134,48 @@ namespace DataAccess.Repositories
 
         private IEnumerable<PropertyInfo> GetProperties => typeof(T).GetProperties();
 
-        private static List<string> GenerateListOfPropertyNames(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false)
+        private static List<string> GenerateListOfPropertyNames(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false, bool isExport = false)
         {
             return (from prop in listOfProperties
-                    let attributes = getIgnoredAttributes(prop, isUpdate)
+                    let attributes = getIgnoredAttributes(prop, isUpdate, isExport)
                     where attributes.Length <= 0
                     select prop.Name).ToList();
         }
 
-        private static List<PropertyInfo> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false)
+        private static List<PropertyInfo> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false, bool isExport = false)
         {
             return (from prop in listOfProperties
-                    let attributes = getIgnoredAttributes(prop, isUpdate)
+                    let attributes = getIgnoredAttributes(prop, isUpdate, isExport)
                     where attributes.Length <= 0
                     select prop).ToList();
         }
 
-        private static object[] getIgnoredAttributes(PropertyInfo prop, bool isUpdate = false)
+        private static object[] getIgnoredAttributes(PropertyInfo prop, bool isUpdate = false, bool isExport = false)
         {
-            var transactionIgnored = prop.GetCustomAttributes(typeof(TransactionIgnoreAttribute), false);
-            
-            if (isUpdate)
+            if (!isExport)
             {
-                var updateIgnored = prop.GetCustomAttributes(typeof(UpdateIgnoreAttribute), false);
-                return transactionIgnored.Concat(updateIgnored).ToArray();
-            }
+                var transactionIgnored = prop.GetCustomAttributes(typeof(TransactionIgnoreAttribute), false);
 
-            var insertIgnored = prop.GetCustomAttributes(typeof(InsertIgnoreAttribute), false);
-            return transactionIgnored.Concat(insertIgnored).ToArray();
+                if (isUpdate)
+                {
+                    var updateIgnored = prop.GetCustomAttributes(typeof(UpdateIgnoreAttribute), false);
+                    return transactionIgnored.Concat(updateIgnored).ToArray();
+                }
+
+                var insertIgnored = prop.GetCustomAttributes(typeof(InsertIgnoreAttribute), false);
+                return transactionIgnored.Concat(insertIgnored).ToArray();
+            } else
+            {
+                var exportIgnored = prop.GetCustomAttributes(typeof(ExportIgnoreAttribute), false);
+                return exportIgnored.ToArray();
+            }
         }
 
-        private DynamicParameters GenerateParametersFromList(IEnumerable<T> entities, bool isUpdate = false)
+        private DynamicParameters GenerateParametersFromList(IEnumerable<T> entities, bool isUpdate = false, bool isExport = false)
         {
             DynamicParameters parameters = new DynamicParameters();
 
-            var properties = GenerateListOfProperties(GetProperties, isUpdate);
+            var properties = GenerateListOfProperties(GetProperties, isUpdate, isExport);
 
             foreach (var entity in entities)
             {
@@ -255,6 +268,19 @@ namespace DataAccess.Repositories
             return updateQuery.ToString();
         }
 
+        private string GenerateExportQuery()
+        {
+            var selectQuery = new StringBuilder("SELECT ");
+            var properties = GenerateListOfPropertyNames(GetProperties, false, true);
+            properties.ForEach(prop => {
+                selectQuery.Append($"[{prop}],");
+            });
+
+            selectQuery.Remove(selectQuery.Length - 1, 1)
+                    .Append($" FROM {_tableName}");
+
+            return selectQuery.ToString();
+        }
         #endregion
     }
 }

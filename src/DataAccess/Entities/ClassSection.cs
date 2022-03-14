@@ -41,20 +41,25 @@ namespace DataAccess.Entities
 
         /// <example>12</example>
         [TransactionIgnore]
+        [ExportIgnore]
         public int RosterActual { get; set; }
 
         /// <example>2022-01-13 14:00:00.000</example>
         [TransactionIgnore]
+        [ExportIgnore]
         public DateTime StartDate { get; set; }
 
         /// <example>2022-01-27 16:00:00.000</example>
         [TransactionIgnore]
+        [ExportIgnore]
         public DateTime EndDate { get; set; }
 
         [TransactionIgnore]
+        [ExportIgnore]
         public TimeSpan StartTime { get; set; }
 
         [TransactionIgnore]
+        [ExportIgnore]
         public TimeSpan EndTime { get; set; }
 
         /// <summary>
@@ -62,6 +67,7 @@ namespace DataAccess.Entities
         /// </summary>
         /// <example>Scheduled</example>
         [TransactionIgnore]
+        [ExportIgnore]
         public string Status { get; set; }
 
         #endregion
@@ -69,10 +75,13 @@ namespace DataAccess.Entities
         #region Data optionally Hydrated
 
         [TransactionIgnore]
+        [ExportIgnore]
         public User Instructor { get; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public ClassType ClassType { get; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public List<ClassMeeting> Meetings { get; set; }
 
         #endregion
