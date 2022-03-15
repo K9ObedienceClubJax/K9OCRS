@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Nav, NavItem, NavLink, Button } from 'reactstrap';
-import { BsCloudDownload, BsCloudUpload } from 'react-icons/bs';
+import { BsCloudDownload } from 'react-icons/bs';
 import PageHeader from '../../../shared/components/PageHeader';
 
 export default function ManagementDashboard() {
