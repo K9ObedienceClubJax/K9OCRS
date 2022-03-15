@@ -11,6 +11,7 @@ namespace DataAccess.Repositories.Contracts
         Task<IReadOnlyList<T>> GetByIDs(IDbConnection conn, IEnumerable<int> ids);
         Task<IReadOnlyList<T>> GetByIDs(IDbConnection conn, string idColumn, IEnumerable<int> ids);
         Task<IReadOnlyList<T>> GetAll(IDbConnection conn);
+        Task<IReadOnlyList<T>> GetTableExport(IDbConnection conn);
         Task<T> Add(IDbConnection conn, T entity);
         Task<T> Add(IDbConnection conn, IDbTransaction tr, T entity);
         Task<IReadOnlyList<T>> AddMany(IDbConnection conn, IDbTransaction tr, List<T> entities);

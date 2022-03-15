@@ -42,8 +42,10 @@ namespace DataAccess.Entities
         #region Data Optionally Hydrated
 
         [TransactionIgnore]
+        [ExportIgnore]
         public List<ClassPhoto> Photos { get; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public List<ClassSection> Sections { get; set; }
 
         #endregion

@@ -13,6 +13,7 @@ namespace DataAccess.Constants
             { nameof(UserRole), "[dbo].[UserRoles]" },
             { nameof(User), "[dbo].[Users]" },
             { nameof(Dog), "[dbo].[Dogs]" },
+            { nameof(UserDog), "[dbo].[UserDogs]" },
             { nameof(VaccinationRecord), "[dbo].[VaccinationRecords]" },
             { nameof(ClassPhoto), "[dbo].[ClassPhotos]" },
             { nameof(ClassType), "[dbo].[ClassTypes]" },

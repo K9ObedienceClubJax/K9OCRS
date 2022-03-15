@@ -1,6 +1,7 @@
 ﻿using DataAccess.Entities;
 using K9OCRS.Models.ClassManagement;
 using K9OCRS.Models.DogManagement;
+using K9OCRS.Models.Reporting;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
@@ -36,8 +37,12 @@ namespace K9OCRS.Extensions
         public static ClassTypeResult ToClassTypeResult(this ClassType type, string storageBasePath) =>
             new ClassTypeResult(type, storageBasePath);
 
+        public static ClassTypeExport ToClassTypeExport(this ClassType type) => new ClassTypeExport(type);
+
         public static ClassSectionResult ToClassSectionResult(this ClassSection section, string storageBasePath) =>
             new ClassSectionResult(section, storageBasePath);
+
+        public static ClassSectionExport ToClassSectionExport(this ClassSection type) => new ClassSectionExport(type);
 
         public static DogResult ToDogResult(this Dog dog, string storageBasePath) =>
             new DogResult(dog, storageBasePath);

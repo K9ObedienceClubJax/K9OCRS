@@ -24,6 +24,7 @@ namespace DataAccess.Entities
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+        [ExportIgnore]
         public string Password { get; set; }
         [TransactionIgnore]
         public string ProfilePictureFilename { get; set; }
