@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[UserDogs] (
-    [UserID] INT NOT NULL,
+    [UserID] INT NOT NULL DEFAULT 1,
     [DogID]  INT NOT NULL,
-    CONSTRAINT [FK_UserDogs_Dogs] FOREIGN KEY ([DogID]) REFERENCES [dbo].[Dogs] ([ID]),
-    CONSTRAINT [FK_UserDogs_Users] FOREIGN KEY ([UserID]) REFERENCES [dbo].[Users] ([ID])
+    CONSTRAINT [FK_UserDogs_Dogs] FOREIGN KEY ([DogID]) REFERENCES [dbo].[Dogs] ([ID]) ON DELETE CASCADE,
+    CONSTRAINT [FK_UserDogs_Users] FOREIGN KEY ([UserID]) REFERENCES [dbo].[Users] ([ID]) ON DELETE SET DEFAULT
 );
 

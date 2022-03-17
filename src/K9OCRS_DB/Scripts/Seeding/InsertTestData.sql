@@ -1,38 +1,27 @@
 ﻿
--- User Roles
-IF NOT EXISTS (SELECT 1 FROM dbo.UserRoles)
-BEGIN
-	INSERT INTO dbo.UserRoles (Title)
-	VALUES
-		('Administrator'),
-		('Instructor'),
-		('Member'),
-		('Student');
-END
-
 -- Users (The password for all is "Test123456")
-IF NOT EXISTS (SELECT 1 FROM dbo.Users)
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE isSystemOwned = 0)
 BEGIN
-	INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], ProfilePictureFilename)
+	INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password])
 	VALUES
-		(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-		(2, 'Darude', 'Sandstorm', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-		(3, 'Jack', 'Sparrow', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png'),
-		(4, 'Tom', 'Riddle', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 'UserPlaceholder.png');
+		(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM='),
+		(2, 'Darude', 'Sandstorm', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM='),
+		(3, 'Jack', 'Sparrow', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM='),
+		(4, 'Tom', 'Riddle', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=');
 END
 
 -- Dogs
 IF NOT EXISTS (SELECT 1 FROM dbo.Dogs)
 BEGIN
-	INSERT INTO Dogs ([Name], [Breed], [DateOfBirth], [ProfilePictureFilename])
+	INSERT INTO Dogs ([Name], [Breed], [DateOfBirth])
 	VALUES
-		('Max', 'Golden Retriever', '2021-08-07', 'DogPlaceholder.png'),
-		('Peanut', 'Pomeranian', '2020-09-02', 'DogPlaceholder.png'),
-		('Jeff', 'Pug', '2021-04-03', 'DogPlaceholder.png'),
-		('Max', 'German Shepherd', '2020-12-16', 'DogPlaceholder.png'),
-		('Juan', 'Chihuahua', '2020-07-26', 'DogPlaceholder.png'),
-		('Coin', 'Shiba Inu', '2021-02-15', 'DogPlaceholder.png'),
-		('Fred', 'Bulldog', '2020-05-19', 'DogPlaceholder.png');
+		('Max', 'Golden Retriever', '2021-08-07'),
+		('Peanut', 'Pomeranian', '2020-09-02'),
+		('Jeff', 'Pug', '2021-04-03'),
+		('Max', 'German Shepherd', '2020-12-16'),
+		('Juan', 'Chihuahua', '2020-07-26'),
+		('Coin', 'Shiba Inu', '2021-02-15'),
+		('Fred', 'Bulldog', '2020-05-19');
 END
 
 
@@ -41,17 +30,17 @@ IF NOT EXISTS (SELECT 1 FROM dbo.UserDogs)
 BEGIN
 	INSERT INTO UserDogs ([UserID], [DogID])
 	VALUES
-		(1,1),
-		(1,6),
-		(2,2),
-		(3,3),
-		(3,4),
-		(4,5),
-		(4,7);
+		(2,1),
+		(2,6),
+		(3,2),
+		(4,3),
+		(4,4),
+		(5,5),
+		(5,7);
 END
 
 -- Class Types
-IF NOT EXISTS (SELECT 1 FROM dbo.ClassTypes)
+IF NOT EXISTS (SELECT 1 FROM dbo.ClassTypes WHERE isSystemOwned = 0)
 BEGIN
 	INSERT INTO ClassTypes (Title, [Description], Requirements, Duration, Price)
 	VALUES
@@ -72,14 +61,14 @@ BEGIN
 END
 
 -- Class Sections
-IF NOT EXISTS (SELECT 1 FROM dbo.ClassSections)
+IF NOT EXISTS (SELECT 1 FROM dbo.ClassSections WHERE isSystemOwned = 0)
 BEGIN
 	INSERT INTO ClassSections ([ClassTypeID], [InstructorID], [RosterCapacity])
 	VALUES
-		(1,1,0),
-		(1, 1, 8),
-		(2, 2, 6),
-		(3, 2, 10);
+		(2, 2, 0),
+		(2, 2, 8),
+		(3, 3, 6),
+		(4, 3, 10);
 END
 
 -- Class Meetings
@@ -97,12 +86,12 @@ VALUES
 	(4, '2022-07-24 14:00:00.000', '2022-07-24 16:00:00.000');
 
 -- Section Applications
-IF NOT EXISTS (SELECT 1 FROM dbo.SectionApplications)
+IF NOT EXISTS (SELECT 1 FROM dbo.[ClassApplications])
 BEGIN
-	INSERT INTO SectionApplications (ClassSectionID, DogID, [Status], [Refunded])
+	INSERT INTO [ClassApplications] (ClassSectionID, DogID, [Status], [PaymentMethod], [isPaid], [isRefunded])
 	VALUES
-		(2, 3, 'Active', 0),
-		(3, 4, 'Cancelled', 0),
-		(3, 5, 'Pending', 0),
-		(2, 7, 'Cancelled', 1);
+		(2, 3, 'Active', 'PayPal', 1, 0),
+		(3, 4, 'Cancelled', 'Check', 0, 0),
+		(3, 5, 'Pending', 'Zelle', 0, 0),
+		(2, 7, 'Cancelled', 'PayPal', 1, 1);
 END

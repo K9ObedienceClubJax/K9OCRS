@@ -1,6 +1,6 @@
 ﻿DROP TABLE ClassMeetings;
 DROP TABLE VaccinationRecords;
-DROP TABLE SectionApplications;
+DROP TABLE [ClassApplications];
 DROP TABLE UserDogs;
 DROP TABLE ClassPhotos;
 DROP TABLE ClassSections;

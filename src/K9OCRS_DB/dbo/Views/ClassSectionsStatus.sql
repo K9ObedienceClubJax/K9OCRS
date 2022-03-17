@@ -12,7 +12,7 @@ SELECT
 		WHEN GETDATE() > EndDate THEN 'Completed'
 		ELSE 'Scheduled'
 	END as [Status],
-	IIF(sa.RosterActual IS NOT NULL, sa.RosterActual, 0) as RosterActual
+	IIF(ca.RosterActual IS NOT NULL, ca.RosterActual, 0) as RosterActual
 FROM ClassSections cs
 -- Get the start and end dates for the section based on all class meetings
 JOIN (
@@ -36,9 +36,9 @@ OUTER APPLY (
 -- Get the count of how many student applications are active or completed
 LEFT JOIN (
 	SELECT
-		sa.ClassSectionID,
+		ca.ClassSectionID,
 		COUNT(ID) as RosterActual
-	FROM SectionApplications sa
-	WHERE sa.[Status] != 'Cancelled'
-	GROUP BY sa.ClassSectionID
-) as sa ON cs.ID = sa.ClassSectionID;
+	FROM [ClassApplications] ca
+	WHERE ca.[Status] != 'Cancelled'
+	GROUP BY ca.ClassSectionID
+) as ca ON cs.ID = ca.ClassSectionID;

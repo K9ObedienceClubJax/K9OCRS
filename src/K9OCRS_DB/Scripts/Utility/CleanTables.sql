@@ -3,7 +3,7 @@ DBCC CHECKIDENT ('[ClassMeetings]', RESEED, 0);
 
 DELETE FROM VaccinationRecords;
 
-DELETE FROM SectionApplications;
+DELETE FROM [ClassApplications];
 DBCC CHECKIDENT ('[SectionApplications]', RESEED, 0);
 
 DELETE FROM UserDogs;

@@ -10,7 +10,7 @@ Debug Post-Deployment Script
 */
 PRINT '*****  Executing Generally Required Scripts  *****';
 
--- Insert Placeholder Rows for Deletable Entities
+:r ..\Seeding\InsertRequiredData.sql
 
 
 /*
