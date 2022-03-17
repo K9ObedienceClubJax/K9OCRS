@@ -78,6 +78,15 @@ namespace DataAccess.Repositories
             return result.ToList();
         }
 
+        public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn, bool includeArchived = false)
+        {
+            var archivedFilter = !includeArchived ? "AND isArchived = 0" : "";
+            var query = $"SELECT * FROM {_tableName} WHERE isSystemOwned = 0 {archivedFilter}";
+
+            var result = await conn.QueryAsync<T>(query);
+            return result.ToList();
+        }
+
         public virtual async Task<IReadOnlyList<T>> GetTableExport(IDbConnection conn)
         {
             var exportQuery = GenerateExportQuery();
