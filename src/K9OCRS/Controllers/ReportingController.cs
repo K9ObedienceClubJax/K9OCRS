@@ -58,7 +58,7 @@ namespace K9OCRS.Controllers
                 classPhotos,
                 classSections,
                 classMeetings,
-                sectionApplications
+                classApplications
             ) = await connectionOwner.Use(async conn =>
             {
                 var userRoles = await dbOwner.UserRoles.GetTableExport(conn);
@@ -71,7 +71,7 @@ namespace K9OCRS.Controllers
                 var classPhotos = await dbOwner.ClassPhotos.GetTableExport(conn);
                 var classSections = (await dbOwner.ClassSections.GetTableExport(conn)).Select(s => s.ToClassSectionExport());
                 var classMeetings = await dbOwner.ClassMeetings.GetTableExport(conn);
-                var sectionApplications = await dbOwner.SectionApplications.GetTableExport(conn);
+                var classApplications = await dbOwner.ClassApplications.GetTableExport(conn);
 
                 return (
                     userRoles,
@@ -83,7 +83,7 @@ namespace K9OCRS.Controllers
                     classPhotos,
                     classSections,
                     classMeetings,
-                    sectionApplications
+                    classApplications
                 );
             });
 
@@ -120,8 +120,8 @@ namespace K9OCRS.Controllers
                 var classMeetingsFile = archive.CreateEntry("classMeetings.csv");
                 WriteCsvFile(classMeetingsFile, classMeetings);
 
-                var sectionApplicationsFile = archive.CreateEntry("sectionApplications.csv");
-                WriteCsvFile(sectionApplicationsFile, sectionApplications);
+                var classApplicationsFile = archive.CreateEntry("classApplications.csv");
+                WriteCsvFile(classApplicationsFile, classApplications);
             }
 
             // Must return the position of the stream to zero so it can be used by the FileStreamResult

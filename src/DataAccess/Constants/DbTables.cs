@@ -19,7 +19,7 @@ namespace DataAccess.Constants
             { nameof(ClassType), "[dbo].[ClassTypes]" },
             { nameof(ClassSection), "[dbo].[ClassSections]" },
             { nameof(ClassMeeting), "[dbo].[ClassMeetings]" },
-            { nameof(SectionApplication), "[dbo].[SectionApplications]" },
+            { nameof(ClassApplication), "[dbo].[ClassApplications]" },
         };
 
         public static string Get(string entity) => mappings[entity];
