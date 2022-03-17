@@ -88,10 +88,10 @@ VALUES
 -- Section Applications
 IF NOT EXISTS (SELECT 1 FROM dbo.[ClassApplications])
 BEGIN
-	INSERT INTO [ClassApplications] (ClassSectionID, DogID, [Status], [PaymentMethod], [isPaid], [isRefunded])
+	INSERT INTO [ClassApplications] (ClassTypeID, ClassSectionID, DogID, [Status], [PaymentMethod], [isPaid], [isRefunded])
 	VALUES
-		(2, 3, 'Active', 'PayPal', 1, 0),
-		(3, 4, 'Cancelled', 'Check', 0, 0),
-		(3, 5, 'Pending', 'Zelle', 0, 0),
-		(2, 7, 'Cancelled', 'PayPal', 1, 1);
+		(2, 2, 3, 'Active', 'PayPal', 1, 0),
+		(2, 3, 4, 'Cancelled', 'Check', 0, 0),
+		(2, 3, 5, 'Pending', 'Zelle', 0, 0),
+		(2, 2, 7, 'Cancelled', 'PayPal', 1, 1);
 END

@@ -14,28 +14,3 @@
 
 
 GO
-
-CREATE TRIGGER [dbo].[ClassTypes_InsteadOfDELETE]
-       ON [dbo].[ClassTypes]
-INSTEAD OF DELETE
-AS
-BEGIN
-    DECLARE @Id INT;
-    DECLARE @isSystemOwned BIT;
-
-    SELECT
-        @Id = DELETED.ID,
-        @isSystemOwned = DELETED.isSystemOwned
-    FROM DELETED
-
-    IF @isSystemOwned = 1
-        BEGIN
-            RAISERROR('A system owned resource can not be deleted',16 ,1)
-            ROLLBACK
-        END
-    ELSE
-        BEGIN
-            DELETE FROM [dbo].[ClassTypes]
-            WHERE ID = @Id
-        END
-END
