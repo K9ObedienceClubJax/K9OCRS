@@ -71,7 +71,7 @@ namespace DataAccess.Repositories
             var query = $"SELECT * FROM {_tableName}";
             if (DbTables.DoesTableContainPlaceholders(_tableName))
             {
-                query = query.Concat(" WHERE isSystemOwned = 0").ToString();
+                query += " WHERE isSystemOwned = 0";
             }
 
             var result = await conn.QueryAsync<T>(query);
@@ -127,7 +127,7 @@ namespace DataAccess.Repositories
             var query = $"DELETE FROM {_tableName} WHERE ID=@Id";
             if (DbTables.DoesTableContainPlaceholders(_tableName))
             {
-                query = query.Concat(" AND isSystemOwned = 0").ToString();
+                query += " AND isSystemOwned = 0";
             }
 
             return await conn.ExecuteAsync(query, new { Id = id });
@@ -138,7 +138,7 @@ namespace DataAccess.Repositories
             var query = $"DELETE FROM {_tableName} WHERE ID=@Id";
             if (DbTables.DoesTableContainPlaceholders(_tableName))
             {
-                query = query.Concat(" AND isSystemOwned = 0").ToString();
+                query += " AND isSystemOwned = 0";
             }
 
             return await conn.ExecuteAsync(query, new { Id = id }, tr);
@@ -149,7 +149,7 @@ namespace DataAccess.Repositories
             var query = $"DELETE FROM {_tableName} WHERE ID IN @Ids";
             if (DbTables.DoesTableContainPlaceholders(_tableName))
             {
-                query = query.Concat(" AND isSystemOwned = 0").ToString();
+                query += " AND isSystemOwned = 0";
             }
 
             return await conn.ExecuteAsync(query, new { Ids = ids }, tr);

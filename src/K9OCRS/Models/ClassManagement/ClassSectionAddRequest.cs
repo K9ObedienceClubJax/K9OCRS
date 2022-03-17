@@ -12,5 +12,6 @@ namespace K9OCRS.Models.ClassManagement
         /// <example>1</example>
         public int InstructorID { get; set; }
         public List<ClassMeeting> Meetings { get; set; }
+        public bool isDraft { get; set; } = false;
     }
 }

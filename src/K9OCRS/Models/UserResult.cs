@@ -18,6 +18,8 @@ namespace K9OCRS.Models
             LastName = entity.LastName;
             Email = entity.Email;
             ProfilePictureFilename = entity.ProfilePictureFilename;
+            isArchived = entity.isArchived;
+            isSystemOwned = entity.isSystemOwned;
         }
         public UserResult(User entity, string storageBasePath) : this(entity) => ProfilePictureUrl = GenerateImageUrl(storageBasePath);
         public int ID { get; set; }
@@ -27,6 +29,8 @@ namespace K9OCRS.Models
         public string Email { get; set; }
         public string ProfilePictureFilename { get; set; }
         public string ProfilePictureUrl { get; set; }
+        public bool isArchived { get; set; }
+        public bool isSystemOwned { get; set; }
 
         // {basePath}/profilePictures/{userId}/{filename} or {basePath}/profilePictures/{filename} if placeholder
         private string GenerateImageUrl(string storageBasepath)

@@ -14,6 +14,7 @@ namespace DataAccess.Entities
             Breed = entity.Breed;
             DateOfBirth = entity.DateOfBirth;
             ProfilePictureFilename = entity.ProfilePictureFilename;
+            isArchived = entity.isArchived;
         }
 
         [TransactionIgnore]
@@ -23,5 +24,6 @@ namespace DataAccess.Entities
         public DateTime DateOfBirth { get; set; }
         [TransactionIgnore]
         public string ProfilePictureFilename { get; set; }
+        public bool isArchived { get; set; }
     }
 }
