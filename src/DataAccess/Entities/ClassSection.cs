@@ -13,6 +13,8 @@ namespace DataAccess.Entities
             ClassTypeID = entity.ClassTypeID;
             InstructorID = entity.InstructorID;
             RosterCapacity = entity.RosterCapacity;
+            isDraft = entity.isDraft;
+            isSystemOwned = entity.isSystemOwned;
 
             RosterActual = entity.RosterActual;
             StartDate = entity.StartDate;
@@ -35,6 +37,11 @@ namespace DataAccess.Entities
         public int RosterCapacity { get; set; }
         /// <example>1</example>
         public int InstructorID { get; set; }
+        /// <example>false</example>
+        public bool isDraft { get; set; }
+        /// <example>false</example>
+        [TransactionIgnore]
+        public bool isSystemOwned { get; set; }
 
 
         #region Data coming from ClassSectionStatus View

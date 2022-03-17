@@ -19,7 +19,7 @@ namespace DataAccess
         public readonly IClassTypesRepository ClassTypes;
         public readonly IRepository<ClassSection> ClassSections;
         public readonly IRepository<ClassMeeting> ClassMeetings;
-        public readonly IRepository<SectionApplication> SectionApplications;
+        public readonly IRepository<ClassApplication> ClassApplications;
 
         public DbOwner()
         {
@@ -32,7 +32,7 @@ namespace DataAccess
             ClassTypes = new ClassTypesRepository();
             ClassSections = new ClassSectionsRepository();
             ClassMeetings = new ClassMeetingsRepository();
-            SectionApplications = new SectionApplicationsRepository();
+            ClassApplications = new ClassApplicationsRepository();
         }
     }
 }

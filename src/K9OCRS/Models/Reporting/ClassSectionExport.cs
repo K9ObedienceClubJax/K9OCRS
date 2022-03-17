@@ -11,6 +11,7 @@ namespace K9OCRS.Models.Reporting
             ClassTypeID = s.ClassTypeID;
             RosterCapacity = s.RosterCapacity;
             InstructorID = s.InstructorID;
+            isDraft = s.isDraft;
         }
 
         /// <example>1</example>
@@ -21,5 +22,6 @@ namespace K9OCRS.Models.Reporting
         public int RosterCapacity { get; set; }
         /// <example>1</example>
         public int InstructorID { get; set; }
+        public bool isDraft { get; set; }
     }
 }

@@ -16,6 +16,8 @@ namespace DataAccess.Entities
             ImageFilename = entity.ImageFilename;
             Duration = entity.Duration;
             Price = entity.Price;
+            isArchived = entity.isArchived;
+            isSystemOwned = entity.isSystemOwned;
 
             Photos = entity.Photos;
             Sections = entity.Sections;
@@ -38,6 +40,11 @@ namespace DataAccess.Entities
         public string Duration { get; set; }
         /// <example>140</example>
         public decimal Price { get; set; }
+        /// <example>false</example>
+        public bool isArchived { get; set; }
+        /// <example>false</example>
+        [TransactionIgnore]
+        public bool isSystemOwned { get; set; }
 
         #region Data Optionally Hydrated
 

@@ -21,6 +21,8 @@ namespace DataAccess.Repositories
 	                cs.ID,
 	                cs.ClassTypeID,
 	                cs.InstructorID,
+	                cs.isDraft,
+	                cs.isSystemOwned,
 	                cs.RosterCapacity,
 	                css.RosterActual,
 	                css.StartDate,
@@ -35,8 +37,9 @@ namespace DataAccess.Repositories
 	                u.ProfilePictureFilename,
                     u.UserRoleID
                 FROM ClassSections cs
-                JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
-                JOIN Users u ON cs.InstructorID = u.ID
+                LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                LEFT JOIN Users u ON cs.InstructorID = u.ID
+                WHERE cs.isSystemOwned = 0
             ";
 
             var result = await conn.QueryAsync<ClassSection, User, ClassSection>(query,
@@ -64,6 +67,8 @@ namespace DataAccess.Repositories
 	                cs.ID,
 	                cs.ClassTypeID,
 	                cs.InstructorID,
+	                cs.isDraft,
+	                cs.isSystemOwned,
 	                cs.RosterCapacity,
 	                css.RosterActual,
 	                css.StartDate,
@@ -85,9 +90,9 @@ namespace DataAccess.Repositories
 	                ct.Requirements,
 	                ct.ImageFilename
                 FROM ClassSections cs
-                JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
-                JOIN Users u ON cs.InstructorID = u.ID
-                JOIN ClassTypes ct ON cs.ClassTypeID = ct.ID
+                LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                LEFT JOIN Users u ON cs.InstructorID = u.ID
+                LEFT JOIN ClassTypes ct ON cs.ClassTypeID = ct.ID
                 WHERE cs.ID = @Id
             ";
 
@@ -140,6 +145,8 @@ namespace DataAccess.Repositories
 	                cs.ID,
 	                cs.ClassTypeID,
 	                cs.InstructorID,
+	                cs.isDraft,
+	                cs.isSystemOwned,
 	                cs.RosterCapacity,
 	                css.RosterActual,
 	                css.StartDate,
@@ -154,8 +161,8 @@ namespace DataAccess.Repositories
 	                u.ProfilePictureFilename,
                     u.UserRoleID
                 FROM ClassSections cs
-                JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
-                JOIN Users u ON cs.InstructorID = u.ID
+                LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                LEFT JOIN Users u ON cs.InstructorID = u.ID
                 WHERE cs.[{idColumn}] = @Id
             ";
 

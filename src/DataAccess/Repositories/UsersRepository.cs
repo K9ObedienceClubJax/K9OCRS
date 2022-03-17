@@ -30,7 +30,7 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role)
         {
-            var query = $"SELECT ID, UserRoleID, Email, FirstName, LastName, ProfilePictureFilename FROM {_tableName} WHERE UserRoleID = @Role";
+            var query = $"SELECT ID, UserRoleID, Email, FirstName, LastName, ProfilePictureFilename FROM {_tableName} WHERE UserRoleID = @Role AND isSystemOwned = 0";
             return await conn.QueryAsync<User>(query, new { Role = role });
         }
     }

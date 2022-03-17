@@ -114,7 +114,7 @@ namespace K9OCRS.Controllers
              
             if (login != null && loginResult != null)
             {
-                var userResult = new UserResult(loginResult);
+                var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
                 var token = GenerateToken(login, loginResult);
 
                 HttpContext.Response.Cookies.Append(
@@ -147,7 +147,7 @@ namespace K9OCRS.Controllers
                     return dbOwner.Users.GetByID(conn, id);
                 });
 
-                var userResult = new UserResult(loginResult);
+                var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
 
                 return Ok(userResult);
             }

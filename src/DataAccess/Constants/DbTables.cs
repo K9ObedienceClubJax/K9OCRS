@@ -19,9 +19,17 @@ namespace DataAccess.Constants
             { nameof(ClassType), "[dbo].[ClassTypes]" },
             { nameof(ClassSection), "[dbo].[ClassSections]" },
             { nameof(ClassMeeting), "[dbo].[ClassMeetings]" },
-            { nameof(SectionApplication), "[dbo].[SectionApplications]" },
+            { nameof(ClassApplication), "[dbo].[ClassApplications]" },
+        };
+
+        private static List<string> _tablesWithPlaceholders = new List<string>
+        {
+            Get(nameof(User)),
+            Get(nameof(ClassType)),
+            Get(nameof(ClassSection))
         };
 
         public static string Get(string entity) => mappings[entity];
+        public static bool DoesTableContainPlaceholders(string tableName) => _tablesWithPlaceholders.Contains(tableName);
     }
 }

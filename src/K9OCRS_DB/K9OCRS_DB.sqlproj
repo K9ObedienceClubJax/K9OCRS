@@ -90,7 +90,7 @@
     <Build Include="dbo\Tables\ClassTypes.sql" />
     <Build Include="dbo\Tables\ClassSections.sql" />
     <Build Include="dbo\Tables\ClassMeetings.sql" />
-    <Build Include="dbo\Tables\SectionApplications.sql" />
+    <Build Include="dbo\Tables\ClassApplications.sql" />
     <Build Include="dbo\Views\ClassSectionsStatus.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +99,7 @@
     <None Include="Scripts\Seeding\InsertTestData.sql" />
     <None Include="Scripts\Utility\DeleteTables.sql" />
     <None Include="Scripts\Utility\CleanTables.sql" />
+    <None Include="Scripts\Seeding\InsertRequiredData.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\PostDeploymentScripts\Dummy.Script.PostDeployment.sql" />

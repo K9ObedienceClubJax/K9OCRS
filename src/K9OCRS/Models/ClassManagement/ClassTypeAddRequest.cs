@@ -15,6 +15,7 @@ namespace K9OCRS.Models.ClassManagement
         public string Duration { get; set; }
         /// <example>140</example>
         public decimal Price { get; set; }
+        public bool isArchived { get; set; } = false;
 
         public IFormFile Image { get; set; }
         public List<IFormFile> Photos { get; set; }

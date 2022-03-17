@@ -47,7 +47,7 @@ namespace K9OCRS.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ClassTypeResult>), 200)]
-        public async Task<IActionResult> GetClassesList([FromQuery] bool includeSections)
+        public async Task<IActionResult> GetClassesList([FromQuery] bool includeSections, [FromQuery] bool includeArchived)
         {
             IEnumerable<ClassTypeResult> result = null;
 
@@ -56,7 +56,7 @@ namespace K9OCRS.Controllers
                 IEnumerable<ClassType> _types = null;
                 Dictionary<int, List<ClassSectionResult>> _groupedSections = null;
 
-                _types = await dbOwner.ClassTypes.GetAll(conn);
+                _types = await dbOwner.ClassTypes.GetAll(conn, includeArchived);
 
                 if (includeSections)
                 {

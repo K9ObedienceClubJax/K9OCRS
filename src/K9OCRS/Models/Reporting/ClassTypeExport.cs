@@ -14,6 +14,7 @@ namespace K9OCRS.Models.Reporting
             ImageFilename = t.ImageFilename;
             Duration = t.Duration;
             Price = t.Price;
+            isArchived = t.isArchived;
         }
 
         /// <example>1</example>
@@ -31,5 +32,6 @@ namespace K9OCRS.Models.Reporting
         public string Duration { get; set; }
         /// <example>140</example>
         public decimal Price { get; set; }
+        public bool isArchived { get; set; }
     }
 }

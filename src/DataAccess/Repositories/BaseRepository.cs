@@ -1,10 +1,11 @@
 ﻿using Dapper;
+using DataAccess.Constants;
+using DataAccess.Entities;
 using DataAccess.Extensions;
 using DataAccess.Repositories.Contracts;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -67,7 +68,22 @@ namespace DataAccess.Repositories
 
         public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn)
         {
-            var result = await conn.QueryAsync<T>($"SELECT * FROM {_tableName}");
+            var query = $"SELECT * FROM {_tableName}";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " WHERE isSystemOwned = 0";
+            }
+
+            var result = await conn.QueryAsync<T>(query);
+            return result.ToList();
+        }
+
+        public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn, bool includeArchived = false)
+        {
+            var archivedFilter = !includeArchived ? "AND isArchived = 0" : "";
+            var query = $"SELECT * FROM {_tableName} WHERE isSystemOwned = 0 {archivedFilter}";
+
+            var result = await conn.QueryAsync<T>(query);
             return result.ToList();
         }
 
@@ -117,17 +133,35 @@ namespace DataAccess.Repositories
 
         public virtual async Task<int> Delete(IDbConnection conn, int id)
         {
-            return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id });
+            var query = $"DELETE FROM {_tableName} WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+
+            return await conn.ExecuteAsync(query, new { Id = id });
         }
 
         public virtual async Task<int> Delete(IDbConnection conn, IDbTransaction tr, int id)
         {
-            return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id }, tr);
+            var query = $"DELETE FROM {_tableName} WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+
+            return await conn.ExecuteAsync(query, new { Id = id }, tr);
         }
 
         public virtual async Task<int> DeleteMany(IDbConnection conn, IDbTransaction tr, IEnumerable<int> ids)
         {
-            return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID IN @Ids", new { Ids = ids }, tr);
+            var query = $"DELETE FROM {_tableName} WHERE ID IN @Ids";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+
+            return await conn.ExecuteAsync(query, new { Ids = ids }, tr);
         }
 
         #region Private Methods
@@ -265,6 +299,11 @@ namespace DataAccess.Repositories
             updateQuery.Remove(updateQuery.Length - 1, 1); //remove last comma
             updateQuery.Append(" WHERE ID=@ID");
 
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                updateQuery.Append(" AND isSystemOwned = 0");
+            }
+
             return updateQuery.ToString();
         }
 
@@ -278,6 +317,11 @@ namespace DataAccess.Repositories
 
             selectQuery.Remove(selectQuery.Length - 1, 1)
                     .Append($" FROM {_tableName}");
+
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                selectQuery.Append(" WHERE isSystemOwned = 0");
+            }
 
             return selectQuery.ToString();
         }
