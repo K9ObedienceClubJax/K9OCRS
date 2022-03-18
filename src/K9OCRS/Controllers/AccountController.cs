@@ -28,6 +28,7 @@ namespace K9OCRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly IStorageClient storageClient;
@@ -54,6 +55,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Account([FromBody] CreateAccount account)
         {
             //Validate names
@@ -102,8 +104,9 @@ namespace K9OCRS.Controllers
                
         }
 
-        [AllowAnonymous]
         [HttpPost("login")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public async Task<IActionResult> Login([FromBody] Login login)
         {
 
@@ -135,6 +138,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("loginstatus")]
+        [AllowAnonymous]
         public async Task<IActionResult> LoginStatus()
         {
             var cookie = Request.Cookies[_config["Jwt:CookieName"]]; 
@@ -167,8 +171,8 @@ namespace K9OCRS.Controllers
             return Ok();
         }
 
-        [AllowAnonymous]
         [HttpPost("forgotpassword")]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] string email)
         {
             //Check if email is in database
@@ -200,8 +204,8 @@ namespace K9OCRS.Controllers
             return Ok("Email sent");
         }
 
-        [AllowAnonymous]
         [HttpPost("changepassword")]
+        [AllowAnonymous]
         public async Task<IActionResult> ChangePassword(PasswordReset passwordReset)
         {
             string tokenString = passwordReset.Token;
@@ -281,7 +285,8 @@ namespace K9OCRS.Controllers
             return Ok();
         }
 
-        [HttpPost("createuser")] 
+        [HttpPost("createuser")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public async Task<IActionResult> CreateUser([FromBody] CreateUser accountInfo)
         {
             if(await ValidateEmailPassword(accountInfo.Email, accountInfo.Password))
@@ -314,6 +319,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost("queryusers")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public async Task<IActionResult> QueryUsers([FromBody] int role)
         {
@@ -358,7 +364,7 @@ namespace K9OCRS.Controllers
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                 _config["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddMinutes(15),
+                expires: DateTime.Now.AddDays(7),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

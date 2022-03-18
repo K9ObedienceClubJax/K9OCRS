@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,10 +15,11 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using K9OCRS.Utils.Constants;
+using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace K9OCRS
 {
@@ -61,6 +60,10 @@ namespace K9OCRS
                         context.Token = context.Request.Cookies[Configuration["Jwt:CookieName"]];
                         return Task.CompletedTask;
                     },
+                    OnAuthenticationFailed = context => {
+                        context.Response.Cookies.Delete(Configuration["Jwt:CookieName"]);
+                        return Task.CompletedTask;
+                    }
                 };
             });
 
@@ -100,6 +103,9 @@ namespace K9OCRS
                         Description = "API for the K9 Obedience Club Registration System",
                         Version = "v1"
                     });
+
+                // Puts a padlock next to endpoints that require authentication
+                options.OperationFilter<SecurityRequirementsOperationFilter>();
 
                 if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
                 {

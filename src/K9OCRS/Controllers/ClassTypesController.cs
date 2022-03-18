@@ -131,7 +131,6 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("placeholderImageUrl")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult GetPlaceholderImageUrl()
         {

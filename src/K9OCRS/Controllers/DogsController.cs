@@ -11,11 +11,13 @@ using System.Collections.Generic;
 using K9OCRS.Models.DogManagement;
 using K9OCRS.Utils.Constants;
 using K9OCRS.Utils.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace K9OCRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DogsController : ControllerBase
     {
         private readonly ILogger logger;
