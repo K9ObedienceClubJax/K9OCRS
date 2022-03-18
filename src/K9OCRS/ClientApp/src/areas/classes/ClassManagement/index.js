@@ -36,6 +36,7 @@ const ClassManagement = (props) => {
           { label: 'Classes', active: true },
         ]}
         alerts={alerts}
+        setAlerts={setAlerts}
       >
         <Button tag={Link} to='/Manage/Classes/Types/Add' color='primary'>
           Add a Type

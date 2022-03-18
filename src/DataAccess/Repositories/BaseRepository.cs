@@ -1,8 +1,11 @@
 ﻿using Dapper;
+using DataAccess.Constants;
+using DataAccess.Entities;
 using DataAccess.Extensions;
 using DataAccess.Repositories.Contracts;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -65,20 +68,55 @@ namespace DataAccess.Repositories
 
         public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn)
         {
-            var result = await conn.QueryAsync<T>($"SELECT * FROM {_tableName}");
+            var query = $"SELECT * FROM {_tableName}";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " WHERE isSystemOwned = 0";
+            }
+
+            var result = await conn.QueryAsync<T>(query);
             return result.ToList();
         }
 
-        public virtual async Task<int> Add(IDbConnection conn, T entity)
+        public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn, bool includeArchived = false)
         {
-            var insertQuery = GenerateInsertQuery();
-            return await conn.QueryFirstOrDefaultAsync<int>(insertQuery, entity);
+            var archivedFilter = !includeArchived ? "AND isArchived = 0" : "";
+            var query = $"SELECT * FROM {_tableName} WHERE isSystemOwned = 0 {archivedFilter}";
+
+            var result = await conn.QueryAsync<T>(query);
+            return result.ToList();
         }
 
-        public virtual async Task<int> Add(IDbConnection conn, IDbTransaction tr, T entity)
+        public virtual async Task<IReadOnlyList<T>> GetTableExport(IDbConnection conn)
+        {
+            var exportQuery = GenerateExportQuery();
+            return (await conn.QueryAsync<T>(exportQuery)).ToList();
+        }
+
+        public virtual async Task<T> Add(IDbConnection conn, T entity)
         {
             var insertQuery = GenerateInsertQuery();
-            return await conn.QueryFirstOrDefaultAsync<int>(insertQuery, entity, tr);
+            return await conn.QueryFirstOrDefaultAsync<T>(insertQuery, entity);
+        }
+
+        public virtual async Task<T> Add(IDbConnection conn, IDbTransaction tr, T entity)
+        {
+            var insertQuery = GenerateInsertQuery();
+            return await conn.QueryFirstOrDefaultAsync<T>(insertQuery, entity, tr);
+        }
+
+        public virtual async Task<IReadOnlyList<T>> AddMany(IDbConnection conn, IDbTransaction tr, List<T> entities)
+        {
+            var insertQuery = GenerateInsertQuery();
+            var results = new List<T>();
+
+            foreach (var entity in entities)
+            {
+                var result = await conn.QuerySingleAsync<T>(insertQuery, entity, tr);
+                results.Add(result);
+            }
+
+            return results;
         }
 
         public virtual async Task<int> Update(IDbConnection conn, T entity)
@@ -95,23 +133,121 @@ namespace DataAccess.Repositories
 
         public virtual async Task<int> Delete(IDbConnection conn, int id)
         {
-            return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id });
+            var query = $"DELETE FROM {_tableName} WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+
+            return await conn.ExecuteAsync(query, new { Id = id });
         }
 
         public virtual async Task<int> Delete(IDbConnection conn, IDbTransaction tr, int id)
         {
-            return await conn.ExecuteAsync($"DELETE FROM {_tableName} WHERE ID=@Id", new { Id = id }, tr);
+            var query = $"DELETE FROM {_tableName} WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+
+            return await conn.ExecuteAsync(query, new { Id = id }, tr);
         }
+
+        public virtual async Task<int> DeleteMany(IDbConnection conn, IDbTransaction tr, IEnumerable<int> ids)
+        {
+            var query = $"DELETE FROM {_tableName} WHERE ID IN @Ids";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+
+            return await conn.ExecuteAsync(query, new { Ids = ids }, tr);
+        }
+
+        #region Private Methods
 
         private IEnumerable<PropertyInfo> GetProperties => typeof(T).GetProperties();
 
-        private static List<string> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties)
+        private static List<string> GenerateListOfPropertyNames(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false, bool isExport = false)
         {
             return (from prop in listOfProperties
-                    let attributes = prop.GetCustomAttributes(typeof(TransactionIgnoreAttribute), false)
-                    //where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "RepoIgnore"
+                    let attributes = getIgnoredAttributes(prop, isUpdate, isExport)
                     where attributes.Length <= 0
                     select prop.Name).ToList();
+        }
+
+        private static List<PropertyInfo> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties, bool isUpdate = false, bool isExport = false)
+        {
+            return (from prop in listOfProperties
+                    let attributes = getIgnoredAttributes(prop, isUpdate, isExport)
+                    where attributes.Length <= 0
+                    select prop).ToList();
+        }
+
+        private static object[] getIgnoredAttributes(PropertyInfo prop, bool isUpdate = false, bool isExport = false)
+        {
+            if (!isExport)
+            {
+                var transactionIgnored = prop.GetCustomAttributes(typeof(TransactionIgnoreAttribute), false);
+
+                if (isUpdate)
+                {
+                    var updateIgnored = prop.GetCustomAttributes(typeof(UpdateIgnoreAttribute), false);
+                    return transactionIgnored.Concat(updateIgnored).ToArray();
+                }
+
+                var insertIgnored = prop.GetCustomAttributes(typeof(InsertIgnoreAttribute), false);
+                return transactionIgnored.Concat(insertIgnored).ToArray();
+            } else
+            {
+                var exportIgnored = prop.GetCustomAttributes(typeof(ExportIgnoreAttribute), false);
+                return exportIgnored.ToArray();
+            }
+        }
+
+        private DynamicParameters GenerateParametersFromList(IEnumerable<T> entities, bool isUpdate = false, bool isExport = false)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+
+            var properties = GenerateListOfProperties(GetProperties, isUpdate, isExport);
+
+            foreach (var entity in entities)
+            {
+                foreach (var property in properties)
+                {
+                    var paramName = $"@{property.Name}";
+
+                    // Generate a type for the List of "x property's type"
+                    Type listType = typeof(List<>).MakeGenericType(new[] { property.PropertyType });
+                    // Generate the parameter value getter for our dynamically generated type
+                    MethodInfo paramValueGetter = typeof(DynamicParameters).GetMethod(nameof(DynamicParameters.Get)).MakeGenericMethod(listType);
+
+                    var propertyValue = property.GetValue(entity);
+
+                    object parameterList;
+
+                    try
+                    {
+                        // This is equal to parameters.Get<List<[propType]>>(paramName)
+                        parameterList = paramValueGetter.Invoke(parameters, new[] { paramName });
+                    }
+                    // If we got this exception it means the list doesn't exist yet
+                    catch (TargetInvocationException ex)
+                    {
+                        // Add new List<[propType]>
+                        parameters.Add(paramName, (IList)Activator.CreateInstance(listType));
+
+                        // This is equal to parameters.Get<List<[propType]>>(paramName)
+                        parameterList = paramValueGetter.Invoke(parameters, new[] { paramName });
+                    }
+
+                    var addMethod = listType.GetMethod(nameof(IList.Add));
+
+                    addMethod.Invoke(parameterList, new[] { propertyValue });
+                }
+            }
+
+            return parameters;
         }
 
         private string GenerateInsertQuery()
@@ -120,7 +256,7 @@ namespace DataAccess.Repositories
 
             insertQuery.Append("(");
 
-            var properties = GenerateListOfProperties(GetProperties);
+            var properties = GenerateListOfPropertyNames(GetProperties);
             properties.ForEach(prop => {
                 if (prop != "ID")
                 {
@@ -131,7 +267,7 @@ namespace DataAccess.Repositories
 
             insertQuery
                 .Remove(insertQuery.Length - 1, 1)
-                .Append(") OUTPUT INSERTED.ID VALUES (");
+                .Append(") OUTPUT INSERTED.* VALUES (");
 
             properties.ForEach(prop => {
                 if (prop != "ID")
@@ -150,7 +286,7 @@ namespace DataAccess.Repositories
         private string GenerateUpdateQuery()
         {
             var updateQuery = new StringBuilder($"UPDATE {_tableName} SET ");
-            var properties = GenerateListOfProperties(GetProperties);
+            var properties = GenerateListOfPropertyNames(GetProperties, true);
 
             properties.ForEach(property =>
             {
@@ -163,7 +299,32 @@ namespace DataAccess.Repositories
             updateQuery.Remove(updateQuery.Length - 1, 1); //remove last comma
             updateQuery.Append(" WHERE ID=@ID");
 
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                updateQuery.Append(" AND isSystemOwned = 0");
+            }
+
             return updateQuery.ToString();
         }
+
+        private string GenerateExportQuery()
+        {
+            var selectQuery = new StringBuilder("SELECT ");
+            var properties = GenerateListOfPropertyNames(GetProperties, false, true);
+            properties.ForEach(prop => {
+                selectQuery.Append($"[{prop}],");
+            });
+
+            selectQuery.Remove(selectQuery.Length - 1, 1)
+                    .Append($" FROM {_tableName}");
+
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                selectQuery.Append(" WHERE isSystemOwned = 0");
+            }
+
+            return selectQuery.ToString();
+        }
+        #endregion
     }
 }

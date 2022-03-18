@@ -1,43 +1,151 @@
-import React from 'react';
-import { Container, Row, Button, Input } from 'reactstrap';
-import PageHeader from '../../../shared/components/PageHeader';
+import React, { useEffect, useState, useRef } from 'react';
+import { connect } from 'react-redux';
+import { useParams, useHistory } from 'react-router-dom';
+import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import ClassTypeEditor from './ClassTypeEditor';
+import PageHeader from '../../../shared/components/PageHeader';
+import * as actions from '../modules/actions';
 
-const ClassTypeSetup = () => {
-  return (
-    <Container>
-      <PageHeader
-        title="Class Types Management"
-        breadCrumbItems={[
-          { label: 'Management', path: '/Manage' },
-          { label: 'Class Types', path: '/Manage/ClassTypes' },
-          { label: 'Class Types Setup', active: true }
-        ]}
-      >
-        <Link to='/Manage/ClassTypes/Add' className="ms-2 p-0">
-          <Button color="primary">Save Changes</Button>
-        </Link>
-      </PageHeader>
-      <form className="d-flex flex-column">
-        <Row className="g-2">
-          <Input type="text" placeholder="Title" className="mb-2" value="S.T.A.R Puppy" />
-          <Input type="text" placeholder="Session Length" className="mb-2" value="7 weeks"/>
-          <Input type="text" placeholder="Price" className="mb-2" value="140"/>
-        </Row>
-        <Row className="g-2">
-          <Input type="textarea" placeholder="Description" className="mb-2" rows="8"
-            value="Raising a puppy can be fun and very rewarding and also a big challenge!  The K-9 Obedience Club offers classes to help you train your puppy to become a self-confident, happy and easy-to-live-with companion."
-          />
-        </Row>
-        <Row className="g-2 mb-3 mt-5">
-          <Button color="secondary" type="cancel">Cancel</Button>
-        </Row>
-        <Row className="g-2">
-          <Button color="primary" type="submit">Submit</Button>
-        </Row>
-      </form>
-    </Container>
-  );
+import './styles.scss';
+
+const ClassTypeSetup = (props) => {
+    const {
+        classType,
+        fetchClassDetails,
+        init,
+        saveNewClassType,
+        updateClassType,
+        deleteClassType,
+    } = props;
+
+    const historyInstance = useHistory();
+    const { classTypeId } = useParams();
+
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [alerts, setAlerts] = useState([]);
+
+    const [data, setData] = useState(null);
+
+    const addingNewType = !classTypeId;
+
+    useEffect(() => {
+        if (addingNewType) {
+            init({ setLoading });
+        } else {
+            fetchClassDetails({ classTypeId, setLoading, setAlerts });
+        }
+    }, [classTypeId]); // eslint-disable-line
+
+    const cn = 'classTypeSetup';
+
+    const formRef = useRef(null);
+
+    const handleSubmit = () => {
+        setSubmitting(true);
+        if (addingNewType) {
+            saveNewClassType({
+                ...data,
+                setSubmitting,
+                setAlerts,
+                redirect: (created) =>
+                    historyInstance.push(`/Manage/Classes/Types/${created.id}`),
+            });
+        } else {
+            updateClassType({
+                ...data,
+                setSubmitting,
+                setLoading,
+                setAlerts,
+            });
+        }
+    };
+
+    const handleDelete = () =>
+        deleteClassType({
+            id: classTypeId,
+            setAlerts,
+            redirect: (created) => historyInstance.push('/Manage/Classes'),
+        });
+
+    return (
+        <div className={cn}>
+            <PageHeader
+                title={
+                    !addingNewType
+                        ? `Class Type: ${classType?.title ?? 'Loading...'}`
+                        : 'Class Type Setup'
+                }
+                breadCrumbItems={[
+                    { label: 'Management', path: '/Manage' },
+                    { label: 'Classes', path: '/Manage/Classes' },
+                    {
+                        label: !addingNewType
+                            ? `Class Type: ${classType?.title ?? 'Loading...'}`
+                            : 'Class Type Setup',
+                        active: true,
+                    },
+                ]}
+                alerts={alerts}
+                setAlerts={setAlerts}
+            >
+                <Button
+                    tag={Link}
+                    to="/Manage/Classes"
+                    color="secondary"
+                    outline
+                >
+                    Cancel
+                </Button>
+                {!addingNewType && (
+                    <Button
+                        color="danger"
+                        onClick={() => handleDelete()}
+                        outline
+                    >
+                        Delete
+                    </Button>
+                )}
+                <Button
+                    color="primary"
+                    disabled={submitting}
+                    onClick={() => formRef.current.requestSubmit()}
+                >
+                    {submitting ? (
+                        <>
+                            Saving Changes
+                            <Spinner className="ms-3" size="sm" />
+                        </>
+                    ) : (
+                        'Save Changes'
+                    )}
+                </Button>
+            </PageHeader>
+            {loading ? (
+                <Spinner />
+            ) : (
+                <ClassTypeEditor
+                    classType={classType}
+                    setData={setData}
+                    addingNewType={addingNewType}
+                    formRef={formRef}
+                    handleSubmit={handleSubmit}
+                />
+            )}
+        </div>
+    );
 };
 
-export default ClassTypeSetup;
+export default connect(
+    (state) => ({
+        classType: state.classes?.classDetails,
+    }),
+    {
+        fetchClassDetails: actions.fetchClassDetails,
+        init: actions.initializeTypeAddition,
+        saveNewClassType: actions.saveNewClassType,
+        updateClassType: actions.updateClassType,
+        deleteClassType: actions.deleteClassType,
+    }
+)(ClassTypeSetup);

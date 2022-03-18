@@ -1,0 +1,84 @@
+3/9/2022 5:56:37 PM	This log contains information about the import schema operation into project 'K9OCRS_DB' on computer 'DEZ-DTP' by user 'drojas'.
+3/9/2022 5:56:38 PM	Import of database schema has started.
+3/9/2022 5:56:41 PM	Gathering database credentials
+3/9/2022 5:56:41 PM	Gathering database options
+3/9/2022 5:56:41 PM	Gathering users
+3/9/2022 5:56:41 PM	Gathering roles
+3/9/2022 5:56:41 PM	Gathering application roles
+3/9/2022 5:56:41 PM	Gathering role memberships
+3/9/2022 5:56:41 PM	Gathering filegroups
+3/9/2022 5:56:41 PM	Gathering full-text catalogs
+3/9/2022 5:56:41 PM	Gathering assemblies
+3/9/2022 5:56:41 PM	Gathering certificates
+3/9/2022 5:56:41 PM	Gathering asymmetric keys
+3/9/2022 5:56:41 PM	Gathering symmetric keys
+3/9/2022 5:56:41 PM	Gathering encrypted symmetric keys
+3/9/2022 5:56:41 PM	Gathering schemas
+3/9/2022 5:56:41 PM	Gathering XML schema collections
+3/9/2022 5:56:41 PM	Gathering user-defined data types
+3/9/2022 5:56:41 PM	Gathering user-defined types
+3/9/2022 5:56:41 PM	Gathering table types
+3/9/2022 5:56:41 PM	Gathering unique keys for table types
+3/9/2022 5:56:41 PM	Gathering primary keys for table types
+3/9/2022 5:56:41 PM	Gathering indexes for table types
+3/9/2022 5:56:41 PM	Gathering check constraints for table types
+3/9/2022 5:56:41 PM	Gathering default constraints for table types
+3/9/2022 5:56:41 PM	Gathering partition functions
+3/9/2022 5:56:41 PM	Gathering partition schemes
+3/9/2022 5:56:41 PM	Gathering functions
+3/9/2022 5:56:41 PM	Gathering encrypted functions
+3/9/2022 5:56:41 PM	Gathering aggregates
+3/9/2022 5:56:41 PM	Gathering procedures
+3/9/2022 5:56:41 PM	Gathering encrypted procedures
+3/9/2022 5:56:41 PM	Gathering tables
+3/9/2022 5:56:41 PM	Gathering primary keys
+3/9/2022 5:56:41 PM	Gathering unique constraints
+3/9/2022 5:56:41 PM	Gathering foreign keys
+3/9/2022 5:56:41 PM	Gathering default constraints
+3/9/2022 5:56:41 PM	Gathering check constraints
+3/9/2022 5:56:41 PM	Gathering views
+3/9/2022 5:56:41 PM	Gathering encrypted views
+3/9/2022 5:56:41 PM	Gathering indexes
+3/9/2022 5:56:41 PM	Gathering statistics
+3/9/2022 5:56:41 PM	Gathering full-text index stoplists
+3/9/2022 5:56:41 PM	Gathering search property lists
+3/9/2022 5:56:41 PM	Gathering search properties
+3/9/2022 5:56:41 PM	Gathering full-text indexes
+3/9/2022 5:56:41 PM	Gathering column store indexes
+3/9/2022 5:56:41 PM	Gathering spatial indexes
+3/9/2022 5:56:41 PM	Gathering XML indexes
+3/9/2022 5:56:41 PM	Gathering Selective XML indexes
+3/9/2022 5:56:41 PM	Gathering encrypted triggers
+3/9/2022 5:56:41 PM	Gathering triggers
+3/9/2022 5:56:41 PM	Gathering encrypted and clr ddl triggers
+3/9/2022 5:56:41 PM	Gathering ddl triggers
+3/9/2022 5:56:41 PM	Gathering synonyms
+3/9/2022 5:56:41 PM	Gathering defaults
+3/9/2022 5:56:41 PM	Gathering data constraint uddt bindings
+3/9/2022 5:56:41 PM	Gathering rules
+3/9/2022 5:56:41 PM	Gathering data constraint uddt bindings
+3/9/2022 5:56:41 PM	Gathering message types
+3/9/2022 5:56:41 PM	Gathering queues
+3/9/2022 5:56:41 PM	Gathering contracts
+3/9/2022 5:56:41 PM	Gathering services
+3/9/2022 5:56:41 PM	Gathering event notifications
+3/9/2022 5:56:41 PM	Gathering remote service bindings
+3/9/2022 5:56:41 PM	Gathering broker priorities
+3/9/2022 5:56:41 PM	Gathering signatures
+3/9/2022 5:56:41 PM	Gathering data compression options
+3/9/2022 5:56:41 PM	Gathering sequence types
+3/9/2022 5:56:41 PM	Gathering security policies
+3/9/2022 5:56:41 PM	Gather column encryption keys
+3/9/2022 5:56:41 PM	Gathering column master keys
+3/9/2022 5:56:41 PM	Gathering external data sources
+3/9/2022 5:56:41 PM	Gathering external file formats
+3/9/2022 5:56:41 PM	Gathering external tables
+3/9/2022 5:56:41 PM	Gathering extended properties
+3/9/2022 5:56:41 PM	Gathering credentials
+3/9/2022 5:56:41 PM	Gathering logins
+3/9/2022 5:56:41 PM	Gathering server audits
+3/9/2022 5:56:41 PM	Scanning project for duplicate elements
+3/9/2022 5:56:41 PM	Finished duplicate element processing
+3/9/2022 5:56:42 PM	Finished importing database.
+3/9/2022 5:56:42 PM	A summary of the import was saved to the following location: E:\Local_Repos\_Class_Repos\2021\Fall\UNF_SeniorProject\Ignitech.K9OCRS\src\K9OCRS_DB\Import Schema Logs\K9OCRS_DB_20220309105637.log
+3/9/2022 5:56:42 PM	Click Finish to continue...

@@ -89,7 +89,7 @@ const CreateAccount = (props) => {
         handleSubmit(first, last, email, password, confirm, history);
       }}
     >
-      <PageHeader title='' alerts={alerts} />
+      <PageHeader title='' alerts={alerts} setAlerts={setAlerts} />
       <h1 className='d-flex justify-content-center mt-4 font-weight-bold'>
         Create an Account
       </h1>

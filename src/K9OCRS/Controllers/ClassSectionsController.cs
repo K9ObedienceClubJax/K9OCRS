@@ -8,17 +8,20 @@ using System;
 using DataAccess.Constants;
 using System.Collections.Generic;
 using System.IO;
-using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
 using K9OCRS.Models.ClassManagement;
-using K9OCRS.Configuration;
 using System.Linq;
+using System.Data.SqlClient;
+using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace K9OCRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ClassSectionsController : ControllerBase
     {
         private readonly ILogger logger;
@@ -44,110 +47,166 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<ClassSectionResult>), 200)]
         public async Task<IActionResult> GetAll()
         {
             var result = await connectionOwner.Use(async conn =>
             {
-                // Get all sections
                 var sections = await dbOwner.ClassSections.GetAll(conn);
-                // Get all instructors associated to sections
-                //var instructorIds = sections.Select(s => s.InstructorID);
-                //var instructors = (await dbOwner.Users.GetByIDs(conn, instructorIds)).ToList();
-                // Get all meetings
-                var meetings = await dbOwner.ClassMeetings.GetAll(conn);
-
-                // Group meetings by classSectionID
-                var groupedMeetings = meetings.Aggregate(new Dictionary<int, List<ClassMeeting>>(), (agg, m) =>
-                {
-                    if (agg.ContainsKey(m.ClassSectionID))
-                    {
-                        agg[m.ClassSectionID].Add(m);
-                    }
-                    else
-                    {
-                        agg.Add(m.ClassSectionID, new List<ClassMeeting> { m });
-                    }
-                    return agg;
-                });
-
-                return sections.Select(s => new ClassSectionResult(
-                    s,
-                    groupedMeetings.ContainsKey(s.ID) ? groupedMeetings[s.ID] : null,
-                    new UserResult(new User {
-                        ID = s.InstructorID,
-                        FirstName = s.FirstName,
-                        LastName = s.LastName,
-                        Email = s.Email,
-                        ProfilePictureFilename = s.ProfilePictureFilename,
-                    })
-                ));
+                return sections.Select(s => s.ToClassSectionResult(serviceConstants.storageBasePath));
             });
 
             return Ok(result);
         }
 
         [HttpGet("{classSectionId}")]
-        [ProducesResponseType(typeof(ClassSectionDetails), 200)]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(ClassSectionResult), 200)]
         public async Task<IActionResult> GetByID(int classSectionId)
         {
             var result = await connectionOwner.Use(async conn =>
             {
                 var section = await dbOwner.ClassSections.GetByID(conn, classSectionId);
-                var meetings = await dbOwner.ClassMeetings.GetByID(conn, "ClassSectionID", section.ID);
-                var type = await dbOwner.ClassTypes.GetByID(conn, section.ClassTypeID);
-                var instructor = new User {
-                    ID = section.InstructorID,
-                    FirstName = section.FirstName,
-                    LastName = section.LastName,
-                    Email = section.Email,
-                    ProfilePictureFilename = section.ProfilePictureFilename,
-                };
-
-                return new ClassSectionDetails(section, meetings, new UserResult(instructor), new ClassTypeResult(type, serviceConstants.storageBasePath));
+                return section.ToClassSectionResult(serviceConstants.storageBasePath);
             });
 
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Add()
+        [HttpGet("roster/{classSectionId}")]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.Instructor))]
+        //[ProducesResponseType(typeof(ClassSectionResult), 200)]
+        public async Task<IActionResult> GetRoster(int classSectionId)
         {
             throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> Add(ClassSectionAddRequest request)
+        {
+            var result = await connectionOwner.UseTransaction(async (conn, tr) =>
+            {
+                var section = await dbOwner.ClassSections.Add(conn, tr, new ClassSection
+                {
+                    ClassTypeID = request.ClassTypeID,
+                    InstructorID = request.InstructorID,
+                    RosterCapacity = request.RosterCapacity,
+                });
+
+                // Update meetings to have the correct section id
+                var assignedMeetings = request.Meetings.Select(m =>
+                {
+                    m.ClassSectionID = section.ID;
+                    return m;
+                }).ToList();
+
+                var meetings = await dbOwner.ClassMeetings.AddMany(conn, tr, assignedMeetings);
+
+                section.Meetings = meetings.ToList();
+
+                tr.Commit();
+
+                return section;
+            });
+
+            return Ok(result.ID);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update()
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        public async Task<IActionResult> Update(ClassSectionUpdateRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await connectionOwner.UseTransaction(async (conn, tr) =>
+                {
+                    var updatedCount = await dbOwner.ClassSections.Update(conn, tr, new ClassSection
+                    {
+                        ID = request.ID,
+                        ClassTypeID = request.ClassTypeID,
+                        InstructorID = request.InstructorID,
+                        RosterCapacity = request.RosterCapacity,
+                    });
+
+                    if (updatedCount < 1) throw new KeyNotFoundException();
+
+                    int deletedCount = 0;
+                    int insertedCount = 0;
+
+                    if (request.MeetingIdsToDelete.Count() > 0)
+                    {
+                        deletedCount = await dbOwner.ClassMeetings.DeleteMany(conn, tr, request.MeetingIdsToDelete);
+                    }
+
+                    if (request.MeetingsToInsert.Count() > 0)
+                    {
+                        // Update meetings to have the correct section id
+                        var assignedMeetings = request.MeetingsToInsert.Select(m =>
+                        {
+                            m.ClassSectionID = request.ID;
+                            return m;
+                        }).ToList();
+
+                        insertedCount = (await dbOwner.ClassMeetings.AddMany(conn, tr, assignedMeetings)).Count();
+                    }
+
+                    if (
+                        request.MeetingIdsToDelete.Count() != deletedCount ||
+                        request.MeetingsToInsert.Count() != insertedCount
+                    )
+                    {
+                        throw new Exception();
+                    }
+
+                    tr.Commit();
+                });
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException)
+                {
+                    return NotFound();
+                }
+
+                logger.Error(ex, ex.Message);
+                return StatusCode(500);
+            }
         }
 
         [HttpDelete("{classSectionId}")]
-        public async Task<IActionResult> Delete(int classSectionId, [FromQuery] bool hardDelete = false)
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        public async Task<IActionResult> Delete(int classSectionId)
         {
-            throw new NotImplementedException();
+            // Prevent deletion of placeholder section
+            if (classSectionId <= 1) return BadRequest("ID must be greater than 1");
+            try
+            {
+                await connectionOwner.UseTransaction(async (conn, tr) =>
+                {
+                    var deletedCount = await dbOwner.ClassSections.Delete(conn, tr, classSectionId);
+
+                    if (deletedCount < 1) throw new KeyNotFoundException();
+
+                    tr.Commit();
+                });
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException)
+                {
+                    return NotFound();
+                }
+
+                logger.Error(ex, ex.Message);
+                return StatusCode(500);
+            }
         }
-
-        #region Class Meetings
-
-        [HttpPost("/meetings")]
-        public async Task<IActionResult> AddMeetings()
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPut("/meetings")]
-        public async Task<IActionResult> UpdateMeeting()
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpDelete("/meetings/{classMeetingId}")]
-        public async Task<IActionResult> DeleteMeeting(int classMeetingId)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 }

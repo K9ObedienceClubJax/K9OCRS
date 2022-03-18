@@ -5,7 +5,7 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using Serilog;
-using K9OCRS.Configuration;
+using K9OCRS.Utils.Configuration;
 using System.IO;
 
 namespace K9OCRS

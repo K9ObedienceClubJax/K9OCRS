@@ -16,23 +16,47 @@ namespace DataAccess.Repositories
 
         public override async Task<IReadOnlyList<ClassSection>> GetAll(IDbConnection conn)
         {
-            var query = @"
+            var query = @$"
                 SELECT
-	                cs.*,
+	                cs.ID,
+	                cs.ClassTypeID,
+	                cs.InstructorID,
+	                cs.isDraft,
+	                cs.isSystemOwned,
+	                cs.RosterCapacity,
 	                css.RosterActual,
 	                css.StartDate,
 	                css.EndDate,
+	                css.StartTime,
+	                css.EndTime,
 	                css.[Status],
+	                -- Hydrate Instructor
 	                u.FirstName,
 	                u.LastName,
 	                u.Email,
-	                u.ProfilePictureFilename
+	                u.ProfilePictureFilename,
+                    u.UserRoleID
                 FROM ClassSections cs
-                JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
-                JOIN Users u ON cs.InstructorID = u.ID
+                LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                LEFT JOIN Users u ON cs.InstructorID = u.ID
+                WHERE cs.isSystemOwned = 0
             ";
 
-            var result = await conn.QueryAsync<ClassSection>(query);
+            var result = await conn.QueryAsync<ClassSection, User, ClassSection>(query,
+            (section, instructor) =>
+            {
+                section.Instructor = new User
+                {
+                    ID = section.InstructorID,
+                    UserRoleID = instructor.UserRoleID,
+                    FirstName = instructor.FirstName,
+                    LastName = instructor.LastName,
+                    Email = instructor.Email,
+                    ProfilePictureFilename = instructor.ProfilePictureFilename,
+                };
+                return section;
+            },
+            splitOn: "FirstName");
             return result.ToList();
         }
 
@@ -40,45 +64,124 @@ namespace DataAccess.Repositories
         {
             var query = @"
                 SELECT
-                    cs.*,
+	                cs.ID,
+	                cs.ClassTypeID,
+	                cs.InstructorID,
+	                cs.isDraft,
+	                cs.isSystemOwned,
+	                cs.RosterCapacity,
 	                css.RosterActual,
 	                css.StartDate,
 	                css.EndDate,
+	                css.StartTime,
+	                css.EndTime,
 	                css.[Status],
+	                -- Hydrate Instructor
 	                u.FirstName,
 	                u.LastName,
 	                u.Email,
-	                u.ProfilePictureFilename
+	                u.ProfilePictureFilename,
+                    u.UserRoleID,
+	                -- Hydrate Class Type
+	                ct.Title,
+	                ct.Price,
+	                ct.Duration,
+	                ct.[Description],
+	                ct.Requirements,
+	                ct.ImageFilename
                 FROM ClassSections cs
-                JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
-                JOIN Users u ON cs.InstructorID = u.ID
-                WHERE ID = @Id
+                LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                LEFT JOIN Users u ON cs.InstructorID = u.ID
+                LEFT JOIN ClassTypes ct ON cs.ClassTypeID = ct.ID
+                WHERE cs.ID = @Id
             ";
 
-            var result = await conn.QuerySingleOrDefaultAsync<ClassSection>(query, new { Id = id });
-            return result;
+            var meetingsQuery = @"
+                SELECT *
+                FROM ClassMeetings cm
+                WHERE cm.ClassSectionID = @ClassSectionID
+            ";
+
+            var classSection = (await conn.QueryAsync<ClassSection, User, ClassType, ClassSection>(query,
+                (section, instructor, type) =>
+                {
+                    section.Instructor = new User
+                    {
+                        ID = section.InstructorID,
+                        UserRoleID = instructor.UserRoleID,
+                        FirstName = instructor.FirstName,
+                        LastName = instructor.LastName,
+                        Email = instructor.Email,
+                        ProfilePictureFilename = instructor.ProfilePictureFilename,
+                    };
+
+                    section.ClassType = new ClassType
+                    {
+                        ID = section.ClassTypeID,
+                        Title = type.Title,
+                        Description = type.Description,
+                        Duration = type.Duration,
+                        Requirements = type.Requirements,
+                        Price = type.Price,
+                        ImageFilename = type.ImageFilename,
+                    };
+
+                    return section;
+                },
+                new { Id = id },
+                splitOn: "FirstName,Title")).FirstOrDefault();
+
+            var meetings = await conn.QueryAsync<ClassMeeting>(meetingsQuery, new { ClassSectionID = classSection.ID });
+
+            classSection.Meetings = meetings.ToList();
+
+            return classSection;
         }
 
         public override async Task<IReadOnlyList<ClassSection>> GetByID(IDbConnection conn, string idColumn, int id)
         {
-            var query = $@"
+            var query = @$"
                 SELECT
-                    cs.*,
+	                cs.ID,
+	                cs.ClassTypeID,
+	                cs.InstructorID,
+	                cs.isDraft,
+	                cs.isSystemOwned,
+	                cs.RosterCapacity,
 	                css.RosterActual,
 	                css.StartDate,
 	                css.EndDate,
+	                css.StartTime,
+	                css.EndTime,
 	                css.[Status],
+	                -- Hydrate Instructor
 	                u.FirstName,
 	                u.LastName,
 	                u.Email,
-	                u.ProfilePictureFilename
+	                u.ProfilePictureFilename,
+                    u.UserRoleID
                 FROM ClassSections cs
-                JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
-                JOIN Users u ON cs.InstructorID = u.ID
-                WHERE [{idColumn}] = @Id
+                LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
+                LEFT JOIN Users u ON cs.InstructorID = u.ID
+                WHERE cs.[{idColumn}] = @Id
             ";
 
-            var result = await conn.QueryAsync<ClassSection>(query, new { Id = id });
+            var result = await conn.QueryAsync<ClassSection, User, ClassSection>(query,
+            (section, instructor) =>
+            {
+                section.Instructor = new User
+                {
+                    ID = section.InstructorID,
+                    UserRoleID = instructor.UserRoleID,
+                    FirstName = instructor.FirstName,
+                    LastName = instructor.LastName,
+                    Email = instructor.Email,
+                    ProfilePictureFilename = instructor.ProfilePictureFilename,
+                };
+                return section;
+            },
+            new { Id = id },
+            splitOn: "FirstName");
             return result.ToList();
         }
     }

@@ -13,24 +13,26 @@ namespace DataAccess
         public readonly IRepository<UserRole> UserRoles;
         public readonly IUsersRepository Users;
         public readonly IRepository<Dog> Dogs;
+        public readonly IRepository<UserDog> UserDogs;
         public readonly IRepository<VaccinationRecord> VaccinationRecords;
         public readonly IClassPhotosRepository ClassPhotos;
         public readonly IClassTypesRepository ClassTypes;
         public readonly IRepository<ClassSection> ClassSections;
         public readonly IRepository<ClassMeeting> ClassMeetings;
-        public readonly IRepository<SectionApplication> SectionApplications;
+        public readonly IRepository<ClassApplication> ClassApplications;
 
         public DbOwner()
         {
             UserRoles = new UserRolesRepository();
             Users = new UsersRepository();
             Dogs = new DogsRepository();
+            UserDogs = new UserDogsRepository();
             VaccinationRecords = new VaccinationRecordsRepository();
             ClassPhotos = new ClassPhotosRepository();
             ClassTypes = new ClassTypesRepository();
             ClassSections = new ClassSectionsRepository();
             ClassMeetings = new ClassMeetingsRepository();
-            SectionApplications = new SectionApplicationsRepository();
+            ClassApplications = new ClassApplicationsRepository();
         }
     }
 }
