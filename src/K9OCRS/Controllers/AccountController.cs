@@ -2,7 +2,6 @@
 using DataAccess.Clients.Contracts;
 using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
-using K9OCRS.Configuration;
 using K9OCRS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,6 +20,9 @@ using System.Threading.Tasks;
 using System.Web.Helpers;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using K9OCRS.Utils.Constants;
 
 namespace K9OCRS.Controllers
 {
@@ -118,7 +120,7 @@ namespace K9OCRS.Controllers
                 var token = GenerateToken(login, loginResult);
 
                 HttpContext.Response.Cookies.Append(
-                    "k9jwt",
+                    _config["Jwt:CookieName"],
                     token.Result,
                     new CookieOptions
                     {
@@ -135,12 +137,12 @@ namespace K9OCRS.Controllers
         [HttpGet("loginstatus")]
         public async Task<IActionResult> LoginStatus()
         {
-            var cookie = Request.Cookies["k9jwt"];
+            var cookie = Request.Cookies[_config["Jwt:CookieName"]]; 
              if (cookie != null)
             {
                 JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(cookie);
                 Console.WriteLine(token.Claims);
-                int id = Int32.Parse(token.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid").Value);
+                int id = Int32.Parse(token.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
                 var loginResult = await connectionOwner.Use(conn =>
                 {
@@ -158,9 +160,9 @@ namespace K9OCRS.Controllers
         public IActionResult Logout()
         {
             //Delete the cookie
-            if (Request.Cookies["k9jwt"] != null)
+            if (Request.Cookies[_config["Jwt:CookieName"]] != null)
             {
-                HttpContext.Response.Cookies.Delete("k9jwt");
+                HttpContext.Response.Cookies.Delete(_config["Jwt:CookieName"]);
             }
             return Ok();
         }
@@ -204,7 +206,8 @@ namespace K9OCRS.Controllers
         {
             string tokenString = passwordReset.Token;
             JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
-            string email = token.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
+            string email = token.Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
+            // TODO: This is a security issue, find another way to do the password change
             string password = token.Claims.First(claim => claim.Type.Contains("Password")).Value;
 
             var accountResult = await connectionOwner.Use(conn =>
@@ -342,24 +345,23 @@ namespace K9OCRS.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(serviceConstants.jwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            var userRole = Enum.GetName(typeof(UserRoles), loginResult.UserRoleID);
+
+            var claims = new[]
             {
-                var claims = new[]
-                {
-                new Claim(ClaimTypes.Sid, loginResult.ID + ""),
-                new Claim(ClaimTypes.Email, loginResult.Email + ""),
-                new Claim(ClaimTypes.Name, loginResult.FirstName + " " + loginResult.LastName),
-                new Claim(ClaimTypes.Role, loginResult.UserRoleID + "")
-                };
+            new Claim(ClaimTypes.NameIdentifier, loginResult.ID.ToString()),
+            new Claim(ClaimTypes.Email, loginResult.Email),
+            new Claim(ClaimTypes.Name, $"{loginResult.FirstName} {loginResult.LastName}"),
+            new Claim(ClaimTypes.Role, userRole)
+            };
 
-                var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-                    _config["Jwt:Audience"],
-                    claims,
-                    expires: DateTime.Now.AddMinutes(15),
-                    signingCredentials: credentials);
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+                _config["Jwt:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(15),
+                signingCredentials: credentials);
 
-                return new JwtSecurityTokenHandler().WriteToken(token);
-
-            }
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         private async Task<string> GenerateForgotPasswordToken(string email, User accountResult)
@@ -371,9 +373,10 @@ namespace K9OCRS.Controllers
 
                 var claims = new[]
                 {
-                    new Claim(ClaimTypes.Sid, accountResult.ID + ""),
-                  new Claim(ClaimTypes.Email, email + ""),
-                  new Claim(type: "Password", accountResult.Password)
+                    new Claim(ClaimTypes.NameIdentifier, accountResult.ID + ""),
+                    new Claim(ClaimTypes.Email, email + ""),
+                    // TODO: This is a security issue, find another way to do the password change
+                    new Claim(type: "Password", accountResult.Password)
                 };
 
                 var token = new JwtSecurityToken(_config["Jwt:Issuer"],

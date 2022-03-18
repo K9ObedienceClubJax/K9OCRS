@@ -8,13 +8,13 @@ using System;
 using DataAccess.Constants;
 using System.Collections.Generic;
 using System.IO;
-using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
 using K9OCRS.Models.ClassManagement;
-using K9OCRS.Configuration;
 using System.Linq;
 using System.Data.SqlClient;
+using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
 
 namespace K9OCRS.Controllers
 {

@@ -8,19 +8,21 @@ using System;
 using DataAccess.Constants;
 using System.Collections.Generic;
 using System.IO;
-using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
 using K9OCRS.Models.ClassManagement;
-using K9OCRS.Configuration;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
+using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
 
 namespace K9OCRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ClassTypesController : ControllerBase
     {
         private readonly ILogger logger;
@@ -46,6 +48,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<ClassTypeResult>), 200)]
         public async Task<IActionResult> GetClassesList([FromQuery] bool includeSections, [FromQuery] bool includeArchived)
         {
@@ -99,6 +102,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(ClassTypeResult), 200)]
         public async Task<IActionResult> GetClassTypeDetails(int id)
         {
@@ -127,6 +131,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("placeholderImageUrl")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult GetPlaceholderImageUrl()
         {
@@ -136,6 +141,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(ClassType), 200)]
         public async Task<IActionResult> CreateClassType([FromForm] ClassTypeAddRequest request)
         {
@@ -182,6 +188,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> UpdateClassType([FromForm] ClassTypeUpdateRequest request)
         {
@@ -235,6 +242,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> DeleteClassType(int id)
         {
@@ -272,7 +280,7 @@ namespace K9OCRS.Controllers
             return Ok(result);
         }
 
-        #region ClassType_Image
+        #region Private Methods
 
         private async Task<int> UpdateImage(int classTypeId, FileUpload upload)
         {
@@ -294,7 +302,6 @@ namespace K9OCRS.Controllers
             throw new ArgumentException();
         }
 
-
         private async Task<int> DeleteImage(int classTypeId, string fileName)
         {
             if (!String.IsNullOrEmpty(fileName) && !String.IsNullOrWhiteSpace(fileName))
@@ -311,10 +318,6 @@ namespace K9OCRS.Controllers
 
             throw new ArgumentException();
         }
-
-        #endregion
-
-        #region ClassType_Photos
 
         private async Task<List<ClassPhoto>> GetPhotosByClassType(int classTypeId) =>
             (await connectionOwner.Use(conn => {

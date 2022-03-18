@@ -1,7 +1,6 @@
 ﻿using DataAccess;
 using DataAccess.Clients.Contracts;
 using DataAccess.Modules.Contracts;
-using K9OCRS.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -14,7 +13,8 @@ using System.IO;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.IO.Compression;
-using K9OCRS.Extensions;
+using K9OCRS.Utils.Extensions;
+using K9OCRS.Utils.Constants;
 
 namespace K9OCRS.Controllers
 {

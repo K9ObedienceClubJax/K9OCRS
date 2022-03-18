@@ -12,12 +12,15 @@ using Serilog;
 using System;
 using System.Diagnostics;
 using DataAccess;
-using K9OCRS.Configuration;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using K9OCRS.Utils.Constants;
 
 namespace K9OCRS
 {
@@ -38,20 +41,31 @@ namespace K9OCRS
             services.AddControllersWithViews();
             services.AddRazorPages().WithRazorPagesRoot("/Views");
             services.AddHttpContextAccessor();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(1),
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = Configuration["Jwt:Issuer"],
                     ValidAudience = Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWT_KEY")))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWT_KEY"))),
                 };
-              
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context => {
+                        context.Token = context.Request.Cookies[Configuration["Jwt:CookieName"]];
+                        return Task.CompletedTask;
+                    },
+                };
             });
+
+            services.AddAuthorization();
+
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
