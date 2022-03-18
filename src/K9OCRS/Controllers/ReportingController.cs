@@ -1,7 +1,6 @@
 ﻿using DataAccess;
 using DataAccess.Clients.Contracts;
 using DataAccess.Modules.Contracts;
-using K9OCRS.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -14,12 +13,15 @@ using System.IO;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.IO.Compression;
-using K9OCRS.Extensions;
+using K9OCRS.Utils.Extensions;
+using K9OCRS.Utils.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace K9OCRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ReportingController : ControllerBase
     {
         private readonly ILogger logger;
@@ -45,6 +47,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("export")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public async Task<IActionResult> DBExport()
         {
             // Get Data

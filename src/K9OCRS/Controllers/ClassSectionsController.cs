@@ -8,18 +8,20 @@ using System;
 using DataAccess.Constants;
 using System.Collections.Generic;
 using System.IO;
-using K9OCRS.Extensions;
 using Serilog;
 using K9OCRS.Models;
 using K9OCRS.Models.ClassManagement;
-using K9OCRS.Configuration;
 using System.Linq;
 using System.Data.SqlClient;
+using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace K9OCRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ClassSectionsController : ControllerBase
     {
         private readonly ILogger logger;
@@ -45,6 +47,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<ClassSectionResult>), 200)]
         public async Task<IActionResult> GetAll()
         {
@@ -58,6 +61,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("{classSectionId}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(ClassSectionResult), 200)]
         public async Task<IActionResult> GetByID(int classSectionId)
         {
@@ -71,6 +75,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpGet("roster/{classSectionId}")]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.Instructor))]
         //[ProducesResponseType(typeof(ClassSectionResult), 200)]
         public async Task<IActionResult> GetRoster(int classSectionId)
         {
@@ -78,6 +83,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> Add(ClassSectionAddRequest request)
         {
@@ -110,6 +116,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public async Task<IActionResult> Update(ClassSectionUpdateRequest request)
         {
             try
@@ -172,6 +179,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpDelete("{classSectionId}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public async Task<IActionResult> Delete(int classSectionId)
         {
             // Prevent deletion of placeholder section

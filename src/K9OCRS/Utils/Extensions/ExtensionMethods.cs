@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace K9OCRS.Extensions
+namespace K9OCRS.Utils.Extensions
 {
     public static class ExtensionMethods
     {

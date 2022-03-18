@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace K9OCRS.Configuration
+namespace K9OCRS.Utils.Configuration
 {
     public class DotEnv
     {

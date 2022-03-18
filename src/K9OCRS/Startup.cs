@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,12 +10,16 @@ using Serilog;
 using System;
 using System.Diagnostics;
 using DataAccess;
-using K9OCRS.Configuration;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Threading.Tasks;
+using K9OCRS.Utils.Constants;
+using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace K9OCRS
 {
@@ -38,20 +40,35 @@ namespace K9OCRS
             services.AddControllersWithViews();
             services.AddRazorPages().WithRazorPagesRoot("/Views");
             services.AddHttpContextAccessor();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(1),
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = Configuration["Jwt:Issuer"],
                     ValidAudience = Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWT_KEY")))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWT_KEY"))),
                 };
-              
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context => {
+                        context.Token = context.Request.Cookies[Configuration["Jwt:CookieName"]];
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context => {
+                        context.Response.Cookies.Delete(Configuration["Jwt:CookieName"]);
+                        return Task.CompletedTask;
+                    }
+                };
             });
+
+            services.AddAuthorization();
+
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -86,6 +103,9 @@ namespace K9OCRS
                         Description = "API for the K9 Obedience Club Registration System",
                         Version = "v1"
                     });
+
+                // Puts a padlock next to endpoints that require authentication
+                options.OperationFilter<SecurityRequirementsOperationFilter>();
 
                 if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
                 {

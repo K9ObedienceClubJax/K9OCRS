@@ -1,5 +1,5 @@
 ﻿
-namespace K9OCRS.Configuration
+namespace K9OCRS.Utils.Constants
 {
     public class ServiceConstants
     {
