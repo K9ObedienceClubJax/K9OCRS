@@ -5,7 +5,6 @@ using DataAccess.Repositories.Contracts;
 using System.Data;
 using System.Threading.Tasks;
 
-
 namespace DataAccess.Repositories
 {
     public class DogsRepository : BaseRepository<Dog>, IDogRepository
@@ -16,6 +15,12 @@ namespace DataAccess.Repositories
         public DogsRepository() : base(DbTables.Get(nameof(Dog))) 
         {
        
+        }
+
+        public async Task<int> UpdateImage(IDbConnection conn, int dogId, string filename)
+        {
+            var query = $"UPDATE {_tableName} SET ImageFilename=@Filename WHERE ID=@ID";
+            return await conn.ExecuteAsync(query, new { ID = dogId, Filename = filename });
         }
     }
 }
