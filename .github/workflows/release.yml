@@ -1,0 +1,33 @@
+name: '[Production] Build & Deploy'
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: 'production'
+      - uses: azure/docker-login@v1
+        with:
+          login-server: pk9ocrs.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build -t pk9ocrs.azurecr.io/k9ocrs:${{ github.sha }} .
+          docker push pk9ocrs.azurecr.io/k9ocrs:${{ github.sha }}
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+      url: https://classes.k9obedienceclub.org
+    needs: build
+    steps:
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'pk9ocrs'
+          publish-profile: ${{ secrets.AZUREWEBAPPPUBLISHPROFILE }}
+          images: 'pk9ocrs.azurecr.io/k9ocrs:${{ github.sha }}'

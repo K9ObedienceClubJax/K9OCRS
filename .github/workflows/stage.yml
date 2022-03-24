@@ -1,0 +1,33 @@
+name: '[Staging] Build & Deploy'
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: Staging
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/docker-login@v1
+        with:
+          login-server: unfignitech.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build -t unfignitech.azurecr.io/k9ocrs:${{ github.sha }} .
+          docker push unfignitech.azurecr.io/k9ocrs:${{ github.sha }}
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: Staging
+      url: https://k9ocrs.azurewebsites.net
+    needs: build
+    steps:
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'k9ocrs'
+          publish-profile: ${{ secrets.AZUREWEBAPPPUBLISHPROFILE }}
+          images: 'unfignitech.azurecr.io/k9ocrs:${{ github.sha }}'
