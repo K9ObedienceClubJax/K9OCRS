@@ -29,7 +29,7 @@ namespace K9OCRS
 
                     configuration.ReadFrom.Configuration(context.Configuration);
 
-                    if (env.IsDevelopment())
+                    if (env.IsDevelopment() || env.IsStaging())
                     {
                         Serilog.Debugging.SelfLog.Enable(Console.Error);
                     }

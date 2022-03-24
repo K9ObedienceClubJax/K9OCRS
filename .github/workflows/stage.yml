@@ -1,4 +1,4 @@
-name: \[Staging\] Build & Deploy
+name: '[Staging] Build & Deploy'
 on:
   push:
     branches:

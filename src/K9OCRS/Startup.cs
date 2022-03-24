@@ -93,39 +93,44 @@ namespace K9OCRS
                 Console.WriteLine("[{0}] service started as pid [{1}]", name, pid);
             }
 
-            // Add Swagger
-            services.AddSwaggerGen(options =>
+            var currentEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            if (currentEnv != "Production")
             {
-                options.SwaggerDoc("v1",
-                    new Microsoft.OpenApi.Models.OpenApiInfo
+                // Add Swagger
+                services.AddSwaggerGen(options => {
+                    options.SwaggerDoc("v1",
+                        new Microsoft.OpenApi.Models.OpenApiInfo
+                        {
+                            Title = "K9OCRS API",
+                            Description = "API for the K9 Obedience Club Registration System",
+                            Version = "v1"
+                        });
+
+                    // Puts a padlock next to endpoints that require authentication
+                    options.OperationFilter<SecurityRequirementsOperationFilter>();
+
+                    if (currentEnv == "Development")
                     {
-                        Title = "K9OCRS API",
-                        Description = "API for the K9 Obedience Club Registration System",
-                        Version = "v1"
-                    });
 
-                // Puts a padlock next to endpoints that require authentication
-                options.OperationFilter<SecurityRequirementsOperationFilter>();
+                        var srcPath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, "..", "..", "..", ".."));
+                        var dataAccessPath = Path.Combine(srcPath, "DataAccess", "bin", "Debug");
 
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
-                {
+                        var mainName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+                        var dataAccessName = typeof(ModuleBuilder).GetTypeInfo().Assembly.GetName().Name;
 
-                    var srcPath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, "..", "..", "..", ".."));
-                    var dataAccessPath = Path.Combine(srcPath, "DataAccess", "bin", "Debug");
-
-                    var mainName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-                    var dataAccessName = typeof(ModuleBuilder).GetTypeInfo().Assembly.GetName().Name;
-
-                    options.IncludeXmlComments("bin/Debug/" + mainName + ".xml");
-                    options.IncludeXmlComments(Path.Combine(dataAccessPath, dataAccessName + ".xml"));
-                }
-            });
+                        options.IncludeXmlComments("bin/Debug/" + mainName + ".xml");
+                        options.IncludeXmlComments(Path.Combine(dataAccessPath, dataAccessName + ".xml"));
+                    }
+                });
+            }
         }
 
         // Here we'll register repositories and services
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            
+            var currentEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
 
             // Modules
 
@@ -133,7 +138,7 @@ namespace K9OCRS
             string databaseConnectionString;
             string storageBasePath;
 
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
+            if (currentEnv == "Development")
             {
                 // This relative path will be used for generating the file urls
                 storageBasePath = Configuration.GetValue<string>("StorageBasePaths:LocalStorage");
@@ -180,7 +185,7 @@ namespace K9OCRS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment() || env.IsEnvironment("Local"))
+            if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -207,12 +212,15 @@ namespace K9OCRS
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseSwagger();
-
-            app.UseSwaggerUI(options =>
+            if (!env.IsProduction())
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "K9OCRS API");
-            });
+                app.UseSwagger();
+
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "K9OCRS API");
+                });
+            }
 
             app.UseEndpoints(endpoints =>
             {
@@ -225,12 +233,6 @@ namespace K9OCRS
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-                //spa.Options.DevServerPort = 5002;
-
-                //if (env.IsDevelopment())
-                //{
-                //    spa.UseReactDevelopmentServer(npmScript: "start");
-                //}
             });
 
             app.UseCors(policy =>
