@@ -1,15 +1,14 @@
-name: \[Production\] Build & Deploy
+name: '[Production] Build & Deploy'
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - production
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: Production
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: 'production'
       - uses: azure/docker-login@v1
         with:
           login-server: pk9ocrs.azurecr.io
