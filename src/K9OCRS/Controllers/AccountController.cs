@@ -23,6 +23,9 @@ using SendGrid.Helpers.Mail;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
+using System.IO;
+using DataAccess.Constants;
 
 namespace K9OCRS.Controllers
 {
@@ -344,6 +347,17 @@ namespace K9OCRS.Controllers
             return Ok(userResults);
         }
 
+        [HttpPut("updateprofilepicture")]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> UpdateProfilePicture([FromBody] ProfilePictureUpdateRequest request)
+        {
+                await UpdateImage(request.ID, new FileUpload
+                {
+                    Files = new List<IFormFile> { request.ImageUpdate },
+                });
+            return Ok();
+        }
+
 
         //Non-API functions
         private async Task<string> GenerateToken(Login login, User loginResult)
@@ -451,5 +465,29 @@ namespace K9OCRS.Controllers
 
             return hashedPassword;
         }
+
+        private async Task<int> UpdateImage(int id, FileUpload upload)
+        {
+            User user = await connectionOwner.Use(conn => {
+                return dbOwner.Users.GetByID(conn, id);
+            });
+
+            if (upload.Files != null && upload.Files.Count > 0)
+            {
+                var data = await upload.Files[0].ToBinaryData();
+
+                var filePath = String.Concat(id.ToString(), "/", id, Path.GetExtension(upload.Files[0].FileName));
+                user.ProfilePictureFilename = Path.GetFileName(filePath);
+
+                await storageClient.UploadFile(UploadType.ProfilePicture, filePath, upload.Files[0].ContentType, data);
+
+                return await connectionOwner.Use(conn => {
+                    return dbOwner.Users.Update(conn, user);
+                });
+            }
+
+            throw new ArgumentException();
+        }
+
     }
 }
