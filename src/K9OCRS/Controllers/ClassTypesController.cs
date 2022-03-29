@@ -186,7 +186,7 @@ namespace K9OCRS.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> UpdateClassType([FromForm] ClassTypeUpdateRequest request)

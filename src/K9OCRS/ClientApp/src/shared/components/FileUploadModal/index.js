@@ -8,13 +8,9 @@ const FileUploadModal = ({ handleClose, show, children }) => {
         <div className={showHideClassName}>
             <div className="modal-container">
                 {children}
-                <a
-                    href="javascript:;"
-                    className="modal-close"
-                    onClick={handleClose}
-                >
+                <p className="modal-close" onClick={handleClose}>
                     close
-                </a>
+                </p>
             </div>
         </div>
     );

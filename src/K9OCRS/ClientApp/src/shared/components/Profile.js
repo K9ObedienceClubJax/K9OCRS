@@ -47,7 +47,9 @@ async function getUserData(
     setLast(inspectedUser.lastName);
     setEmail(inspectedUser.email);
     setRole(inspectedUser.userRoleID);
-    setPicture(inspectedUser.profilePictureFilename);
+    setPicture(
+        `K9Storage/profilepictures/${inspectedUser.id}/${inspectedUser.profilePictureFilename}`
+    );
     //Use to role id to select the radio button
     const radio = document.getElementById('option' + inspectedUser.userRoleID);
     radio.checked = true;
@@ -75,10 +77,32 @@ function handleSubmit(
     password,
     role,
     picture,
-    imageToUpdate
+    imageUpdate
 ) {
+    var formData = new FormData();
+
+    if (userId) {
+        formData.append('id', userId);
+    }
+
+    formData.append('firstName', first);
+    formData.append('lastName', last);
+    formData.append('email', email);
+
+    if (imageUpdate) {
+        formData.append('imageUpdate', imageUpdate, imageUpdate.name);
+    }
+
+    if (role) {
+        formData.append('userRoleId', role);
+    }
+
+    if (password) {
+        formData.append('password', password);
+    }
+
     if (defaultMode) {
-        accountsApi.changeInfo(userId, first, last, email);
+        accountsApi.changeInfo(formData);
         setAlerts([
             {
                 color: 'success',
@@ -86,7 +110,7 @@ function handleSubmit(
             },
         ]);
     } else if (createMode) {
-        accountsApi.createUser(email, first, last, password, role);
+        accountsApi.createUser(formData);
         setAlerts([
             {
                 color: 'success',
@@ -94,7 +118,7 @@ function handleSubmit(
             },
         ]);
     } else if (inspectMode) {
-        accountsApi.changeInfo(userId, first, last, email, role, picture);
+        accountsApi.changeInfoAdmin(formData);
         setAlerts([
             {
                 color: 'success',
@@ -102,7 +126,6 @@ function handleSubmit(
             },
         ]);
     }
-    accountsApi.updateProfilePicture({ userId, imageToUpdate });
 }
 
 const Profile = (props) => {
@@ -180,6 +203,7 @@ const Profile = (props) => {
                     setImageToUpdate={setImageToUpdate}
                     currentUser={currentUser}
                     picture={picture}
+                    setPicture={setPicture}
                 />
             </Col>
             <Col lg={{ size: 10, offset: 1 }}>
