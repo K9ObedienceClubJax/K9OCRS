@@ -33,5 +33,11 @@ namespace DataAccess.Repositories
             var query = $"SELECT ID, UserRoleID, Email, FirstName, LastName, ProfilePictureFilename FROM {_tableName} WHERE UserRoleID = @Role AND isSystemOwned = 0";
             return await conn.QueryAsync<User>(query, new { Role = role });
         }
+
+        public async Task<int> UpdateProfilePicture(IDbConnection conn, int userId, string filename)
+        { 
+            var query = $"UPDATE {_tableName} SET ProfilePictureFilename=@Filename WHERE ID=@ID";
+            return await conn.ExecuteAsync(query, new { ID = userId, Filename = filename });
+        }
     }
 }

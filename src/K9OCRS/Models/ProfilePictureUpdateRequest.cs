@@ -7,10 +7,15 @@ using System.Threading.Tasks;
 
 namespace K9OCRS.Models
 {
-    public class ProfilePictureUpdateRequest
+    public class ChangeUserInfoRequest
     {
-        [Required]
+        //Do not require ID, so that admins can create new users
         public int ID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public int UserRoleID { get; set; }
         public IFormFile ImageUpdate { get; set; }
     }
 }
