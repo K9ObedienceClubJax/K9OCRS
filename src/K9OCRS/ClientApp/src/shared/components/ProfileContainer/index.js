@@ -4,7 +4,14 @@ import ProfileFileDropzone from '../FileDropzone/Profile';
 import './style.css';
 
 const ProfileContainer = (props) => {
-    const { modal, setModal, setImageToUpdate, currentUser, picture } = props;
+    const {
+        modal,
+        setModal,
+        setImageToUpdate,
+        currentUser,
+        picture,
+        setPicture,
+    } = props;
     return (
         <div className="d-flex container">
             <img
