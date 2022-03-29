@@ -259,10 +259,13 @@ namespace K9OCRS.Controllers
                 await dbOwner.Users.Update(conn, tr, user);
                 tr.Commit();
             }));
-            await UpdateImage(request.ID, new FileUpload
+            if (request.ImageUpdate != null)
             {
-                Files = new List<IFormFile> { request.ImageUpdate },
-            });
+                await UpdateImage(request.ID, new FileUpload
+                {
+                    Files = new List<IFormFile> { request.ImageUpdate },
+                });
+            }
 
             await Task.WhenAll(tasks);
             return Ok();
