@@ -112,9 +112,10 @@ const ClassTypeEditor = (props) => {
                         <Col md="5" lg="3">
                             <Input
                                 type="text"
-                                label="Session Length"
-                                labelFor="SessionLength"
+                                label="Estimated Length"
+                                labelFor="EstimatedLength"
                                 className="mb-2"
+                                helpText={'for example: "7 weeks"'}
                                 value={classTypeDetails?.duration}
                                 onChange={(e) =>
                                     dispatch({
@@ -122,6 +123,7 @@ const ClassTypeEditor = (props) => {
                                         payload: e.target.value,
                                     })
                                 }
+                                pattern="^\d+\s[A-Z-a-z]+.*$"
                                 required
                             />
                         </Col>

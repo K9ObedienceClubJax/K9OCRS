@@ -90,14 +90,16 @@ const ClassTypeSetup = (props) => {
                 alerts={alerts}
                 setAlerts={setAlerts}
             >
-                <Button
-                    tag={Link}
-                    to="/Manage/Classes"
-                    color="secondary"
-                    outline
-                >
-                    Cancel
-                </Button>
+                {addingNewType && (
+                    <Button
+                        tag={Link}
+                        to="/Manage/Classes"
+                        color="secondary"
+                        outline
+                    >
+                        Cancel
+                    </Button>
+                )}
                 {!addingNewType && (
                     <Button
                         color="danger"
