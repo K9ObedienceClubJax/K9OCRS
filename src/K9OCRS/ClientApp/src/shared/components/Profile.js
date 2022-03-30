@@ -47,9 +47,7 @@ async function getUserData(
     setLast(inspectedUser.lastName);
     setEmail(inspectedUser.email);
     setRole(inspectedUser.userRoleID);
-    setPicture(
-        `K9Storage/profilepictures/${inspectedUser.id}/${inspectedUser.profilePictureFilename}`
-    );
+    setPicture(inspectedUser.profilePictureUrl);
     //Use to role id to select the radio button
     const radio = document.getElementById('option' + inspectedUser.userRoleID);
     radio.checked = true;
