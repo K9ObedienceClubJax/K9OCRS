@@ -23,6 +23,9 @@ using SendGrid.Helpers.Mail;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
+using System.IO;
+using DataAccess.Constants;
 
 namespace K9OCRS.Controllers
 {
@@ -239,17 +242,17 @@ namespace K9OCRS.Controllers
             return Ok();
         }
 
-        [HttpPost("changeinfo")]
-        public async Task<IActionResult> ChangeInfo([FromBody] User newInfo)
+        [HttpPut("changeinfo")]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> ChangeInfo([FromForm] ChangeUserInfoRequest request)
         {
             User user = await connectionOwner.Use(conn =>
             {
-                return dbOwner.Users.GetByID(conn, newInfo.ID);
+                return dbOwner.Users.GetByID(conn, request.ID);
             });
-            user.Email = newInfo.Email;
-            user.FirstName = newInfo.FirstName;
-            user.LastName = newInfo.LastName;
-
+            user.Email = request.Email;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
             var tasks = new List<Task>();
             tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
             {
@@ -257,50 +260,72 @@ namespace K9OCRS.Controllers
                 tr.Commit();
             }));
 
+            if (request.ImageUpdate != null)
+            {
+                await UpdateImage(request.ID, new FileUpload
+                {
+                    Files = new List<IFormFile> { request.ImageUpdate },
+                });
+            }
+
             await Task.WhenAll(tasks);
             return Ok();
         }
 
-        [HttpPost("changeinfoadmin")]
-        public async Task<IActionResult> ChangeInfoAdmin([FromBody] User newInfo)
+        [HttpPut("changeinfoadmin")]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> ChangeInfoAdmin([FromForm] ChangeUserInfoRequest request)
         {
-            User user = await connectionOwner.Use(conn =>
-            {
-                return dbOwner.Users.GetByID(conn, newInfo.ID);
+            User user = await connectionOwner.Use(conn => {
+                return dbOwner.Users.GetByID(conn, request.ID);
             });
-            user.Email = newInfo.Email;
-            user.FirstName = newInfo.FirstName;
-            user.LastName = newInfo.LastName;
-            user.UserRoleID = newInfo.UserRoleID;
-            user.ProfilePictureFilename = newInfo.ProfilePictureFilename;
-
+            user.Email = request.Email;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.UserRoleID = request.UserRoleID;
             var tasks = new List<Task>();
-            tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
-            {
+            tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                 await dbOwner.Users.Update(conn, tr, user);
                 tr.Commit();
             }));
 
+            if (request.ImageUpdate != null)
+            {
+                await UpdateImage(request.ID, new FileUpload
+                {
+                    Files = new List<IFormFile> { request.ImageUpdate },
+                });
+            }
+
             await Task.WhenAll(tasks);
             return Ok();
         }
 
-        [HttpPost("createuser")]
-        [Authorize(Roles = nameof(UserRoles.Admin))]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUser accountInfo)
+        [HttpPut("createuser")]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> CreateUser([FromForm] ChangeUserInfoRequest request)
         {
-            if(await ValidateEmailPassword(accountInfo.Email, accountInfo.Password))
+            if(await ValidateEmailPassword(request.Email, request.Password))
             {
                 var result = await connectionOwner.Use(conn =>
                 {
                     User user = new();
-                    user.FirstName = accountInfo.First;
-                    user.LastName = accountInfo.Last;
-                    user.Email = accountInfo.Email;
-                    user.Password = GetHashedPassword(accountInfo.Password);
-                    user.UserRoleID = accountInfo.Role;
+                    user.FirstName = request.FirstName;
+                    user.LastName = request.LastName;
+                    user.Email = request.Email;
+                    user.Password = GetHashedPassword(request.Password);
+                    user.UserRoleID = request.UserRoleID;
                     return dbOwner.Users.Add(conn, user);
                 });
+
+                if (request.ImageUpdate != null)
+                {
+                    await UpdateImage(result.ID, new FileUpload
+                    {
+                        Files = new List<IFormFile> { request.ImageUpdate },
+                    });
+                }
+
                 return Ok("Account added");
             }
             return StatusCode(400, "Failed to create user");
@@ -388,7 +413,7 @@ namespace K9OCRS.Controllers
                 var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                     _config["Jwt:Audience"],
                     claims,
-                    expires: DateTime.Now.AddMinutes(15),
+                    expires: DateTime.Now.AddMinutes(30),
                     signingCredentials: credentials);
 
                 return new JwtSecurityTokenHandler().WriteToken(token);
@@ -415,7 +440,7 @@ namespace K9OCRS.Controllers
                 {
                     return dbOwner.Users.GetByEmail(conn, email);
                 });
-                if (emailResult.Email.Contains(email))
+                if (emailResult != null)
                 {
                     return false;
                 }
@@ -451,5 +476,25 @@ namespace K9OCRS.Controllers
 
             return hashedPassword;
         }
+
+        private async Task<int> UpdateImage(int id, FileUpload upload)
+        {
+            if (upload.Files != null && upload.Files.Count > 0)
+            {
+                var data = await upload.Files[0].ToBinaryData();
+
+                var filePath = String.Concat(id.ToString(), "/", id, Path.GetExtension(upload.Files[0].FileName));
+                var filename = Path.GetFileName(filePath);
+
+                await storageClient.UploadFile(UploadType.ProfilePicture, filePath, upload.Files[0].ContentType, data);
+
+                return await connectionOwner.Use(conn => {
+                    return dbOwner.Users.UpdateProfilePicture(conn, id, filename);
+                });
+            }
+
+            throw new ArgumentException();
+        }
+
     }
 }
