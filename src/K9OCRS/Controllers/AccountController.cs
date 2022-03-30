@@ -259,18 +259,6 @@ namespace K9OCRS.Controllers
                 await dbOwner.Users.Update(conn, tr, user);
                 tr.Commit();
             }));
-            if (request.ImageUpdate != null)
-            {
-                await UpdateImage(request.ID, new FileUpload
-                {
-                    Files = new List<IFormFile> { request.ImageUpdate },
-                });
-            }
-
-            await UpdateImage(request.ID, new FileUpload
-            {
-                Files = new List<IFormFile> { request.ImageUpdate },
-            });
 
             if (request.ImageUpdate != null)
             {
@@ -300,10 +288,14 @@ namespace K9OCRS.Controllers
                 await dbOwner.Users.Update(conn, tr, user);
                 tr.Commit();
             }));
-            await UpdateImage(request.ID, new FileUpload
+
+            if (request.ImageUpdate != null)
             {
-                Files = new List<IFormFile> { request.ImageUpdate },
-            });
+                await UpdateImage(request.ID, new FileUpload
+                {
+                    Files = new List<IFormFile> { request.ImageUpdate },
+                });
+            }
 
             await Task.WhenAll(tasks);
             return Ok();
@@ -325,11 +317,14 @@ namespace K9OCRS.Controllers
                     user.UserRoleID = request.UserRoleID;
                     return dbOwner.Users.Add(conn, user);
                 });
-                
-                await UpdateImage(result.ID, new FileUpload
+
+                if (request.ImageUpdate != null)
                 {
-                    Files = new List<IFormFile> { request.ImageUpdate },
-                });
+                    await UpdateImage(result.ID, new FileUpload
+                    {
+                        Files = new List<IFormFile> { request.ImageUpdate },
+                    });
+                }
 
                 return Ok("Account added");
             }

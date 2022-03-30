@@ -10,7 +10,7 @@ const ProfileContainer = (props) => {
         setImageToUpdate,
         currentUser,
         picture,
-        setPicture,
+        // setPicture,
     } = props;
     return (
         <div className="d-flex container">
