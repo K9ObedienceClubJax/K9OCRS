@@ -164,6 +164,58 @@ namespace DataAccess.Repositories
             return await conn.ExecuteAsync(query, new { Ids = ids }, tr);
         }
 
+        #region Archivable
+        public virtual async Task<int> Archive(IDbConnection conn, int id)
+        {
+            if (!ValidateIsArchivableEntity()) throw new NotSupportedException("The entity does not support archiving");
+
+            var query = $"UPDATE {_tableName} SET IsArchived = 1 WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+            return await conn.ExecuteAsync(query, new { Id = id });
+        }
+
+        public virtual async Task<int> Unarchive(IDbConnection conn, int id)
+        {
+            if (!ValidateIsArchivableEntity()) throw new NotSupportedException("The entity does not support archiving");
+
+            var query = $"UPDATE {_tableName} SET IsArchived = 0 WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+            return await conn.ExecuteAsync(query, new { Id = id });
+        }
+        #endregion
+
+        #region Draftable
+        public virtual async Task<int> MakeDraft(IDbConnection conn, int id)
+        {
+            if (!ValidateIsDraftableEntity()) throw new NotSupportedException("The entity does not support drafting");
+
+            var query = $"UPDATE {_tableName} SET IsDraft = 1 WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+            return await conn.ExecuteAsync(query, new { Id = id });
+        }
+
+        public virtual async Task<int> PublishDraft(IDbConnection conn, int id)
+        {
+            if (!ValidateIsDraftableEntity()) throw new NotSupportedException("The entity does not support drafting");
+
+            var query = $"UPDATE {_tableName} SET IsDraft = 0 WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+            return await conn.ExecuteAsync(query, new { Id = id });
+        }
+        #endregion
+
         #region Private Methods
 
         private IEnumerable<PropertyInfo> GetProperties => typeof(T).GetProperties();
@@ -248,6 +300,18 @@ namespace DataAccess.Repositories
             }
 
             return parameters;
+        }
+
+        private bool ValidateIsArchivableEntity()
+        {
+            var props = GenerateListOfPropertyNames(GetProperties);
+            return props.Contains("isArchived");
+        }
+
+        private bool ValidateIsDraftableEntity()
+        {
+            var props = GenerateListOfPropertyNames(GetProperties);
+            return props.Contains("isDraft");
         }
 
         private string GenerateInsertQuery()

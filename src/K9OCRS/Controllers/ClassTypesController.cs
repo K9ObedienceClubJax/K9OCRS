@@ -1,22 +1,22 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using DataAccess;
+using DataAccess.Clients.Contracts;
+using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
-using DataAccess.Clients.Contracts;
-using System;
-using DataAccess.Constants;
-using System.Collections.Generic;
-using System.IO;
-using Serilog;
 using K9OCRS.Models;
 using K9OCRS.Models.ClassManagement;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
 using K9OCRS.Utils.Constants;
 using K9OCRS.Utils.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace K9OCRS.Controllers
 {
@@ -54,8 +54,7 @@ namespace K9OCRS.Controllers
         {
             IEnumerable<ClassTypeResult> result = null;
 
-            var (types, groupedSections) = await connectionOwner.Use(async conn =>
-            {
+            var (types, groupedSections) = await connectionOwner.Use(async conn => {
                 IEnumerable<ClassType> _types = null;
                 Dictionary<int, List<ClassSectionResult>> _groupedSections = null;
 
@@ -66,8 +65,7 @@ namespace K9OCRS.Controllers
                     var sections = await dbOwner.ClassSections.GetAll(conn);
 
                     // Group sections by classTypeID
-                    _groupedSections = sections.Aggregate(new Dictionary<int, List<ClassSectionResult>>(), (agg, s) =>
-                    {
+                    _groupedSections = sections.Aggregate(new Dictionary<int, List<ClassSectionResult>>(), (agg, s) => {
                         if (agg.ContainsKey(s.ClassTypeID))
                         {
                             agg[s.ClassTypeID].Add(s.ToClassSectionResult(serviceConstants.storageBasePath));
@@ -106,8 +104,7 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(ClassTypeResult), 200)]
         public async Task<IActionResult> GetClassTypeDetails(int id)
         {
-            var result = await connectionOwner.Use(async conn =>
-            {
+            var result = await connectionOwner.Use(async conn => {
                 // Get the data from the ClassTypes table
                 var entity = (await dbOwner.ClassTypes.GetByID(conn, id)).ToClassTypeResult(serviceConstants.storageBasePath);
 
@@ -144,8 +141,7 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(ClassType), 200)]
         public async Task<IActionResult> CreateClassType([FromForm] ClassTypeAddRequest request)
         {
-            var result = await connectionOwner.UseTransaction(async (conn, tr) =>
-            {
+            var result = await connectionOwner.UseTransaction(async (conn, tr) => {
                 try
                 {
                     var type = await dbOwner.ClassTypes.Add(conn, tr, new ClassType
@@ -240,6 +236,26 @@ namespace K9OCRS.Controllers
             return Ok(result);
         }
 
+        [HttpPost("archive/{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> ArchiveClassType(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.ClassTypes.Archive(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the class type with id: {id}");
+            return NoContent();
+        }
+
+        [HttpPost("unarchive/{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> UnarchiveClassType(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.ClassTypes.Unarchive(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the class type with id: {id}");
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(int), 200)]
@@ -256,8 +272,7 @@ namespace K9OCRS.Controllers
             var type = await connectionOwner.Use(conn =>
                 dbOwner.ClassTypes.GetByID(conn, id));
 
-            var result = await connectionOwner.UseTransaction(async (conn, tr) =>
-            {
+            var result = await connectionOwner.UseTransaction(async (conn, tr) => {
                 try
                 {
                     if (!type.ImageFilename.Contains("Placeholder"))
@@ -292,8 +307,7 @@ namespace K9OCRS.Controllers
 
                 await storageClient.UploadFile(UploadType.ClassPicture, filePath, upload.Files[0].ContentType, data);
 
-                return await connectionOwner.Use(conn =>
-                {
+                return await connectionOwner.Use(conn => {
                     return dbOwner.ClassTypes.UpdateImage(conn, classTypeId, filename);
                 });
             }
@@ -309,8 +323,7 @@ namespace K9OCRS.Controllers
 
                 await storageClient.DeleteFile(UploadType.ClassPicture, filename);
 
-                return await connectionOwner.Use(conn =>
-                {
+                return await connectionOwner.Use(conn => {
                     return dbOwner.ClassTypes.UpdateImage(conn, classTypeId, "ClassPlaceholder.png");
                 });
             }
@@ -335,8 +348,7 @@ namespace K9OCRS.Controllers
                     var ext = Path.GetExtension(upload.Files[i].FileName);
                     var contType = upload.Files[i].ContentType;
 
-                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
-                    {
+                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                         try
                         {
                             var photo = new ClassPhoto
@@ -404,8 +416,7 @@ namespace K9OCRS.Controllers
 
                     var photoId = Int32.Parse(fileNames[i].Substring(0, fileNames[i].IndexOf('.')));
 
-                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
-                    {
+                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                         try
                         {
                             await dbOwner.ClassPhotos.Delete(conn, tr, photoId);
