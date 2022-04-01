@@ -64,28 +64,57 @@ const ClassTypeSetup = (props) => {
         }
     };
 
-    const handleDelete = () =>
-        deleteClassType({
-            id: classTypeId,
-            setAlerts,
-            redirect: (created) => historyInstance.push('/Manage/Classes'),
-        });
+    const handleDelete = () => {
+        var sectionsCount = classType?.sections?.length;
+        if (sectionsCount > 0) {
+            setAlerts([
+                {
+                    color: 'danger',
+                    message: `This class type has ${sectionsCount} sections that must be reassigned before it can be deleted.`,
+                },
+            ]);
+        } else if (
+            window.confirm(
+                "This action can't be reverted. This class type and all the photos related to it will be deleted."
+            )
+        ) {
+            deleteClassType({
+                id: classTypeId,
+                setAlerts,
+                redirect: () => historyInstance.push('/Manage/Classes'),
+            });
+        }
+    };
 
-    const handleArchive = () =>
-        archiveClassType({
-            classTypeId,
-            setSubmitting,
-            setLoading,
-            setAlerts,
-        });
+    const handleArchive = () => {
+        if (
+            window.confirm(
+                "This class will be hidden from the catalog and new sections won't be allowed to use this class type"
+            )
+        ) {
+            archiveClassType({
+                classTypeId,
+                setSubmitting,
+                setLoading,
+                setAlerts,
+            });
+        }
+    };
 
-    const handleUnarchive = () =>
-        unarchiveClassType({
-            classTypeId,
-            setSubmitting,
-            setLoading,
-            setAlerts,
-        });
+    const handleUnarchive = () => {
+        if (
+            window.confirm(
+                'This class will be shown on the catalog and new sections will be allowed to use this class type'
+            )
+        ) {
+            unarchiveClassType({
+                classTypeId,
+                setSubmitting,
+                setLoading,
+                setAlerts,
+            });
+        }
+    };
 
     return (
         <div className={cn}>
