@@ -191,5 +191,16 @@ namespace DataAccess.Repositories
             splitOn: "FirstName");
             return result.ToList();
         }
+
+        public async Task<int> ReassignWholeClassType(IDbConnection conn, IDbTransaction tr, int currentClassTypeId, int targetClassTypeId)
+        {
+            var query = @$"
+                UPDATE {_tableName}
+                SET ClassTypeID = @targetClassTypeId
+                WHERE ClassTypeID = @currentClassTypeId
+            ";
+
+            return await conn.ExecuteAsync(query, new { targetClassTypeId, currentClassTypeId }, tr);
+        }
     }
 }

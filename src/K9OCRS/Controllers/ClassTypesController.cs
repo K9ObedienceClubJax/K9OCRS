@@ -262,7 +262,7 @@ namespace K9OCRS.Controllers
         [HttpDelete("{id}")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(int), 200)]
-        public async Task<IActionResult> DeleteClassType(int id)
+        public async Task<IActionResult> DeleteClassType(int id, [FromQuery] int? reassignSectionsToId = null)
         {
             var photos = await GetPhotosByClassType(id);
 
@@ -281,6 +281,11 @@ namespace K9OCRS.Controllers
                     if (!type.ImageFilename.Contains("Placeholder"))
                     {
                         await DeleteImage(id, type.ImageFilename);
+                    }
+
+                    if (reassignSectionsToId != null)
+                    {
+                        await dbOwner.ClassSections.ReassignWholeClassType(conn, tr, id, (int) reassignSectionsToId);
                     }
 
                     var affectedRows = await dbOwner.ClassTypes.Delete(conn, tr, id);
