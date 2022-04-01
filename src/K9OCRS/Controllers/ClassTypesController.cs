@@ -136,6 +136,16 @@ namespace K9OCRS.Controllers
                 .ImageUrl);
         }
 
+        [HttpGet("options")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(IEnumerable<ClassTypeOptionResult>), 200)]
+        public async Task<IActionResult> GetClassTypeOptions()
+        {
+            var types = await connectionOwner.Use(conn => dbOwner.ClassTypes.GetAll(conn, true));
+            var options = types.Select(t => t.ToClassTypeOptionResult());
+            return Ok(options);
+        }
+
         [HttpPost]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(ClassType), 200)]
