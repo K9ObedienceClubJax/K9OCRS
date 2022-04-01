@@ -76,23 +76,85 @@ function* saveNewClassType({ payload }) {
 }
 
 function* updateClassType({ payload }) {
+    const { id, setLoading, setSubmitting, setAlerts } = payload;
+
     log('Saving Class Type changes');
     try {
         var formData = classTypeUpdateRequestToFormData(payload);
         var res = yield call(classTypesClient.updateClassType, formData);
         log('Class Type changes saved!', res?.data);
-        payload.setSubmitting(false);
-        payload.setAlerts([
+        setLoading(true);
+        yield call(fetchClassDetails, { payload: { classTypeId: id, setLoading, setAlerts } });
+        setLoading(false);
+        setSubmitting(false);
+        setAlerts([
             {
                 color: 'success',
                 message: 'Your changes are saved!',
             },
         ]);
-        setTimeout(() => window.location.reload(), 2000);
     } catch (err) {
         log('An error ocurred while saving changes to an existing class type.', err);
-        payload.setSubmitting(false);
-        payload.setAlerts([
+        setSubmitting(false);
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'Failed to save changes.',
+            },
+        ]);
+    }
+}
+
+function* archiveClassType({ payload }) {
+    const { classTypeId, setLoading, setSubmitting, setAlerts } = payload;
+
+    log(`Archiving Class Type id: ${classTypeId}`);
+    try {
+        var res = yield call(classTypesClient.archiveClassType, classTypeId);
+        log(`Class Type archived!`, res?.data);
+        setLoading(true);
+        yield call(fetchClassDetails, { payload: { classTypeId, setLoading, setAlerts } });
+        setLoading(false);
+        setSubmitting(false);
+        setAlerts([
+            {
+                color: 'success',
+                message: 'Your changes are saved!',
+            },
+        ]);
+    } catch (err) {
+        log(`An error ocurred while archiving the class type id: ${classTypeId}.`, err);
+        setSubmitting(false);
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'Failed to save changes.',
+            },
+        ]);
+    }
+}
+
+function* unarchiveClassType({ payload }) {
+    const { classTypeId, setLoading, setSubmitting, setAlerts } = payload;
+
+    log(`Unarchiving Class Type id: ${classTypeId}`);
+    try {
+        var res = yield call(classTypesClient.unarchiveClassType, classTypeId);
+        log(`Class Type unarchived!`, res?.data);
+        setLoading(true);
+        yield call(fetchClassDetails, { payload: { classTypeId, setLoading, setAlerts } });
+        setLoading(false);
+        setSubmitting(false);
+        setAlerts([
+            {
+                color: 'success',
+                message: 'Your changes are saved!',
+            },
+        ]);
+    } catch (err) {
+        log(`An error ocurred while unarchiving the class type id: ${classTypeId}.`, err);
+        setSubmitting(false);
+        setAlerts([
             {
                 color: 'danger',
                 message: 'Failed to save changes.',
@@ -124,6 +186,8 @@ const sagas = [
     takeEvery(actions.initializeTypeAddition, initializeTypeAddition),
     takeLatest(actions.saveNewClassType, saveNewClassType),
     takeLatest(actions.updateClassType, updateClassType),
+    takeLatest(actions.archiveClassType, archiveClassType),
+    takeLatest(actions.unarchiveClassType, unarchiveClassType),
     takeLatest(actions.deleteClassType, deleteClassType),
 ];
 

@@ -17,6 +17,8 @@ const ClassTypeSetup = (props) => {
         saveNewClassType,
         updateClassType,
         deleteClassType,
+        archiveClassType,
+        unarchiveClassType,
     } = props;
 
     const historyInstance = useHistory();
@@ -48,9 +50,9 @@ const ClassTypeSetup = (props) => {
             saveNewClassType({
                 ...data,
                 setSubmitting,
+                setLoading,
                 setAlerts,
-                redirect: (created) =>
-                    historyInstance.push(`/Manage/Classes/Types/${created.id}`),
+                redirect: (created) => historyInstance.push(`/Manage/Classes/Types/${created.id}`),
             });
         } else {
             updateClassType({
@@ -67,6 +69,22 @@ const ClassTypeSetup = (props) => {
             id: classTypeId,
             setAlerts,
             redirect: (created) => historyInstance.push('/Manage/Classes'),
+        });
+
+    const handleArchive = () =>
+        archiveClassType({
+            classTypeId,
+            setSubmitting,
+            setLoading,
+            setAlerts,
+        });
+
+    const handleUnarchive = () =>
+        unarchiveClassType({
+            classTypeId,
+            setSubmitting,
+            setLoading,
+            setAlerts,
         });
 
     return (
@@ -91,27 +109,42 @@ const ClassTypeSetup = (props) => {
                 setAlerts={setAlerts}
             >
                 {addingNewType && (
-                    <Button
-                        tag={Link}
-                        to="/Manage/Classes"
-                        color="secondary"
-                        outline
-                    >
+                    <Button tag={Link} to="/Manage/Classes" color="secondary" outline>
                         Cancel
                     </Button>
                 )}
                 {!addingNewType && (
-                    <Button
-                        color="danger"
-                        onClick={() => handleDelete()}
-                        outline
-                    >
-                        Delete
-                    </Button>
+                    <>
+                        <Button
+                            color="danger"
+                            disabled={loading || submitting}
+                            onClick={() => handleDelete()}
+                            outline
+                        >
+                            Delete
+                        </Button>
+                        {!loading && !classType?.isArchived ? (
+                            <Button
+                                color="secondary"
+                                disabled={loading || submitting}
+                                onClick={() => handleArchive()}
+                            >
+                                Archive
+                            </Button>
+                        ) : (
+                            <Button
+                                color="secondary"
+                                disabled={loading || submitting}
+                                onClick={() => handleUnarchive()}
+                            >
+                                Unarchive
+                            </Button>
+                        )}
+                    </>
                 )}
                 <Button
                     color="primary"
-                    disabled={submitting}
+                    disabled={loading || submitting}
                     onClick={() => formRef.current.requestSubmit()}
                 >
                     {submitting ? (
@@ -149,5 +182,7 @@ export default connect(
         saveNewClassType: actions.saveNewClassType,
         updateClassType: actions.updateClassType,
         deleteClassType: actions.deleteClassType,
+        archiveClassType: actions.archiveClassType,
+        unarchiveClassType: actions.unarchiveClassType,
     }
 )(ClassTypeSetup);

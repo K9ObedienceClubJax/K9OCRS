@@ -32,5 +32,11 @@ export const updateClassType = async (classTypeUpdateRequestFormData) =>
         },
     });
 
+export const archiveClassType = async (classTypeId) =>
+    await axios.post(`${base}/archive/${classTypeId}`);
+
+export const unarchiveClassType = async (classTypeId) =>
+    await axios.post(`${base}/unarchive/${classTypeId}`);
+
 // Delete
 export const deleteClassType = async (classTypeId) => await axios.delete(`${base}/${classTypeId}`);
