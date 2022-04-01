@@ -29,10 +29,7 @@ function* fetchClassList({ payload }) {
 function* fetchClassDetails({ payload }) {
     log(`Fetching class details for id: ${payload.classTypeId}`);
     try {
-        const res = yield call(
-            classTypesClient.getClassTypeByID,
-            payload.classTypeId
-        );
+        const res = yield call(classTypesClient.getClassTypeByID, payload.classTypeId);
         yield put(actions.fetchedClassDetails(res?.data));
         payload.setLoading(false);
     } catch (err) {
@@ -93,10 +90,7 @@ function* updateClassType({ payload }) {
         ]);
         setTimeout(() => window.location.reload(), 2000);
     } catch (err) {
-        log(
-            'An error ocurred while saving changes to an existing class type.',
-            err
-        );
+        log('An error ocurred while saving changes to an existing class type.', err);
         payload.setSubmitting(false);
         payload.setAlerts([
             {
@@ -114,10 +108,7 @@ function* deleteClassType({ payload }) {
         log(`Class Type deleted with id: ${payload.id}`);
         payload.redirect();
     } catch (err) {
-        log(
-            `An error ocurred while deleting the class type with id ${payload.id}`,
-            err
-        );
+        log(`An error ocurred while deleting the class type with id ${payload.id}`, err);
         payload.setAlerts([
             {
                 color: 'danger',

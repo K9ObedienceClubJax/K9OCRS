@@ -11,14 +11,18 @@ export const createClassType = async (classTypeAddRequestFormData) =>
     });
 
 // Read
-export const getAllClassTypes = async () =>
-    await axios.get(base, { params: { includeSections: true } });
+export const getAllClassTypes = async (
+    includeArchived = false,
+    includeSections = true,
+    includeDrafts = false
+) => await axios.get(base, { params: { includeArchived, includeSections, includeDrafts } });
 
-export const getClassTypeByID = async (classTypeId) =>
-    await axios.get(`${base}/${classTypeId}`);
+export const getClassTypeByID = async (classTypeId, includeDrafts = false) =>
+    await axios.get(`${base}/${classTypeId}`, {
+        params: { includeDrafts },
+    });
 
-export const getPlaceholderImageUrl = async () =>
-    await axios.get(`${base}/placeholderImageUrl`);
+export const getPlaceholderImageUrl = async () => await axios.get(`${base}/placeholderImageUrl`);
 
 // Update
 export const updateClassType = async (classTypeUpdateRequestFormData) =>
@@ -29,5 +33,4 @@ export const updateClassType = async (classTypeUpdateRequestFormData) =>
     });
 
 // Delete
-export const deleteClassType = async (classTypeId) =>
-    await axios.delete(`${base}/${classTypeId}`);
+export const deleteClassType = async (classTypeId) => await axios.delete(`${base}/${classTypeId}`);
