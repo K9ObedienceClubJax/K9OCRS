@@ -24,6 +24,8 @@ export const getClassTypeByID = async (classTypeId, includeDrafts = false) =>
 
 export const getPlaceholderImageUrl = async () => await axios.get(`${base}/placeholderImageUrl`);
 
+export const getClassTypeOptions = async () => await axios.get(`${base}/options`);
+
 // Update
 export const updateClassType = async (classTypeUpdateRequestFormData) =>
     await axios.put(base, classTypeUpdateRequestFormData, {
@@ -39,4 +41,5 @@ export const unarchiveClassType = async (classTypeId) =>
     await axios.post(`${base}/unarchive/${classTypeId}`);
 
 // Delete
-export const deleteClassType = async (classTypeId) => await axios.delete(`${base}/${classTypeId}`);
+export const deleteClassType = async (classTypeId, reassignSectionsToId = undefined) =>
+    await axios.delete(`${base}/${classTypeId}`, { params: { reassignSectionsToId } });

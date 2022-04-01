@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import ClassTypeEditor from './ClassTypeEditor';
 import PageHeader from '../../../shared/components/PageHeader';
 import * as actions from '../modules/actions';
+
+import ClassTypeEditor from './ClassTypeEditor';
+import DeleteModal from './DeleteModal';
 
 import './styles.scss';
 
@@ -29,6 +31,9 @@ const ClassTypeSetup = (props) => {
     const [alerts, setAlerts] = useState([]);
 
     const [data, setData] = useState(null);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
     const addingNewType = !classTypeId;
 
@@ -64,26 +69,13 @@ const ClassTypeSetup = (props) => {
         }
     };
 
-    const handleDelete = () => {
-        var sectionsCount = classType?.sections?.length;
-        if (sectionsCount > 0) {
-            setAlerts([
-                {
-                    color: 'danger',
-                    message: `This class type has ${sectionsCount} sections that must be reassigned before it can be deleted.`,
-                },
-            ]);
-        } else if (
-            window.confirm(
-                "This action can't be reverted. This class type and all the photos related to it will be deleted."
-            )
-        ) {
-            deleteClassType({
-                id: classTypeId,
-                setAlerts,
-                redirect: () => historyInstance.push('/Manage/Classes'),
-            });
-        }
+    const handleDelete = (targetId) => {
+        deleteClassType({
+            id: classTypeId,
+            targetId,
+            setAlerts,
+            redirect: () => historyInstance.push('/Manage/Classes'),
+        });
     };
 
     const handleArchive = () => {
@@ -147,7 +139,7 @@ const ClassTypeSetup = (props) => {
                         <Button
                             color="danger"
                             disabled={loading || submitting}
-                            onClick={() => handleDelete()}
+                            onClick={() => toggleDeleteModal()}
                             outline
                         >
                             Delete
@@ -189,13 +181,23 @@ const ClassTypeSetup = (props) => {
             {loading ? (
                 <Spinner />
             ) : (
-                <ClassTypeEditor
-                    classType={classType}
-                    setData={setData}
-                    addingNewType={addingNewType}
-                    formRef={formRef}
-                    handleSubmit={handleSubmit}
-                />
+                <>
+                    <ClassTypeEditor
+                        classType={classType}
+                        setData={setData}
+                        addingNewType={addingNewType}
+                        formRef={formRef}
+                        handleSubmit={handleSubmit}
+                    />
+                    <DeleteModal
+                        toggle={toggleDeleteModal}
+                        handleDelete={handleDelete}
+                        sectionsCount={classType?.sections?.length}
+                        isOpen={showDeleteModal}
+                        loading={loading}
+                        submitting={submitting}
+                    />
+                </>
             )}
         </div>
     );
