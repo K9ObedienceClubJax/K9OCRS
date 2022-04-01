@@ -50,7 +50,7 @@ namespace K9OCRS.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<ClassTypeResult>), 200)]
-        public async Task<IActionResult> GetClassesList([FromQuery] bool includeSections, [FromQuery] bool includeArchived)
+        public async Task<IActionResult> GetClassesList([FromQuery] bool includeArchived, [FromQuery] bool includeSections, [FromQuery] bool includeDrafts)
         {
             IEnumerable<ClassTypeResult> result = null;
 
@@ -62,7 +62,7 @@ namespace K9OCRS.Controllers
 
                 if (includeSections)
                 {
-                    var sections = await dbOwner.ClassSections.GetAll(conn);
+                    var sections = await dbOwner.ClassSections.GetAll(conn, includeDrafts);
 
                     // Group sections by classTypeID
                     _groupedSections = sections.Aggregate(new Dictionary<int, List<ClassSectionResult>>(), (agg, s) => {
@@ -102,7 +102,7 @@ namespace K9OCRS.Controllers
         [HttpGet("{id}")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(ClassTypeResult), 200)]
-        public async Task<IActionResult> GetClassTypeDetails(int id)
+        public async Task<IActionResult> GetClassTypeDetails(int id, [FromQuery] bool includeDrafts)
         {
             var result = await connectionOwner.Use(async conn => {
                 // Get the data from the ClassTypes table
@@ -112,7 +112,7 @@ namespace K9OCRS.Controllers
                 var photos = await dbOwner.ClassPhotos.GetByClassTypeID(conn, id);
 
                 // Get the list of sections related to the class type
-                var sections = await dbOwner.ClassSections.GetByID(conn, "ClassTypeID", id);
+                var sections = await dbOwner.ClassSections.GetByID(conn, "ClassTypeID", id, includeDrafts);
 
                 // Combine the data using the Models
                 var sectionResults = sections.Select(s => s.ToClassSectionResult(serviceConstants.storageBasePath));
@@ -187,6 +187,8 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> UpdateClassType([FromForm] ClassTypeUpdateRequest request)
         {
+            var current = await connectionOwner.Use(conn => dbOwner.ClassTypes.GetByID(conn, request.ID));
+
             var result = await connectionOwner.UseTransaction(async (conn, tr) => {
                 try
                 {
@@ -198,6 +200,7 @@ namespace K9OCRS.Controllers
                         Requirements = request.Requirements,
                         Duration = request.Duration,
                         Price = request.Price,
+                        isArchived = current.isArchived,
                     });
 
                     tr.Commit();
