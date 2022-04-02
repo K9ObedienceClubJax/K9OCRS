@@ -172,8 +172,10 @@ function* unarchiveClassType({ payload }) {
 function* deleteClassType({ payload }) {
     log(`Deleting Class Type id: ${payload.id}`);
     try {
+        payload.setSubmitting(true);
         yield call(classTypesClient.deleteClassType, payload.id, payload.targetId);
         log(`Class Type deleted with id: ${payload.id}`);
+        payload.setSubmitting(false);
         payload.redirect();
     } catch (err) {
         log(`An error ocurred while deleting the class type with id ${payload.id}`, err);
