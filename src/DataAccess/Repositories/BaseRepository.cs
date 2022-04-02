@@ -2,13 +2,16 @@
 using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Extensions;
+using DataAccess.Modules;
 using DataAccess.Repositories.Contracts;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,10 +26,20 @@ namespace DataAccess.Repositories
     /// </summary>
     public abstract class BaseRepository<T> : IRepository<T> where T : class
     {
+        protected readonly ModifierIdentity _identity;
         public readonly string _tableName;
 
-        protected BaseRepository(string tablename)
+        protected BaseRepository(string tablename, IHttpContextAccessor httpContextAccessor)
         {
+            var user = httpContextAccessor.HttpContext.User;
+            if (user.Identity.IsAuthenticated) {
+                _identity = new ModifierIdentity
+                {
+                    ID = Int32.Parse(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value),
+                    Name = user.Identity.Name,
+                    Email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value,
+                };
+            }
             _tableName = tablename;
         }
 
