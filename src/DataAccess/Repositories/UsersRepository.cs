@@ -35,7 +35,7 @@ namespace DataAccess.Repositories
 
         public async Task<int> UpdateProfilePicture(IDbConnection conn, int userId, string filename)
         {
-            var query = $"UPDATE {_tableName} SET ProfilePictureFilename=@Filename WHERE ID=@ID";
+            var query = $"UPDATE {_tableName} SET ProfilePictureFilename=@Filename, {GenerateTrackingSection()} WHERE ID=@ID";
             return await conn.ExecuteAsync(query, new { ID = userId, Filename = filename });
         }
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace K9OCRS.Models
 {
-    public class UserResult
+    public class UserResult : BaseEntity
     {
         public UserResult() { }
         public UserResult(User entity)
@@ -20,6 +20,10 @@ namespace K9OCRS.Models
             ProfilePictureFilename = entity.ProfilePictureFilename;
             isArchived = entity.isArchived;
             isSystemOwned = entity.isSystemOwned;
+
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
         }
         public UserResult(User entity, string storageBasePath) : this(entity) => ProfilePictureUrl = GenerateImageUrl(storageBasePath);
         public int ID { get; set; }

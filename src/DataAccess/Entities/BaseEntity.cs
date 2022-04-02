@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataAccess.Extensions;
+using System;
 
 namespace DataAccess.Entities
 {
@@ -6,6 +7,7 @@ namespace DataAccess.Entities
     {
         public int ModifiedByID { get; set; }
         public string ModifiedByName { get; set; }
+        [TransactionIgnore]
         public DateTime ModifiedDate { get; set; }
     }
 }

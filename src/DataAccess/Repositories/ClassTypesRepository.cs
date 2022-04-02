@@ -16,7 +16,7 @@ namespace DataAccess.Repositories
 
         public async Task<int> UpdateImage(IDbConnection conn, int classTypeId, string filename)
         {
-            var query = $"UPDATE {_tableName} SET ImageFilename=@Filename WHERE ID=@ID";
+            var query = $"UPDATE {_tableName} SET ImageFilename=@Filename, {GenerateTrackingSection()} WHERE ID=@ID";
             return await conn.ExecuteAsync(query, new { ID = classTypeId, Filename = filename });
         }
     }

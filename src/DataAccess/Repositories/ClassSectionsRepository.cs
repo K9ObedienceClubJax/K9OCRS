@@ -197,7 +197,7 @@ namespace DataAccess.Repositories
         {
             var query = @$"
                 UPDATE {_tableName}
-                SET ClassTypeID = @targetClassTypeId
+                SET ClassTypeID = @targetClassTypeId, {GenerateTrackingSection()}
                 WHERE ClassTypeID = @currentClassTypeId
             ";
 
