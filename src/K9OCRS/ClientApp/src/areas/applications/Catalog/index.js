@@ -5,6 +5,7 @@ import PageHeader from '../../../shared/components/PageHeader';
 import ClassCard from './components/ClassCard';
 import CustomPagination from '../../../shared/components/Pagination';
 import Search from './components/Search';
+import PageBody from '../../../shared/components/PageBody';
 
 const Catalog = () => {
     const itemsPerPage = 8;
@@ -51,32 +52,34 @@ const Catalog = () => {
     return (
         <div>
             <PageHeader title="Class Catalog" alerts={alerts} setAlerts={setAlerts} />
-            <Container className="px-lg-5" fluid>
-                {loading && <Spinner />}
-                {loading || alerts?.length > 0 ? null : (
-                    <>
-                        <Search query={query} onQueryChange={(myquery) => setQuery(myquery)} />
-                        <Row className="my-4">
-                            {visibleClassTypes?.length > 0 ? (
-                                visibleClassTypes.map((ct) => <ClassCard key={ct.id} {...ct} />)
-                            ) : (
-                                <p>
-                                    There are no classes that meet your search terms. Please try
-                                    again!
-                                </p>
-                            )}
-                        </Row>
-                    </>
-                )}
-            </Container>
-            <div className="d-flex justify-content-end px-4 px-lg-5">
-                <CustomPagination
-                    onPageChange={setPage}
-                    totalCount={classTypes?.length}
-                    currentPage={page}
-                    pageSize={itemsPerPage}
-                />
-            </div>
+            <PageBody>
+                <Container className="px-lg-5" fluid>
+                    {loading && <Spinner />}
+                    {loading || alerts?.length > 0 ? null : (
+                        <>
+                            <Search query={query} onQueryChange={(myquery) => setQuery(myquery)} />
+                            <Row className="my-4">
+                                {visibleClassTypes?.length > 0 ? (
+                                    visibleClassTypes.map((ct) => <ClassCard key={ct.id} {...ct} />)
+                                ) : (
+                                    <p>
+                                        There are no classes that meet your search terms. Please try
+                                        again!
+                                    </p>
+                                )}
+                            </Row>
+                        </>
+                    )}
+                </Container>
+                <div className="d-flex justify-content-end px-4 px-lg-5">
+                    <CustomPagination
+                        onPageChange={setPage}
+                        totalCount={classTypes?.length}
+                        currentPage={page}
+                        pageSize={itemsPerPage}
+                    />
+                </div>
+            </PageBody>
         </div>
     );
 };
