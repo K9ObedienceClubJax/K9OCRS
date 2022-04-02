@@ -8,6 +8,7 @@ SELECT
 	t.StartTime,
 	t.EndTime,
 	CASE
+		WHEN cs.isDraft = 1 THEN 'Drafted'
 		WHEN GETDATE() > StartDate AND GETDATE() < EndDate THEN 'Ongoing'
 		WHEN GETDATE() > EndDate THEN 'Completed'
 		ELSE 'Scheduled'
