@@ -12,7 +12,13 @@ const log = debug('saga:classes');
 function* fetchClassList({ payload }) {
     log('Fetching class list');
     try {
-        const res = yield call(classTypesClient.getAllClassTypes);
+        payload.setLoading(true);
+        const res = yield call(
+            classTypesClient.getAllClassTypes,
+            payload.includeArchived,
+            true,
+            payload.includeDrafts
+        );
         yield put(actions.fetchedClassList(res?.data));
         payload.setLoading(false);
     } catch (err) {

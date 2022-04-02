@@ -9,6 +9,9 @@ export const fetchedClassDetails = makeAction('FETCHED_CLASS_DETAILS');
 export const initializedClassDetails = makeAction('INITIALIZED_CLASS_DETAILS');
 export const fetchedSectionDetails = makeAction('FETCHED_SECTION_DETAILS');
 
+export const toggledIncludeArchived = makeAction('TOGGLED_INCLUDE_ARCHIVED');
+export const toggledIncludeDrafts = makeAction('TOGGLED_INCLUDE_DRAFTS');
+
 // Saga-only actions
 export const fetchClassList = makeAction('FETCH_CLASS_LIST');
 export const fetchClassDetails = makeAction('FETCH_CLASS_DETAILS');
