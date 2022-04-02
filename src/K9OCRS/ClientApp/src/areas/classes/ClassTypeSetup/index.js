@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import ClassTypeEditor from './ClassTypeEditor';
 import PageHeader from '../../../shared/components/PageHeader';
 import * as actions from '../modules/actions';
+
+import ClassTypeEditor from './ClassTypeEditor';
+import DeleteModal from './DeleteModal';
 
 import './styles.scss';
 
@@ -17,6 +19,8 @@ const ClassTypeSetup = (props) => {
         saveNewClassType,
         updateClassType,
         deleteClassType,
+        archiveClassType,
+        unarchiveClassType,
     } = props;
 
     const historyInstance = useHistory();
@@ -27,6 +31,9 @@ const ClassTypeSetup = (props) => {
     const [alerts, setAlerts] = useState([]);
 
     const [data, setData] = useState(null);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
     const addingNewType = !classTypeId;
 
@@ -48,9 +55,9 @@ const ClassTypeSetup = (props) => {
             saveNewClassType({
                 ...data,
                 setSubmitting,
+                setLoading,
                 setAlerts,
-                redirect: (created) =>
-                    historyInstance.push(`/Manage/Classes/Types/${created.id}`),
+                redirect: (created) => historyInstance.push(`/Manage/Classes/Types/${created.id}`),
             });
         } else {
             updateClassType({
@@ -62,12 +69,44 @@ const ClassTypeSetup = (props) => {
         }
     };
 
-    const handleDelete = () =>
+    const handleDelete = (targetId) => {
         deleteClassType({
             id: classTypeId,
+            targetId,
             setAlerts,
-            redirect: (created) => historyInstance.push('/Manage/Classes'),
+            redirect: () => historyInstance.push('/Manage/Classes'),
         });
+    };
+
+    const handleArchive = () => {
+        if (
+            window.confirm(
+                "This class will be hidden from the catalog and new sections won't be allowed to use this class type"
+            )
+        ) {
+            archiveClassType({
+                classTypeId,
+                setSubmitting,
+                setLoading,
+                setAlerts,
+            });
+        }
+    };
+
+    const handleUnarchive = () => {
+        if (
+            window.confirm(
+                'This class will be shown on the catalog and new sections will be allowed to use this class type'
+            )
+        ) {
+            unarchiveClassType({
+                classTypeId,
+                setSubmitting,
+                setLoading,
+                setAlerts,
+            });
+        }
+    };
 
     return (
         <div className={cn}>
@@ -91,27 +130,42 @@ const ClassTypeSetup = (props) => {
                 setAlerts={setAlerts}
             >
                 {addingNewType && (
-                    <Button
-                        tag={Link}
-                        to="/Manage/Classes"
-                        color="secondary"
-                        outline
-                    >
+                    <Button tag={Link} to="/Manage/Classes" color="secondary" outline>
                         Cancel
                     </Button>
                 )}
                 {!addingNewType && (
-                    <Button
-                        color="danger"
-                        onClick={() => handleDelete()}
-                        outline
-                    >
-                        Delete
-                    </Button>
+                    <>
+                        <Button
+                            color="danger"
+                            disabled={loading || submitting}
+                            onClick={() => toggleDeleteModal()}
+                            outline
+                        >
+                            Delete
+                        </Button>
+                        {!loading && !classType?.isArchived ? (
+                            <Button
+                                color="secondary"
+                                disabled={loading || submitting}
+                                onClick={() => handleArchive()}
+                            >
+                                Archive
+                            </Button>
+                        ) : (
+                            <Button
+                                color="secondary"
+                                disabled={loading || submitting}
+                                onClick={() => handleUnarchive()}
+                            >
+                                Unarchive
+                            </Button>
+                        )}
+                    </>
                 )}
                 <Button
                     color="primary"
-                    disabled={submitting}
+                    disabled={loading || submitting}
                     onClick={() => formRef.current.requestSubmit()}
                 >
                     {submitting ? (
@@ -127,13 +181,24 @@ const ClassTypeSetup = (props) => {
             {loading ? (
                 <Spinner />
             ) : (
-                <ClassTypeEditor
-                    classType={classType}
-                    setData={setData}
-                    addingNewType={addingNewType}
-                    formRef={formRef}
-                    handleSubmit={handleSubmit}
-                />
+                <>
+                    <ClassTypeEditor
+                        classType={classType}
+                        setData={setData}
+                        addingNewType={addingNewType}
+                        formRef={formRef}
+                        handleSubmit={handleSubmit}
+                    />
+                    <DeleteModal
+                        classTypeId={classTypeId}
+                        toggle={toggleDeleteModal}
+                        handleDelete={handleDelete}
+                        sectionsCount={classType?.sections?.length}
+                        isOpen={showDeleteModal}
+                        loading={loading}
+                        submitting={submitting}
+                    />
+                </>
             )}
         </div>
     );
@@ -149,5 +214,7 @@ export default connect(
         saveNewClassType: actions.saveNewClassType,
         updateClassType: actions.updateClassType,
         deleteClassType: actions.deleteClassType,
+        archiveClassType: actions.archiveClassType,
+        unarchiveClassType: actions.unarchiveClassType,
     }
 )(ClassTypeSetup);

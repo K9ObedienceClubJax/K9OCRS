@@ -37,6 +37,9 @@ namespace K9OCRS.Utils.Extensions
         public static ClassTypeResult ToClassTypeResult(this ClassType type, string storageBasePath) =>
             new ClassTypeResult(type, storageBasePath);
 
+        public static ClassTypeOptionResult ToClassTypeOptionResult(this ClassType type) =>
+            new ClassTypeOptionResult(type);
+
         public static ClassTypeExport ToClassTypeExport(this ClassType type) => new ClassTypeExport(type);
 
         public static ClassSectionResult ToClassSectionResult(this ClassSection section, string storageBasePath) =>

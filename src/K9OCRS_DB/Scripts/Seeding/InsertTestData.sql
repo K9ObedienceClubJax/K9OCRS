@@ -63,12 +63,12 @@ END
 -- Class Sections
 IF NOT EXISTS (SELECT 1 FROM dbo.ClassSections WHERE isSystemOwned = 0)
 BEGIN
-	INSERT INTO ClassSections ([ClassTypeID], [InstructorID], [RosterCapacity])
+	INSERT INTO ClassSections ([ClassTypeID], [InstructorID], [RosterCapacity], [isDraft])
 	VALUES
-		(2, 2, 0),
-		(2, 2, 8),
-		(3, 3, 6),
-		(4, 3, 10);
+		(2, 2, 0, 0),
+		(2, 2, 8, 0),
+		(3, 3, 6, 0),
+		(4, 3, 10, 1);
 END
 
 -- Class Meetings
@@ -83,7 +83,10 @@ VALUES
 	(4, '2022-07-13 16:00:00.000', '2022-07-13 18:00:00.000'),
 	(4, '2022-07-17 16:00:00.000', '2022-07-17 18:00:00.000'),
 	(4, '2022-07-20 14:00:00.000', '2022-07-20 16:00:00.000'),
-	(4, '2022-07-24 14:00:00.000', '2022-07-24 16:00:00.000');
+	(4, '2022-07-24 14:00:00.000', '2022-07-24 16:00:00.000'),
+	(5, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
+	(5, '2022-02-17 14:00:00.000', '2022-02-17 16:00:00.000'),
+	(5, '2022-04-20 15:00:00.000', '2022-04-20 17:00:00.000');
 
 -- Section Applications
 IF NOT EXISTS (SELECT 1 FROM dbo.[ClassApplications])
