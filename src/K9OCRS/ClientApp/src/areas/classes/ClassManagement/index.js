@@ -8,6 +8,7 @@ import columns from './columns';
 import Table from '../../../shared/components/Table';
 
 import './styles.scss';
+import PageBody from '../../../shared/components/PageBody';
 
 const ClassManagement = (props) => {
     const {
@@ -47,39 +48,41 @@ const ClassManagement = (props) => {
                     Add a Section
                 </Button>
             </PageHeader>
-            <div className="d-flex justify-content-center justify-content-sm-end">
-                <FormGroup className="me-5" check>
-                    <Input
-                        type="checkbox"
-                        checked={includeArchived}
-                        onChange={() => toggleIncludeArchived()}
-                        disabled={loading}
+            <PageBody>
+                <div className="d-flex justify-content-center justify-content-sm-end">
+                    <FormGroup className="me-5" check>
+                        <Input
+                            type="checkbox"
+                            checked={includeArchived}
+                            onChange={() => toggleIncludeArchived()}
+                            disabled={loading}
+                        />
+                        <Label check>Show Archived Types</Label>
+                    </FormGroup>
+                    <FormGroup check>
+                        <Input
+                            type="checkbox"
+                            checked={includeDrafts}
+                            onChange={() => toggleIncludeDrafts()}
+                            disabled={loading}
+                        />
+                        <Label check>Show Drafted Sections</Label>
+                    </FormGroup>
+                </div>
+                {loading ? (
+                    <Spinner />
+                ) : (
+                    <Table
+                        columns={columns}
+                        data={classList}
+                        tableConfig={tableConfig}
+                        pageSize={12}
+                        footnotes={['* This is the usual meeting time, but it may vary']}
+                        expandable
+                        withPagination
                     />
-                    <Label check>Show Archived Types</Label>
-                </FormGroup>
-                <FormGroup check>
-                    <Input
-                        type="checkbox"
-                        checked={includeDrafts}
-                        onChange={() => toggleIncludeDrafts()}
-                        disabled={loading}
-                    />
-                    <Label check>Show Drafted Sections</Label>
-                </FormGroup>
-            </div>
-            {loading ? (
-                <Spinner />
-            ) : (
-                <Table
-                    columns={columns}
-                    data={classList}
-                    tableConfig={tableConfig}
-                    pageSize={12}
-                    footnotes={['* This is the usual meeting time, but it may vary']}
-                    expandable
-                    withPagination
-                />
-            )}
+                )}
+            </PageBody>
         </div>
     );
 };

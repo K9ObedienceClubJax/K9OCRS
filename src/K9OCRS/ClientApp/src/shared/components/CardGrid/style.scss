@@ -1,22 +1,22 @@
-@import '../../../app.scss';
+@use '../../../app.scss';
 
 .cardGrid {
-  &__row {
-    &__col {
-      &__card,
-      &__card--clickable {
-        box-shadow: $box-shadow-sm;
-        transition: box-shadow .2s, transform .2s;
-      }
+    &__row {
+        &__col {
+            &__card,
+            &__card--clickable {
+                box-shadow: app.$box-shadow-sm;
+                transition: box-shadow 0.2s, transform 0.2s;
+            }
 
-      &__card--clickable {
-        cursor: pointer;
+            &__card--clickable {
+                cursor: pointer;
 
-        &:hover {
-          box-shadow: $box-shadow;
-          transform: translate(0,-.2rem);
+                &:hover {
+                    box-shadow: app.$box-shadow;
+                    transform: translate(0, -0.2rem);
+                }
+            }
         }
-      }
     }
-  }
 }

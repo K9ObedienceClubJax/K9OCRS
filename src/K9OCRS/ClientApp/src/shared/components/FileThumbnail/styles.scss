@@ -1,4 +1,4 @@
-@import '../../../app.scss';
+@use '../../../app.scss';
 
 .file-thumbnail {
     position: relative;
@@ -7,13 +7,13 @@
     height: 126px;
     padding: 0.25rem;
     margin: 0.5rem;
-    background-color: $gray-100;
-    border: 1px solid $gray-200;
+    background-color: app.$gray-100;
+    border: 1px solid app.$gray-200;
     border-radius: 0.25rem;
     font-size: 0.75rem;
 
     &:hover {
-        box-shadow: $box-shadow-sm;
+        box-shadow: app.$box-shadow-sm;
     }
 
     img {
@@ -30,15 +30,15 @@
         height: 1.65rem;
         padding: 0.1rem;
         z-index: 999;
-        color: $danger;
-        background-color: $gray-100;
+        color: app.$danger;
+        background-color: app.$gray-100;
         border-radius: 50%;
         transition-duration: 100ms;
         transition-property: color, width, height;
 
         &:hover {
             cursor: pointer;
-            color: lighten($danger, 10);
+            color: lighten(app.$danger, 10);
             width: 1.85rem;
             height: 1.85rem;
         }
@@ -47,12 +47,12 @@
     &__name {
         position: absolute;
         bottom: 0;
-        background-color: $gray-100;
+        background-color: app.$gray-100;
         padding: 0.1rem 0.25rem;
     }
 }
 
-@include media-breakpoint-up(sm) {
+@include app.media-breakpoint-up(sm) {
     .file-thumbnail {
         width: 156px;
         height: 156px;

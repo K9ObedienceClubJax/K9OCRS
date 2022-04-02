@@ -11,6 +11,7 @@ import ClassTypeEditor from './ClassTypeEditor';
 import DeleteModal from './DeleteModal';
 
 import './styles.scss';
+import PageBody from '../../../shared/components/PageBody';
 
 const ClassTypeSetup = (props) => {
     const {
@@ -187,31 +188,33 @@ const ClassTypeSetup = (props) => {
                     )}
                 </Button>
             </PageHeader>
-            {loading ? (
-                <Spinner />
-            ) : (
-                <>
-                    <p className="text-muted text-center text-sm-end fst-italic fs-6">
-                        {lastUpdateInfo}
-                    </p>
-                    <ClassTypeEditor
-                        classType={classType}
-                        setData={setData}
-                        addingNewType={addingNewType}
-                        formRef={formRef}
-                        handleSubmit={handleSubmit}
-                    />
-                    <DeleteModal
-                        classTypeId={classTypeId}
-                        toggle={toggleDeleteModal}
-                        handleDelete={handleDelete}
-                        sectionsCount={classType?.sections?.length}
-                        isOpen={showDeleteModal}
-                        loading={loading}
-                        submitting={submitting}
-                    />
-                </>
-            )}
+            <PageBody>
+                {loading ? (
+                    <Spinner />
+                ) : (
+                    <>
+                        <p className="text-muted text-center text-sm-end fst-italic fs-6">
+                            {lastUpdateInfo}
+                        </p>
+                        <ClassTypeEditor
+                            classType={classType}
+                            setData={setData}
+                            addingNewType={addingNewType}
+                            formRef={formRef}
+                            handleSubmit={handleSubmit}
+                        />
+                        <DeleteModal
+                            classTypeId={classTypeId}
+                            toggle={toggleDeleteModal}
+                            handleDelete={handleDelete}
+                            sectionsCount={classType?.sections?.length}
+                            isOpen={showDeleteModal}
+                            loading={loading}
+                            submitting={submitting}
+                        />
+                    </>
+                )}
+            </PageBody>
         </div>
     );
 };
