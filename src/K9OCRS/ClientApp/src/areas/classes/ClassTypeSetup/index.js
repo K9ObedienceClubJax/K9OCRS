@@ -74,6 +74,7 @@ const ClassTypeSetup = (props) => {
             id: classTypeId,
             targetId,
             setAlerts,
+            setSubmitting,
             redirect: () => historyInstance.push('/Manage/Classes'),
         });
     };

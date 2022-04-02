@@ -10,6 +10,7 @@ import {
     Input,
     FormGroup,
     Label,
+    Spinner,
 } from 'reactstrap';
 
 const DeleteModal = (props) => {
@@ -83,6 +84,7 @@ const DeleteModal = (props) => {
             <ModalFooter>
                 <Button color="danger" disabled={disableDelete} onClick={deleteHandler}>
                     {mustReassignSections ? 'Reassign and Delete' : 'Delete'}
+                    {submitting && <Spinner className="ms-3" size="sm" />}
                 </Button>
                 <Button color="secondary" onClick={toggle} outline>
                     Cancel
