@@ -53,7 +53,6 @@ namespace DataAccess.Modules
                 }
                 catch
                 {
-                    transaction.Rollback();
                     transaction.Dispose();
                     throw;
                 }
@@ -74,7 +73,6 @@ namespace DataAccess.Modules
                 }
                 catch
                 {
-                    transaction.Rollback();
                     transaction.Dispose();
                     throw;
                 }

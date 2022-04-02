@@ -8,6 +8,9 @@
     [ProfilePictureFilename] VARCHAR (70)   DEFAULT ('UserPlaceholder.png') NULL,
     [isSystemOwned]          BIT NOT NULL DEFAULT 0, 
     [isArchived] BIT NOT NULL DEFAULT 0, 
+    [ModifiedByID] INT NULL,
+    [ModifiedByName] VARCHAR(128) NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([ID] ASC),
     CONSTRAINT [FK_Users_UserRoles] FOREIGN KEY ([UserRoleID]) REFERENCES [dbo].[UserRoles] ([ID])
 );

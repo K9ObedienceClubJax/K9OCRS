@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DataAccess.Entities
 {
-    public class ClassType
+    public class ClassType : BaseEntity
     {
         public ClassType() { }
         public ClassType(ClassType entity)
@@ -18,6 +18,9 @@ namespace DataAccess.Entities
             Price = entity.Price;
             isArchived = entity.isArchived;
             isSystemOwned = entity.isSystemOwned;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
 
             Photos = entity.Photos;
             Sections = entity.Sections;
