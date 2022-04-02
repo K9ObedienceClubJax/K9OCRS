@@ -1,10 +1,9 @@
 ﻿
 using DataAccess.Extensions;
-using System.Collections.Generic;
 
 namespace DataAccess.Entities
 {
-    public class User
+    public class User : BaseEntity
     {
         public User() { }
         public User(User entity)
@@ -18,6 +17,9 @@ namespace DataAccess.Entities
             ProfilePictureFilename = entity.ProfilePictureFilename;
             isArchived = entity.isArchived;
             isSystemOwned = entity.isSystemOwned;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
         }
 
         [TransactionIgnore]

@@ -3,7 +3,7 @@ using System;
 
 namespace DataAccess.Entities
 {
-    public class ClassApplication
+    public class ClassApplication : BaseEntity
     {
         [TransactionIgnore]
         public int ID { get; set; }
@@ -16,5 +16,23 @@ namespace DataAccess.Entities
         public bool isRefunded { get; set; } = false;
         public int? ReviewedBy { get; set; }
         public DateTime? ReviewedDate { get; set; }
+
+        public ClassApplication() { }
+        public ClassApplication(ClassApplication entity)
+        {
+            ID = entity.ID;
+            ClassTypeID = entity.ClassTypeID;
+            ClassSectionID = entity.ClassSectionID;
+            DogID = entity.DogID;
+            Status = entity.Status;
+            PaymentMethod = entity.PaymentMethod;
+            isPaid = entity.isPaid;
+            isRefunded = entity.isRefunded;
+            ReviewedBy = entity.ReviewedBy;
+            ReviewedDate = entity.ReviewedDate;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
+        }
     }
 }
