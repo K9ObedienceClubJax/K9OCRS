@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DataAccess.Entities
 {
-    public class ClassPhoto
+    public class ClassPhoto : BaseEntity
     {
         public ClassPhoto() { }
         public ClassPhoto(ClassPhoto entity)
@@ -11,6 +11,9 @@ namespace DataAccess.Entities
             ID = entity.ID;
             ClassTypeID = entity.ClassTypeID;
             Filename = entity.Filename;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
         }
 
         /// <example>1</example>

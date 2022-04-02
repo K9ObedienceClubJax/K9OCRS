@@ -3,7 +3,7 @@ using System;
 
 namespace DataAccess.Entities
 {
-    public class VaccinationRecord
+    public class VaccinationRecord : BaseEntity
     {
         public VaccinationRecord() { }
         public VaccinationRecord(VaccinationRecord entity)
@@ -14,6 +14,9 @@ namespace DataAccess.Entities
             ExpireDate = entity.ExpireDate;
             ReviewedBy = entity.ReviewedBy;
             ReviewedDate = entity.ReviewedDate;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
         }
 
         [TransactionIgnore]

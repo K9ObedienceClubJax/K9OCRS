@@ -8,6 +8,9 @@
     [Price]         MONEY          NOT NULL,
     [isSystemOwned] BIT NOT NULL DEFAULT 0, 
     [isArchived] BIT NOT NULL DEFAULT 0, 
+    [ModifiedByID] INT NULL,
+    [ModifiedByName] VARCHAR(128) NULL,
+    [ModifiedDate] DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT [PK_ClassTypes] PRIMARY KEY CLUSTERED ([ID] ASC),
     CONSTRAINT [UQ_ClassTypes_Title] UNIQUE NONCLUSTERED ([Title] ASC)
 );

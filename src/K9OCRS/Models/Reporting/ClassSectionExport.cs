@@ -3,7 +3,7 @@ using DataAccess.Entities;
 
 namespace K9OCRS.Models.Reporting
 {
-    public class ClassSectionExport
+    public class ClassSectionExport : BaseEntity
     {
         public ClassSectionExport(ClassSection s)
         {
@@ -12,6 +12,10 @@ namespace K9OCRS.Models.Reporting
             RosterCapacity = s.RosterCapacity;
             InstructorID = s.InstructorID;
             isDraft = s.isDraft;
+
+            ModifiedByID = s.ModifiedByID;
+            ModifiedByName = s.ModifiedByName;
+            ModifiedDate = s.ModifiedDate;
         }
 
         /// <example>1</example>

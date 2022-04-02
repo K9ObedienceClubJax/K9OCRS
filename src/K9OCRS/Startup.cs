@@ -1,3 +1,7 @@
+using Autofac;
+using DataAccess;
+using K9OCRS.Utils.Constants;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -5,21 +9,15 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Autofac;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Diagnostics;
-using DataAccess;
 using System.IO;
 using System.Reflection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
-using K9OCRS.Utils.Constants;
-using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
-using Swashbuckle.AspNetCore.Filters;
 
 namespace K9OCRS
 {
@@ -71,8 +69,7 @@ namespace K9OCRS
 
 
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
+            services.AddSpaStaticFiles(configuration => {
                 configuration.RootPath = "ClientApp/build";
             });
 
@@ -145,7 +142,7 @@ namespace K9OCRS
                 // This one will be used for actually storing files
                 var fullStorageBasePath = Path.Combine(Environment.CurrentDirectory, "ClientApp", "public", storageBasePath);
                 databaseConnectionString = Configuration.GetConnectionString("LocalDB");
-                
+
                 dataAccessModule.UseLocalStorage(fullStorageBasePath);
             }
             else
@@ -216,27 +213,23 @@ namespace K9OCRS
             {
                 app.UseSwagger();
 
-                app.UseSwaggerUI(options =>
-                {
+                app.UseSwaggerUI(options => {
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "K9OCRS API");
                 });
             }
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapRazorPages();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
             });
 
-            app.UseSpa(spa =>
-            {
+            app.UseSpa(spa => {
                 spa.Options.SourcePath = "ClientApp";
             });
 
-            app.UseCors(policy =>
-            {
+            app.UseCors(policy => {
                 var allowedOrigins = Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new string[] { };
                 policy.WithOrigins(allowedOrigins);
                 policy.AllowAnyHeader();

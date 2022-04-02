@@ -2,6 +2,7 @@
 using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Repositories.Contracts;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace DataAccess.Repositories
     {
         // Everytime that you create a repository, make sure you include a constructor that calls the "base constructor"
         // passing in the Db table name that is associated to it by using this syntax
-        public ClassSectionsRepository() : base(DbTables.Get(nameof(ClassSection))) { }
+        public ClassSectionsRepository(IHttpContextAccessor _httpContextAccessor) : base(DbTables.Get(nameof(ClassSection)), _httpContextAccessor) { }
 
         public override async Task<IReadOnlyList<ClassSection>> GetAll(IDbConnection conn, bool includeDrafts = false)
         {
@@ -196,7 +197,7 @@ namespace DataAccess.Repositories
         {
             var query = @$"
                 UPDATE {_tableName}
-                SET ClassTypeID = @targetClassTypeId
+                SET ClassTypeID = @targetClassTypeId, {GenerateTrackingSection()}
                 WHERE ClassTypeID = @currentClassTypeId
             ";
 

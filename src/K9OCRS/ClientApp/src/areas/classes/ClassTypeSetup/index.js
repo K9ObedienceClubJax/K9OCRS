@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import moment from 'moment-timezone';
 import PageHeader from '../../../shared/components/PageHeader';
 import * as actions from '../modules/actions';
 
@@ -36,6 +37,13 @@ const ClassTypeSetup = (props) => {
     const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
     const addingNewType = !classTypeId;
+
+    const lastUpdatedDate = loading
+        ? ''
+        : moment(classType.modifiedDate).format('MMMM Do, YYYY [at] h:mm A');
+    const lastUpdateInfo = loading
+        ? ''
+        : `last updated by ${classType.modifiedByName} (id: ${classType.modifiedByID}) on ${lastUpdatedDate}`;
 
     useEffect(() => {
         if (addingNewType) {
@@ -183,6 +191,9 @@ const ClassTypeSetup = (props) => {
                 <Spinner />
             ) : (
                 <>
+                    <p className="text-muted text-center text-sm-end fst-italic fs-6">
+                        {lastUpdateInfo}
+                    </p>
                     <ClassTypeEditor
                         classType={classType}
                         setData={setData}
