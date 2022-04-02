@@ -190,6 +190,7 @@ const ClassTypeSetup = (props) => {
                         handleSubmit={handleSubmit}
                     />
                     <DeleteModal
+                        classTypeId={classTypeId}
                         toggle={toggleDeleteModal}
                         handleDelete={handleDelete}
                         sectionsCount={classType?.sections?.length}

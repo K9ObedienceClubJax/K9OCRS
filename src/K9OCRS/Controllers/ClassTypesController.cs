@@ -139,10 +139,10 @@ namespace K9OCRS.Controllers
         [HttpGet("options")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(IEnumerable<ClassTypeOptionResult>), 200)]
-        public async Task<IActionResult> GetClassTypeOptions()
+        public async Task<IActionResult> GetClassTypeOptions([FromQuery] int? excludedId = null)
         {
             var types = await connectionOwner.Use(conn => dbOwner.ClassTypes.GetAll(conn, true));
-            var options = types.Select(t => t.ToClassTypeOptionResult());
+            var options = types.Select(t => t.ToClassTypeOptionResult()).Where(t => t.ID != excludedId);
             return Ok(options);
         }
 

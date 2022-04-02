@@ -24,7 +24,8 @@ export const getClassTypeByID = async (classTypeId, includeDrafts = false) =>
 
 export const getPlaceholderImageUrl = async () => await axios.get(`${base}/placeholderImageUrl`);
 
-export const getClassTypeOptions = async () => await axios.get(`${base}/options`);
+export const getClassTypeOptions = async (excludedId) =>
+    await axios.get(`${base}/options`, { params: { excludedId } });
 
 // Update
 export const updateClassType = async (classTypeUpdateRequestFormData) =>

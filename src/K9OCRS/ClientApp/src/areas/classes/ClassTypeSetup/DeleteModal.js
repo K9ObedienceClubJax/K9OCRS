@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 
 const DeleteModal = (props) => {
-    const { toggle, isOpen, loading, submitting, handleDelete, sectionsCount } = props;
+    const { classTypeId, toggle, isOpen, loading, submitting, handleDelete, sectionsCount } = props;
     const mustReassignSections = sectionsCount > 0;
 
     const [loadingOptions, setLoadingOptions] = useState(false);
@@ -35,14 +35,14 @@ const DeleteModal = (props) => {
             async function getOptions() {
                 try {
                     setLoadingOptions(true);
-                    const res = await getClassTypeOptions(false, false);
+                    const res = await getClassTypeOptions(classTypeId);
                     setTypeOptions(res?.data);
                     setLoadingOptions(false);
                 } catch (err) {}
             }
             getOptions();
         }
-    }, [typeOptions, setTypeOptions]);
+    }, [classTypeId, typeOptions, setTypeOptions]);
 
     const handleSelect = (e) => {
         if (e.target.value !== '') {
