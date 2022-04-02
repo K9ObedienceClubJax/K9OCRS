@@ -1,21 +1,9 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import {
-    Collapse,
-    Navbar,
-    NavbarToggler,
-    NavbarBrand,
-    NavItem,
-    NavLink,
-    Button,
-} from 'reactstrap';
+import { Collapse, Navbar, NavbarToggler, NavbarBrand, NavItem, NavLink, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Nav } from 'reactstrap';
-import {
-    isLoggedIn,
-    isAtLeastInstructor,
-    isAdmin,
-} from '../../../util/accessEvaluator';
+import { isLoggedIn, isAtLeastInstructor, isAdmin } from '../../../util/accessEvaluator';
 import selectors from '../../modules/selectors';
 import { logout as logoutAction } from '../../../areas/accounts/modules/actions';
 
@@ -41,11 +29,7 @@ const NavMenu = (props) => {
         >
             <NavbarBrand className="m-0" />
             <NavbarToggler onClick={() => setCollapsed(!collapsed)} />
-            <Collapse
-                className="d-lg-flex justify-content-end"
-                isOpen={!collapsed}
-                navbar
-            >
+            <Collapse className="d-lg-flex justify-content-end" isOpen={!collapsed} navbar>
                 <Nav className="flex-column flex-lg-row">
                     <NavItem>
                         <NavLink
@@ -139,13 +123,8 @@ const NavMenu = (props) => {
                                     Login
                                 </Button>
                             </Link>
-                            <Link
-                                to="/Account/Create"
-                                onClick={() => setCollapsed(true)}
-                            >
-                                <Button color="secondary">
-                                    Create an Account
-                                </Button>
+                            <Link to="/Account/Create" onClick={() => setCollapsed(true)}>
+                                <Button color="secondary">Create an Account</Button>
                             </Link>
                         </>
                     )}
