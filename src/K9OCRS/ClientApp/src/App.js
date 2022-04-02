@@ -42,48 +42,16 @@ export default class App extends Component {
                     {/* Routes available to anyone */}
                     <Route path="/" component={Catalog} exact />
                     <GuestOnlyRoute path="/Account/Login" component={Login} />
-                    <GuestOnlyRoute
-                        path="/Account/Create"
-                        component={CreatePassword}
-                    />
-                    <Route
-                        path="/Account/PasswordReset"
-                        component={PasswordReset}
-                    />
-                    <Route
-                        path="/Account/ChangePassword"
-                        component={ChangePassword}
-                    />
-                    <Route
-                        path="/Classes/:classTypeId"
-                        component={Classes}
-                        exact
-                    />
+                    <GuestOnlyRoute path="/Account/Create" component={CreatePassword} />
+                    <Route path="/Account/PasswordReset" component={PasswordReset} />
+                    <Route path="/Account/ChangePassword" component={ChangePassword} />
+                    <Route path="/Classes/:classTypeId" component={Classes} exact />
                     {/* Routes available to Logged in Users */}
-                    <ProtectedRoute
-                        path="/Classes/Apply/:sectionId"
-                        component={Confirm}
-                    />
-                    <ProtectedRoute
-                        path="/Account"
-                        component={MyAccount}
-                        exact
-                    />
-                    <ProtectedRoute
-                        path="/Account/MyDogs"
-                        component={MyDogs}
-                        exact
-                    />
-                    <ProtectedRoute
-                        path="/Account/MyDogs/Add"
-                        component={DogSetup}
-                        exact
-                    />
-                    <ProtectedRoute
-                        path="/Account/MyDogs/:dogId"
-                        component={DogDetails}
-                        exact
-                    />
+                    <ProtectedRoute path="/Classes/Apply/:sectionId" component={Confirm} />
+                    <ProtectedRoute path="/Account" component={MyAccount} exact />
+                    <ProtectedRoute path="/Account/MyDogs" component={MyDogs} exact />
+                    <ProtectedRoute path="/Account/MyDogs/Add" component={DogSetup} exact />
+                    <ProtectedRoute path="/Account/MyDogs/:dogId" component={DogDetails} exact />
                     {/* Routes available to Instructors */}
                     {/* Routes available only to Administrators */}
                     <ProtectedRoute

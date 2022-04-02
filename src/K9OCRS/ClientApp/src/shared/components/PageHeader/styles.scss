@@ -1,18 +1,19 @@
-@import '../../../util/colors.scss';
+@use '../../../_app.scss';
 
 .pageHeader {
   &__breadcrumbs {
     display: inline-block;
-    background-color: $gray-100;
-    padding: .6rem 1.2rem;
-    border-radius: .25rem;
-    margin-top: .5rem;
+        background-color: app.$gray-100;
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.25rem;
+        margin-top: 0.5rem;
 
     .breadcrumb {
       margin-bottom: 0;
 
       a.breadcrumb-item {
-        &.active, &:disabled {
+                &.active,
+                &:disabled {
           pointer-events: none;
           touch-action: none;
           text-decoration: none;

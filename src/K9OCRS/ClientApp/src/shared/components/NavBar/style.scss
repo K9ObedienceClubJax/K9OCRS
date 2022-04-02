@@ -1,4 +1,4 @@
-@import '../../../app.scss';
+@use '../../../_app.scss';
 
 .k9-navbar.navbar {
     position: fixed !important;
@@ -14,7 +14,7 @@
     }
 }
 
-@include media-breakpoint-up(sm) {
+@include app.media-breakpoint-up(sm) {
     .k9-navbar.navbar {
         font-size: 0.95rem;
         .btn {
@@ -23,7 +23,7 @@
     }
 }
 
-@include media-breakpoint-up(xl) {
+@include app.media-breakpoint-up(xl) {
     .k9-navbar.navbar {
         font-size: 1rem;
         .btn {
