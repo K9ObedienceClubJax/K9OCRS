@@ -49,12 +49,15 @@ const PageHeader = (props) => {
         return (_) => window.removeEventListener('resize', debouncedHandleResize);
     });
 
+    const childCount = React.Children.count(children);
+    const showBottomBar = !breakpointHit && childCount > 0;
+
     return (
         <>
-            {!breakpointHit && (
+            {showBottomBar && (
                 <div
                     className={`${cn}__action-buttons ${
-                        children?.length > 3 ? `${cn}__action-buttons--many` : ''
+                        childCount > 3 ? `${cn}__action-buttons--many` : ''
                     } gap-2`}
                 >
                     {children}
