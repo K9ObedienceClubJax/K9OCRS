@@ -6,7 +6,6 @@ BEGIN
 	VALUES
 		('Administrator'),
 		('Instructor'),
-		('Member'),
 		('Student');
 END
 

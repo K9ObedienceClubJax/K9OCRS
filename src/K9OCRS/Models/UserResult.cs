@@ -18,6 +18,7 @@ namespace K9OCRS.Models
             LastName = entity.LastName;
             Email = entity.Email;
             ProfilePictureFilename = entity.ProfilePictureFilename;
+            isMember = entity.isMember;
             isArchived = entity.isArchived;
             isSystemOwned = entity.isSystemOwned;
 
@@ -33,6 +34,7 @@ namespace K9OCRS.Models
         public string Email { get; set; }
         public string ProfilePictureFilename { get; set; }
         public string ProfilePictureUrl { get; set; }
+        public bool isMember { get; set; }
         public bool isArchived { get; set; }
         public bool isSystemOwned { get; set; }
 
