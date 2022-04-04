@@ -15,6 +15,7 @@ namespace DataAccess.Entities
             Email = entity.Email;
             Password = entity.Password;
             ProfilePictureFilename = entity.ProfilePictureFilename;
+            isMember = entity.isMember;
             isArchived = entity.isArchived;
             isSystemOwned = entity.isSystemOwned;
             ModifiedByID = entity.ModifiedByID;
@@ -32,6 +33,7 @@ namespace DataAccess.Entities
         public string Password { get; set; }
         [TransactionIgnore]
         public string ProfilePictureFilename { get; set; }
+        public bool isMember { get; set; }
         public bool isArchived { get; set; }
         [TransactionIgnore]
         public bool isSystemOwned { get; set; }

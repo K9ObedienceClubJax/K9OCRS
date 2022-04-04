@@ -6,6 +6,7 @@
     [Email]                  NVARCHAR (128) NOT NULL,
     [Password]               NVARCHAR (256) NOT NULL,
     [ProfilePictureFilename] VARCHAR (70)   DEFAULT ('UserPlaceholder.png') NULL,
+    [isMember] BIT NOT NULL DEFAULT 0,
     [isSystemOwned]          BIT NOT NULL DEFAULT 0, 
     [isArchived] BIT NOT NULL DEFAULT 0, 
     [ModifiedByID] INT NULL,
