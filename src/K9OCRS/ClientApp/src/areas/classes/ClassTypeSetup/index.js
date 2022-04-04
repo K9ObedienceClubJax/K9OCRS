@@ -78,6 +78,13 @@ const ClassTypeSetup = (props) => {
         }
     };
 
+    // Safari doesn't support form.requestSubmit() so we have to do this the long way...
+    const requestFormSubmit = () => {
+        if(formRef.current.reportValidity()){
+            handleSubmit()
+        }
+    }
+
     const handleDelete = (targetId) => {
         deleteClassType({
             id: classTypeId,
@@ -176,7 +183,7 @@ const ClassTypeSetup = (props) => {
                 <Button
                     color="primary"
                     disabled={loading || submitting}
-                    onClick={() => formRef.current.requestSubmit()}
+                    onClick={requestFormSubmit}
                 >
                     {submitting ? (
                         <>
