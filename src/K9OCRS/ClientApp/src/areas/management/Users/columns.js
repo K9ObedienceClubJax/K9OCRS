@@ -1,7 +1,10 @@
 import React from 'react';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
+import { USER_ROLES } from '../../../util/accessEvaluator';
 import { alignmentWrapper } from '../../../util/columns';
+import { BsCheckLg } from 'react-icons/bs';
 
+const USER_ROLES_KEYS = Object.keys(USER_ROLES);
 
 const idTemplate = ({ value }) => {
   return value;
@@ -20,21 +23,14 @@ const userTemplate = ({ value }) => {
 };
 
 const roleTemplate = ({ value }) => {
-  switch (value) {
-    case 1:
-      return 'Admin';
-    case 2:
-      return 'Instructor';
-    case 3:
-      return 'Member';
-    default:
-      return 'Non-Member';
-  }
+  return USER_ROLES_KEYS.find(key => USER_ROLES[key] === value);
 };
 
 const emailTemplate = ({ value }) => {
   return value;
 };
+
+const membershipTemplate = ({ value }) => value ? <BsCheckLg className="text-success" /> : '';
 
 // const dogTemplate = ({ value }) => {
 //   return value;
@@ -60,6 +56,11 @@ const columns = [
     Header: 'Email',
     accessor: 'email',
     Cell: emailTemplate,
+  },
+  {
+    Header: 'Membership',
+    accessor: 'isMember',
+    Cell: membershipTemplate,
   },
   {
     Header: 'Role',

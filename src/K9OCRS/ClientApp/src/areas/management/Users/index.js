@@ -7,6 +7,7 @@ import Table from '../../../shared/components/Table/index';
 import columns from './columns';
 import * as accountsApi from '../../../util/apiClients/userAccounts';
 import PageBody from '../../../shared/components/PageBody';
+import { USER_ROLES } from '../../../util/accessEvaluator';
 
 const Users = (props) => {
     const [users, setUsers] = useState([]);
@@ -28,6 +29,30 @@ const Users = (props) => {
         const radio = document.getElementById('option0');
         radio.checked = true;
     }, []); // eslint-disable-line
+
+    const userRoleRadios = [];
+
+    for(const [key, value] of Object.entries(USER_ROLES)) {
+        userRoleRadios.push(
+            <>
+                <input
+                    key={`${key}_input`}
+                    type="radio"
+                    className="btn-check"
+                    name="role"
+                    value={value}
+                    id={key}
+                    disabled={loading}
+                    onChange={(e) => getUsers(setUsers, setLoading, e.currentTarget.value)}
+                />
+                <label key={`${key}_label`} className="btn btn-outline-secondary" htmlFor={key}>
+                    {key}
+                </label>
+            </>
+        );
+    }
+
+    userRoleRadios.reverse();
 
     return (
         <div>
@@ -51,58 +76,13 @@ const Users = (props) => {
                             name="role"
                             value="0"
                             id="option0"
+                            disabled={loading}
                             onChange={(e) => getUsers(setUsers, setLoading, e.currentTarget.value)}
                         />
                         <label className="btn btn-outline-secondary" htmlFor="option0">
                             All
                         </label>
-                        <input
-                            type="radio"
-                            className="btn-check"
-                            name="role"
-                            value="4"
-                            id="option4"
-                            onChange={(e) => getUsers(setUsers, setLoading, e.currentTarget.value)}
-                        />
-                        <label className="btn btn-outline-secondary" htmlFor="option4">
-                            Non-Member
-                        </label>
-
-                        <input
-                            type="radio"
-                            className="btn-check"
-                            name="role"
-                            value="3"
-                            id="option3"
-                            onChange={(e) => getUsers(setUsers, setLoading, e.currentTarget.value)}
-                        />
-                        <label className="btn btn-outline-secondary" htmlFor="option3">
-                            Member
-                        </label>
-
-                        <input
-                            type="radio"
-                            className="btn-check"
-                            name="role"
-                            value="2"
-                            id="option2"
-                            onChange={(e) => getUsers(setUsers, setLoading, e.currentTarget.value)}
-                        />
-                        <label className="btn btn-outline-secondary" htmlFor="option2">
-                            Instructor
-                        </label>
-
-                        <input
-                            type="radio"
-                            className="btn-check"
-                            name="role"
-                            value="1"
-                            id="option1"
-                            onChange={(e) => getUsers(setUsers, setLoading, e.currentTarget.value)}
-                        />
-                        <label className="btn btn-outline-secondary" htmlFor="option1">
-                            Admin
-                        </label>
+                        {userRoleRadios}
                     </div>
                 </div>
                 {loading ? (

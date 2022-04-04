@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import selectors from '../../shared/modules/selectors';
 import * as accountsApi from '../../util/apiClients/userAccounts';
 import ProfileContainer from './ProfileContainer';
+import { USER_ROLES } from '../../util/accessEvaluator';
 
 function ValidateEmail(e) {
     //Validate email
@@ -48,9 +49,6 @@ async function getUserData(
     setEmail(inspectedUser.email);
     setRole(inspectedUser.userRoleID);
     setPicture(inspectedUser.profilePictureUrl);
-    //Use to role id to select the radio button
-    const radio = document.getElementById('option' + inspectedUser.userRoleID);
-    radio.checked = true;
 }
 
 function sendPasswordEmail(email, setAlerts) {
@@ -172,6 +170,30 @@ const Profile = (props) => {
             );
         }
     }, []); // eslint-disable-line
+
+    const userRoleRadios = [];
+
+    for(const [key, value] of Object.entries(USER_ROLES)) {
+        userRoleRadios.push(
+            <>
+                <input
+                    key={`${key}_input`}
+                    type="radio"
+                    className="btn-check"
+                    name="role"
+                    value={value}
+                    id={key}
+                    onChange={(e) => setRole(parseInt(e.currentTarget.value))}
+                    checked={role === value}
+                />
+                <label key={`${key}_label`} className="btn btn-outline-secondary" htmlFor={key}>
+                    {key}
+                </label>
+            </>
+        );
+    }
+
+    userRoleRadios.reverse();
 
     return (
         <form
@@ -305,65 +327,7 @@ const Profile = (props) => {
                 {(inspectMode === true || createMode === true) && (
                     <div className=" mx-auto text-center mt-3">
                         <div className="btn-group">
-                            <input
-                                type="radio"
-                                className="btn-check"
-                                name="role"
-                                value={4}
-                                id="option4"
-                                onChange={(e) => setRole(e.currentTarget.value)}
-                            />
-                            <label
-                                className="btn btn-outline-secondary"
-                                htmlFor="option4"
-                            >
-                                Non-Member
-                            </label>
-
-                            <input
-                                type="radio"
-                                className="btn-check"
-                                name="role"
-                                value={3}
-                                id="option3"
-                                onChange={(e) => setRole(e.currentTarget.value)}
-                            />
-                            <label
-                                className="btn btn-outline-secondary"
-                                htmlFor="option3"
-                            >
-                                Member
-                            </label>
-
-                            <input
-                                type="radio"
-                                className="btn-check"
-                                name="role"
-                                value={2}
-                                id="option2"
-                                onChange={(e) => setRole(e.currentTarget.value)}
-                            />
-                            <label
-                                className="btn btn-outline-secondary"
-                                htmlFor="option2"
-                            >
-                                Instructor
-                            </label>
-
-                            <input
-                                type="radio"
-                                className="btn-check"
-                                name="role"
-                                value={1}
-                                id="option1"
-                                onChange={(e) => setRole(e.currentTarget.value)}
-                            />
-                            <label
-                                className="btn btn-outline-secondary"
-                                htmlFor="option1"
-                            >
-                                Admin
-                            </label>
+                            {userRoleRadios}
                         </div>
                     </div>
                 )}
