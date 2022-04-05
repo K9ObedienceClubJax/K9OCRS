@@ -84,13 +84,10 @@ const PageHeader = (props) => {
                 </Col>
                 <Col className={`${cn}__right mb-4`}>
                     {breakpointHit && (
-                        <div className={`${cn}__action-buttons gap-2`}>{children}</div>
+                        <div className={`${cn}__action-buttons`}>{children}</div>
                     )}
                 </Col>
             </div>
-            {/* {!breakpointHit && (
-                <BottomActions className={`${cn}__action-buttons gap-2`}>{children}</BottomActions>
-            )} */}
             <div className={`${cn}__alerts mb-4`}>
                 {Array.isArray(alerts) &&
                     alerts.map((a, idx) => (
