@@ -171,7 +171,7 @@ namespace K9OCRS.Controllers
 
                 await connectionOwner.Use(conn =>
                 {
-                    return dbOwner.Dogs.Update(conn, dogId, filename);
+                    return dbOwner.Dogs.UpdateImage(conn, dogId, filename);
                 });
 
                 return Ok();
