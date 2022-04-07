@@ -15,7 +15,7 @@ namespace DataAccess
 
         public readonly IRepository<UserRole> UserRoles;
         public readonly IUsersRepository Users;
-        public readonly IRepository<Dog> Dogs;
+        public readonly IDogRepository Dogs;
         public readonly IRepository<UserDog> UserDogs;
         public readonly IRepository<VaccinationRecord> VaccinationRecords;
         public readonly IClassPhotosRepository ClassPhotos;
