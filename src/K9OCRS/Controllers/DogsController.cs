@@ -5,7 +5,12 @@ using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
 using DataAccess.Clients.Contracts;
 using System;
+using DataAccess.Constants;
+using System.Collections.Generic;
+using System.IO;
+using K9OCRS.Extensions;
 using Serilog;
+using K9OCRS.Configuration;
 using System.Linq;
 using System.Collections.Generic;
 using K9OCRS.Models.DogManagement;
@@ -149,6 +154,32 @@ namespace K9OCRS.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+        #endregion
+
+        #region Dog_Photos
+        [HttpPut("{dogId}/image")]
+        public async Task<IActionResult> UpdateImage(int dogId, [FromForm] FileUpload upload)
+        {
+            if(upload.Files != null && upload.Files.Count > 0)
+            {
+                var data = await upload.Files[0].ToBinaryData();
+
+                var filePath = String.Concat(dogId.ToString(), "/", dogId, Path.GetExtension(upload.Files[0].FileName));
+                var filename = Path.GetFileName(filePath);
+
+                await storageClient.UploadFile(UploadType.DogProfilePicture, filePath, upload.Files[0].ContentType, data);
+
+                await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Dogs.Update(conn, dogId, filename);
+                });
+
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
         #endregion
     }
 }
