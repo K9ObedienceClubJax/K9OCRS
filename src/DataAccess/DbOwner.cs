@@ -22,7 +22,7 @@ namespace DataAccess
         public readonly IClassTypesRepository ClassTypes;
         public readonly IClassSectionsRepository ClassSections;
         public readonly IRepository<ClassMeeting> ClassMeetings;
-        public readonly IRepository<ClassApplication> ClassApplications;
+        public readonly IClassApplicationsRepository ClassApplications;
 
         public DbOwner(IHttpContextAccessor httpContextAccessor)
         {
