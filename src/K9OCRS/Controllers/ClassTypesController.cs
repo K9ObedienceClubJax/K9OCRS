@@ -295,7 +295,8 @@ namespace K9OCRS.Controllers
 
                     if (reassignSectionsToId != null)
                     {
-                        await dbOwner.ClassSections.ReassignWholeClassType(conn, tr, id, (int) reassignSectionsToId);
+                        await dbOwner.ClassSections.ReassignWholeClassType(conn, tr, id, (int)reassignSectionsToId);
+                        await dbOwner.ClassApplications.ReassignWholeClassType(conn, tr, id, (int)reassignSectionsToId);
                     }
 
                     var affectedRows = await dbOwner.ClassTypes.Delete(conn, tr, id);
