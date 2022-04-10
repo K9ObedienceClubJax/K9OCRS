@@ -145,20 +145,32 @@ namespace K9OCRS.Controllers
         public async Task<IActionResult> LoginStatus()
         {
             var cookie = Request.Cookies[_config["Jwt:CookieName"]]; 
-             if (cookie != null)
+             if (!String.IsNullOrEmpty(cookie))
             {
-                JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(cookie);
-                Console.WriteLine(token.Claims);
-                int id = Int32.Parse(token.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-
-                var loginResult = await connectionOwner.Use(conn =>
+                try
                 {
-                    return dbOwner.Users.GetByID(conn, id);
-                });
+                    JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(cookie);
+                    int id = Int32.Parse(token.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+                
+                    var loginResult = await connectionOwner.Use(conn => {
+                        return dbOwner.Users.GetByID(conn, id);
+                    });
 
-                var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
+                    var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
 
-                return Ok(userResult);
+                    return Ok(userResult);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is KeyNotFoundException)
+                    {
+                        return Logout();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
             return Ok();
         }
