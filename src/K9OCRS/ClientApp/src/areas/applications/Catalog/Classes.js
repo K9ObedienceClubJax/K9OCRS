@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import * as classTypesClient from '../../../util/apiClients/classTypes';
-import { Container, Spinner, Row, Col } from 'reactstrap';
+import { Container, Spinner, Row, Col, Button } from 'reactstrap';
+import { isAdmin as verifyIsAdmin } from '../../../util/accessEvaluator';
 import Table from '../../../shared/components/Table';
 import sectionColumns from './components/sectionColumns';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -9,6 +11,8 @@ import './components/style.scss';
 import PageBody from '../../../shared/components/PageBody';
 
 const Classes = (props) => {
+    const { isAdmin } = props;
+
     const { classTypeId } = useParams();
     const [classDetail, setClassDetail] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,7 +51,18 @@ const Classes = (props) => {
                     { label: classDetail.title ?? 'Class Details', active: true },
                 ]}
                 setAlerts={setAlerts}
-            />
+            >
+                { !isAdmin ? null : (
+                    <Button
+                        tag="a"
+                        href={`/Manage/Classes/Types/${classTypeId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Edit Class Type
+                    </Button>
+                )}
+            </PageHeader>
             <PageBody>
                 {loading ? <Spinner /> : null}
                 {!loading && (
@@ -115,4 +130,6 @@ const Classes = (props) => {
     );
 };
 
-export default Classes;
+export default connect((state) => ({
+    isAdmin: verifyIsAdmin(state?.shared?.currentUser),
+}), {})(Classes);
