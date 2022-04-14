@@ -21,5 +21,10 @@ namespace DataAccess.Repositories.Contracts
         Task<int> Delete(IDbConnection conn, int id);
         Task<int> Delete(IDbConnection conn, IDbTransaction tr, int id);
         Task<int> DeleteMany(IDbConnection conn, IDbTransaction tr, IEnumerable<int> ids);
+        Task<int> Archive(IDbConnection conn, int id);
+        Task<int> Unarchive(IDbConnection conn, int id);
+        Task<int> MakeDraft(IDbConnection conn, int id);
+        Task<int> PublishDraft(IDbConnection conn, int id);
+
     }
 }

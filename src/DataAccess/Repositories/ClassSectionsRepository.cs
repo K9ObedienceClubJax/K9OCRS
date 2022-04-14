@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using DataAccess.Constants;
 using DataAccess.Entities;
+using DataAccess.Repositories.Contracts;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -8,14 +10,16 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
 {
-    public class ClassSectionsRepository : BaseRepository<ClassSection>
+    public class ClassSectionsRepository : BaseRepository<ClassSection>, IClassSectionsRepository
     {
         // Everytime that you create a repository, make sure you include a constructor that calls the "base constructor"
         // passing in the Db table name that is associated to it by using this syntax
-        public ClassSectionsRepository() : base(DbTables.Get(nameof(ClassSection))) { }
+        public ClassSectionsRepository(IHttpContextAccessor _httpContextAccessor) : base(DbTables.Get(nameof(ClassSection)), _httpContextAccessor) { }
 
-        public override async Task<IReadOnlyList<ClassSection>> GetAll(IDbConnection conn)
+        public override async Task<IReadOnlyList<ClassSection>> GetAll(IDbConnection conn, bool includeDrafts = false)
         {
+            var draftFilter = !includeDrafts ? "AND cs.isDraft = 0" : "";
+
             var query = @$"
                 SELECT
 	                cs.ID,
@@ -39,7 +43,7 @@ namespace DataAccess.Repositories
                 FROM ClassSections cs
                 LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
                 LEFT JOIN Users u ON cs.InstructorID = u.ID
-                WHERE cs.isSystemOwned = 0
+                WHERE cs.isSystemOwned = 0 {draftFilter}
             ";
 
             var result = await conn.QueryAsync<ClassSection, User, ClassSection>(query,
@@ -60,9 +64,11 @@ namespace DataAccess.Repositories
             return result.ToList();
         }
 
-        public override async Task<ClassSection> GetByID(IDbConnection conn, int id)
+        public async Task<ClassSection> GetByID(IDbConnection conn, int id, bool includeDrafts = false)
         {
-            var query = @"
+            var draftFilter = !includeDrafts ? "AND cs.isDraft = 0" : "";
+
+            var query = @$"
                 SELECT
 	                cs.ID,
 	                cs.ClassTypeID,
@@ -93,7 +99,7 @@ namespace DataAccess.Repositories
                 LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
                 LEFT JOIN Users u ON cs.InstructorID = u.ID
                 LEFT JOIN ClassTypes ct ON cs.ClassTypeID = ct.ID
-                WHERE cs.ID = @Id
+                WHERE cs.ID = @Id {draftFilter}
             ";
 
             var meetingsQuery = @"
@@ -138,8 +144,10 @@ namespace DataAccess.Repositories
             return classSection;
         }
 
-        public override async Task<IReadOnlyList<ClassSection>> GetByID(IDbConnection conn, string idColumn, int id)
+        public async Task<IReadOnlyList<ClassSection>> GetByID(IDbConnection conn, string idColumn, int id, bool includeDrafts = false)
         {
+            var draftFilter = !includeDrafts ? "AND cs.isDraft = 0" : "";
+
             var query = @$"
                 SELECT
 	                cs.ID,
@@ -163,7 +171,7 @@ namespace DataAccess.Repositories
                 FROM ClassSections cs
                 LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
                 LEFT JOIN Users u ON cs.InstructorID = u.ID
-                WHERE cs.[{idColumn}] = @Id
+                WHERE cs.[{idColumn}] = @Id {draftFilter}
             ";
 
             var result = await conn.QueryAsync<ClassSection, User, ClassSection>(query,
@@ -183,6 +191,17 @@ namespace DataAccess.Repositories
             new { Id = id },
             splitOn: "FirstName");
             return result.ToList();
+        }
+
+        public async Task<int> ReassignWholeClassType(IDbConnection conn, IDbTransaction tr, int currentClassTypeId, int targetClassTypeId)
+        {
+            var query = @$"
+                UPDATE {_tableName}
+                SET ClassTypeID = @targetClassTypeId, {GenerateTrackingSection()}
+                WHERE ClassTypeID = @currentClassTypeId
+            ";
+
+            return await conn.ExecuteAsync(query, new { targetClassTypeId, currentClassTypeId }, tr);
         }
     }
 }

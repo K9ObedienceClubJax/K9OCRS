@@ -1,10 +1,9 @@
 ﻿using DataAccess.Extensions;
 using System;
-using System.Collections.Generic;
 
 namespace DataAccess.Entities
 {
-    public class Dog
+    public class Dog : BaseEntity
     {
         public Dog() { }
         public Dog(Dog entity)
@@ -15,6 +14,9 @@ namespace DataAccess.Entities
             DateOfBirth = entity.DateOfBirth;
             ProfilePictureFilename = entity.ProfilePictureFilename;
             isArchived = entity.isArchived;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
         }
 
         [TransactionIgnore]

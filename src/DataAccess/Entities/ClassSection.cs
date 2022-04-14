@@ -4,7 +4,7 @@ using DataAccess.Extensions;
 
 namespace DataAccess.Entities
 {
-    public class ClassSection
+    public class ClassSection : BaseEntity
     {
         public ClassSection() { }
         public ClassSection(ClassSection entity)
@@ -15,6 +15,9 @@ namespace DataAccess.Entities
             RosterCapacity = entity.RosterCapacity;
             isDraft = entity.isDraft;
             isSystemOwned = entity.isSystemOwned;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
 
             RosterActual = entity.RosterActual;
             StartDate = entity.StartDate;

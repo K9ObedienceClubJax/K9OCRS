@@ -1,33 +1,33 @@
-@import '../../../app.scss';
+@use '../../../app.scss';
 
 .notFound {
-  &__illustration-container {
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-    padding: 2.5rem;
-  }
-  &__illustration {
-    width: 70vw;
-  }
-
-  @include media-breakpoint-up(md) {
-    &__title {
-      margin-left: 2.5rem; // 40px
-    }
-    &__subtitle {
-      margin-left: 5rem; // 80px
-    }
-
     &__illustration-container {
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-end;
-      padding: 0 2.5rem 2.5rem 2.5rem;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 2.5rem;
+    }
+    &__illustration {
+        width: 70vw;
     }
 
-    &__illustration {
-      width: 35vw;
+    @include app.media-breakpoint-up(md) {
+        &__title {
+            margin-left: 2.5rem; // 40px
+        }
+        &__subtitle {
+            margin-left: 5rem; // 80px
+        }
+
+        &__illustration-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 0 2.5rem 2.5rem 2.5rem;
+        }
+
+        &__illustration {
+            width: 35vw;
+        }
     }
-  }
 }

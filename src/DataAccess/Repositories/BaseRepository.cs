@@ -2,13 +2,16 @@
 using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Extensions;
+using DataAccess.Modules;
 using DataAccess.Repositories.Contracts;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,12 +24,22 @@ namespace DataAccess.Repositories
     /// If you require more fine grained control, please create a custom repository that extends this one. Keep in mind that
     /// the "abstract" keyword on the class definition means that you can take any of the "virtual" methods and override them to suit your needs.
     /// </summary>
-    public abstract class BaseRepository<T> : IRepository<T> where T : class
+    public abstract class BaseRepository<T> : IRepository<T> where T : BaseEntity
     {
+        protected readonly ModifierIdentity _identity;
         public readonly string _tableName;
 
-        protected BaseRepository(string tablename)
+        protected BaseRepository(string tablename, IHttpContextAccessor httpContextAccessor)
         {
+            var user = httpContextAccessor.HttpContext.User;
+            if (user.Identity.IsAuthenticated) {
+                _identity = new ModifierIdentity
+                {
+                    ID = Int32.Parse(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value),
+                    Name = user.Identity.Name,
+                    Email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value,
+                };
+            }
             _tableName = tablename;
         }
 
@@ -95,12 +108,16 @@ namespace DataAccess.Repositories
 
         public virtual async Task<T> Add(IDbConnection conn, T entity)
         {
+            entity.ModifiedByID = _identity.ID;
+            entity.ModifiedByName = _identity.Name;
             var insertQuery = GenerateInsertQuery();
             return await conn.QueryFirstOrDefaultAsync<T>(insertQuery, entity);
         }
 
         public virtual async Task<T> Add(IDbConnection conn, IDbTransaction tr, T entity)
         {
+            entity.ModifiedByID = _identity.ID;
+            entity.ModifiedByName = _identity.Name;
             var insertQuery = GenerateInsertQuery();
             return await conn.QueryFirstOrDefaultAsync<T>(insertQuery, entity, tr);
         }
@@ -112,6 +129,8 @@ namespace DataAccess.Repositories
 
             foreach (var entity in entities)
             {
+                entity.ModifiedByID = _identity.ID;
+                entity.ModifiedByName = _identity.Name;
                 var result = await conn.QuerySingleAsync<T>(insertQuery, entity, tr);
                 results.Add(result);
             }
@@ -121,12 +140,16 @@ namespace DataAccess.Repositories
 
         public virtual async Task<int> Update(IDbConnection conn, T entity)
         {
+            entity.ModifiedByID = _identity.ID;
+            entity.ModifiedByName = _identity.Name;
             var updateQuery = GenerateUpdateQuery();
             return await conn.ExecuteAsync(updateQuery, entity);
         }
 
         public virtual async Task<int> Update(IDbConnection conn, IDbTransaction tr, T entity)
         {
+            entity.ModifiedByID = _identity.ID;
+            entity.ModifiedByName = _identity.Name;
             var updateQuery = GenerateUpdateQuery();
             return await conn.ExecuteAsync(updateQuery, entity, tr);
         }
@@ -163,6 +186,77 @@ namespace DataAccess.Repositories
 
             return await conn.ExecuteAsync(query, new { Ids = ids }, tr);
         }
+
+        #region Archivable
+        public virtual async Task<int> Archive(IDbConnection conn, int id)
+        {
+            if (!ValidateIsArchivableEntity()) throw new NotSupportedException("The entity does not support archiving");
+
+            var query = $"UPDATE {_tableName} SET IsArchived = 1, {GenerateTrackingSection()} WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+            return await conn.ExecuteAsync(query, new { Id = id });
+        }
+
+        public virtual async Task<int> Unarchive(IDbConnection conn, int id)
+        {
+            if (!ValidateIsArchivableEntity()) throw new NotSupportedException("The entity does not support archiving");
+
+            var query = $"UPDATE {_tableName} SET IsArchived = 0, {GenerateTrackingSection()} WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+            return await conn.ExecuteAsync(query, new { Id = id });
+        }
+        #endregion
+
+        #region Draftable
+        public virtual async Task<int> MakeDraft(IDbConnection conn, int id)
+        {
+            if (!ValidateIsDraftableEntity()) throw new NotSupportedException("The entity does not support drafting");
+
+            var query = $"UPDATE {_tableName} SET IsDraft = 1, {GenerateTrackingSection()} WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+            return await conn.ExecuteAsync(query, new { Id = id });
+        }
+
+        public virtual async Task<int> PublishDraft(IDbConnection conn, int id)
+        {
+            if (!ValidateIsDraftableEntity()) throw new NotSupportedException("The entity does not support drafting");
+
+            var query = $"UPDATE {_tableName} SET IsDraft = 0, {GenerateTrackingSection()} WHERE ID=@Id";
+            if (DbTables.DoesTableContainPlaceholders(_tableName))
+            {
+                query += " AND isSystemOwned = 0";
+            }
+            return await conn.ExecuteAsync(query, new { Id = id });
+        }
+        #endregion
+
+        #region Internal Utility Methods
+        internal bool ValidateIsArchivableEntity()
+        {
+            var props = GenerateListOfPropertyNames(GetProperties);
+            return props.Contains("isArchived");
+        }
+
+        internal bool ValidateIsDraftableEntity()
+        {
+            var props = GenerateListOfPropertyNames(GetProperties);
+            return props.Contains("isDraft");
+        }
+
+        internal string GenerateTrackingSection()
+        {
+            return $"ModifiedByID = {_identity.ID}, ModifiedByName = '{_identity.Name}', ModifiedDate=GETDATE()";
+        } 
+        #endregion
 
         #region Private Methods
 
@@ -296,7 +390,8 @@ namespace DataAccess.Repositories
                 }
             });
 
-            updateQuery.Remove(updateQuery.Length - 1, 1); //remove last comma
+            updateQuery.Append($"ModifiedDate=GETDATE()");
+            //updateQuery.Remove(updateQuery.Length - 1, 1); //remove last comma
             updateQuery.Append(" WHERE ID=@ID");
 
             if (DbTables.DoesTableContainPlaceholders(_tableName))

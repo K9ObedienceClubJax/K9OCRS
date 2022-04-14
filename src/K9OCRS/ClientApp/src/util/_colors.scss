@@ -1,0 +1,32 @@
+// These variables override the colors that come from the bootstrap stylesheets, don't change the names or they'll stop working
+
+// Base gray-scale
+$white: #fff;
+$gray-100: #f4f6f4;
+$gray-200: #e9ede9;
+$gray-300: #c8d1c7;
+$gray-400: #a7b5a6;
+$gray-500: #869985;
+$gray-600: #677a66;
+$gray-700: #546454;
+$gray-800: #414e41;
+$gray-900: #262c26;
+$black: #000;
+
+// Base color-wheel
+$blue: #007bff;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #e83e8c;
+$red: #dc3545;
+$orange: #fd7e14;
+$yellow: #ffc107;
+$green: #1ecc46;
+$teal: #20c997;
+$cyan: #17a2b8;
+
+$accent: #3454d1; // maybe for some touches?
+
+// Theme Colors
+$primary: #7db06f;
+$secondary: $gray-700; //#6C7D6E;

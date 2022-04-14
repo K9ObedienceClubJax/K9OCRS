@@ -1,6 +1,7 @@
 ﻿using DataAccess.Entities;
 using DataAccess.Repositories;
 using DataAccess.Repositories.Contracts;
+using Microsoft.AspNetCore.Http;
 
 namespace DataAccess
 {
@@ -10,6 +11,8 @@ namespace DataAccess
     /// </summary>
     public class DbOwner
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public readonly IRepository<UserRole> UserRoles;
         public readonly IUsersRepository Users;
         public readonly IRepository<Dog> Dogs;
@@ -17,22 +20,24 @@ namespace DataAccess
         public readonly IRepository<VaccinationRecord> VaccinationRecords;
         public readonly IClassPhotosRepository ClassPhotos;
         public readonly IClassTypesRepository ClassTypes;
-        public readonly IRepository<ClassSection> ClassSections;
+        public readonly IClassSectionsRepository ClassSections;
         public readonly IRepository<ClassMeeting> ClassMeetings;
-        public readonly IRepository<ClassApplication> ClassApplications;
+        public readonly IClassApplicationsRepository ClassApplications;
 
-        public DbOwner()
+        public DbOwner(IHttpContextAccessor httpContextAccessor)
         {
-            UserRoles = new UserRolesRepository();
-            Users = new UsersRepository();
-            Dogs = new DogsRepository();
-            UserDogs = new UserDogsRepository();
-            VaccinationRecords = new VaccinationRecordsRepository();
-            ClassPhotos = new ClassPhotosRepository();
-            ClassTypes = new ClassTypesRepository();
-            ClassSections = new ClassSectionsRepository();
-            ClassMeetings = new ClassMeetingsRepository();
-            ClassApplications = new ClassApplicationsRepository();
+            _httpContextAccessor = httpContextAccessor;
+
+            UserRoles = new UserRolesRepository(_httpContextAccessor);
+            Users = new UsersRepository(_httpContextAccessor);
+            Dogs = new DogsRepository(_httpContextAccessor);
+            UserDogs = new UserDogsRepository(_httpContextAccessor);
+            VaccinationRecords = new VaccinationRecordsRepository(_httpContextAccessor);
+            ClassPhotos = new ClassPhotosRepository(_httpContextAccessor);
+            ClassTypes = new ClassTypesRepository(_httpContextAccessor);
+            ClassSections = new ClassSectionsRepository(_httpContextAccessor);
+            ClassMeetings = new ClassMeetingsRepository(_httpContextAccessor);
+            ClassApplications = new ClassApplicationsRepository(_httpContextAccessor);
         }
     }
 }

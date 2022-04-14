@@ -42,6 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Models\ApplicationsManagement\NewFile.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
   </ItemGroup>
 

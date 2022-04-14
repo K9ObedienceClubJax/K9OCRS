@@ -3,7 +3,7 @@ using DataAccess.Extensions;
 
 namespace DataAccess.Entities
 {
-    public class UserRole
+    public class UserRole : BaseEntity
     {
         public UserRole() { }
 
@@ -11,6 +11,9 @@ namespace DataAccess.Entities
         {
             ID = entity.ID;
             Title = entity.Title;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
         }
 
         [TransactionIgnore]
