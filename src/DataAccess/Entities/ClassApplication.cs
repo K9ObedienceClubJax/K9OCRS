@@ -11,6 +11,8 @@ namespace DataAccess.Entities
         public int ClassSectionID { get; set; } = 1;
         public int DogID { get; set; }
         public string Status { get; set; } // One of [Pending, Active, Completed, Cancelled]
+        public string MainAttendee { get; set; }
+        public string AdditionalAttendees { get; set; }
         public string PaymentMethod { get; set; }
         public bool isPaid { get; set; } = false;
         public bool isRefunded { get; set; } = false;
@@ -34,6 +36,8 @@ namespace DataAccess.Entities
             ClassSectionID = entity.ClassSectionID;
             DogID = entity.DogID;
             Status = entity.Status;
+            MainAttendee = entity.MainAttendee;
+            AdditionalAttendees = entity.AdditionalAttendees;
             PaymentMethod = entity.PaymentMethod;
             isPaid = entity.isPaid;
             isRefunded = entity.isRefunded;

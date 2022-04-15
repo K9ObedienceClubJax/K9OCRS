@@ -1,7 +1,9 @@
-using Dapper;
+﻿using Dapper;
 using DataAccess.Entities;
 using DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
+using SqlKata;
+using SqlKata.Compilers;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -15,41 +17,59 @@ namespace DataAccess.Repositories
         // passing in the Db table name that is associated to it by using this syntax
         public ClassApplicationsRepository(IHttpContextAccessor _httpContextAccessor) : base(nameof(ClassApplication), _httpContextAccessor) { }
 
-        public async Task<IReadOnlyList<ClassApplication>> GetAll(IDbConnection conn, string PaymentMethod, bool includePending, bool includeActive, bool includeCompleted, bool includeCancelled)
+        public async Task<IReadOnlyList<ClassApplication>> GetAll(
+            IDbConnection conn,
+            int? DogID,
+            string PaymentMethod,
+            bool includePending,
+            bool includeActive,
+            bool includeCompleted,
+            bool includeCancelled
+        )
         {
-            var useIncludes = !includePending || !includeActive || !includeCompleted || !includeCancelled;
-            var usePaymentMethodFilter = !string.IsNullOrEmpty(PaymentMethod);
+            var sqlCompiler = new SqlServerCompiler();
+            var queryBuilder = new Query($"{_tableNameRaw} as ca")
+                .LeftJoin("Dogs as d", "d.ID", "ca.DogID")
+                .LeftJoin("ClassTypes as ct", "ct.ID", "ca.ClassTypeID")
+                .Select(
+                    "ca.*",
+                    "d.Name as DogName",
+                    "ct.Title"
+                );
 
-            var paymentMethodFilter = usePaymentMethodFilter ? "ca.PaymentMethod = @PaymentMethod" : "";
+            // Add DogID Filter
+            if (DogID != null) queryBuilder.WhereRaw("ca.DogID = @DogID");
 
-            var includesList = new List<string>();
-            var includes = $"ca.Status NOT IN (";
+            // Add PaymentMethod Filter
+            if (!string.IsNullOrEmpty(PaymentMethod)) queryBuilder.WhereRaw("ca.PaymentMethod = @PaymentMethod");
 
-            if (!includePending) includesList.Add("\'Pending\'");
-            if (!includeActive) includesList.Add("\'Active\'");
-            if (!includeCompleted) includesList.Add("\'Completed\'");
-            if (!includeCancelled) includesList.Add("\'Cancelled\'");
+            var excludedStatusesList = new List<string>();
 
-            var idx = 0;
-            foreach(string include in includesList)
-            {
-                if (idx == 0)
-                {
-                    includes += include;
-                } else
-                {
-                    includes = includes + ',' + include;
-                }
-                idx++;
-            }
+            if (!includePending) excludedStatusesList.Add("Pending");
+            if (!includeActive) excludedStatusesList.Add("Active");
+            if (!includeCompleted) excludedStatusesList.Add("Completed");
+            if (!includeCancelled) excludedStatusesList.Add("Cancelled");
 
-            includes += ')';
+            // Add Status Filter
+            if (excludedStatusesList.Count > 0) queryBuilder.WhereNotIn("ca.Status", excludedStatusesList);
 
-            var includesFilter = useIncludes ? includes : "";
+            // Only use this when using Dapper's parameters
+            var query = sqlCompiler.Compile(queryBuilder).ToString();
 
-            var whereSection = (usePaymentMethodFilter || useIncludes)  ? "WHERE" : "";
-            var andSection = !string.IsNullOrEmpty(paymentMethodFilter) && !string.IsNullOrEmpty(includesFilter) ? "AND" : "";
+            var result = await conn.QueryAsync<ClassApplication, string, string, ClassApplication>(query,
+            (application, dogName, typeTitle) => {
+                application.DogName = dogName;
+                application.ClassTypeTitle = typeTitle;
+                return application;
+            },
+            new { PaymentMethod, DogID },
+            splitOn: "DogName,Title");
 
+            return result.ToList();
+        }
+
+        public override async Task<ClassApplication> GetByID(IDbConnection conn, int id)
+        {
             var query = $@"
                 SELECT
                     ca.ID,
@@ -57,6 +77,8 @@ namespace DataAccess.Repositories
                     ca.ClassSectionID,
                     ca.DogID,
                     ca.Status,
+                    ca.MainAttendee,
+                    ca.AdditionalAttendees,
                     ca.PaymentMethod,
                     ca.isPaid,
                     ca.isRefunded,
@@ -72,20 +94,56 @@ namespace DataAccess.Repositories
                 FROM ClassApplications ca
                 LEFT JOIN Dogs d ON d.ID = ca.DogID
                 LEFT JOIN ClassTypes ct ON ct.ID = ca.ClassTypeID
-                {whereSection}
-                {paymentMethodFilter}
-                {andSection}
-                {includesFilter}
+                WHERE ca.ID = @Id
             ";
 
             var result = await conn.QueryAsync<ClassApplication, string, string, ClassApplication>(query,
-            (application, dogName, typeTitle) =>
-            {
+            (application, dogName, typeTitle) => {
                 application.DogName = dogName;
                 application.ClassTypeTitle = typeTitle;
                 return application;
             },
-            new { PaymentMethod },
+            new { Id = id },
+            splitOn: "DogName,Title");
+            return result.FirstOrDefault();
+        }
+
+        public override async Task<IReadOnlyList<ClassApplication>> GetByID(IDbConnection conn, string idColumn, int id)
+        {
+            var query = $@"
+                SELECT
+                    ca.ID,
+                    ca.ClassTypeID,
+                    ca.ClassSectionID,
+                    ca.DogID,
+                    ca.Status,
+                    ca.MainAttendee,
+                    ca.AdditionalAttendees,
+                    ca.PaymentMethod,
+                    ca.isPaid,
+                    ca.isRefunded,
+                    ca.ReviewedBy,
+                    ca.ReviewedDate,
+                    ca.ModifiedByID,
+                    ca.ModifiedByName,
+                    ca.ModifiedDate,
+                    -- Dog Info
+                    d.[Name] as DogName,
+                    -- Class Type
+                    ct.Title
+                FROM ClassApplications ca
+                LEFT JOIN Dogs d ON d.ID = ca.DogID
+                LEFT JOIN ClassTypes ct ON ct.ID = ca.ClassTypeID
+                WHERE ca.{idColumn} = @Id
+            ";
+
+            var result = await conn.QueryAsync<ClassApplication, string, string, ClassApplication>(query,
+            (application, dogName, typeTitle) => {
+                application.DogName = dogName;
+                application.ClassTypeTitle = typeTitle;
+                return application;
+            },
+            new { Id = id },
             splitOn: "DogName,Title");
             return result.ToList();
         }
