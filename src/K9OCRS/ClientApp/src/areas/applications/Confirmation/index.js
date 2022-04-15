@@ -157,9 +157,8 @@ const Confirm = (props) => {
                         </select>
                         </div>
                         {/* todo: need to format the age */}
-                        {/* todo: Not Selected option breaks when going back to Please select a dog */}
-                        <p><b>Age:</b> { dogSelected.dateOfBirth ? dogSelected?.dateOfBirth : "Not Selected" }</p>
-                        <p><b>Breed:</b> {dogSelected?.breed}</p>
+                        <p><b>Age:</b> { dogSelected?.dateOfBirth ? dogSelected?.dateOfBirth : "Not Selected" }</p>
+                        <p><b>Breed:</b> {dogSelected?.breed ? dogSelected.breed : "Not Selected"}</p>
                         {/* todo: I don't see vaccination record status in the dogs api */}
                         <p className='pb-3'><b>Vaccination Record:</b> Not in api</p>
 
