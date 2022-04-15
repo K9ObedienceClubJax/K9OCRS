@@ -2,7 +2,7 @@
 {
     public class ApplicationsListRequest
     {
-        public int DogID { get; set; }
+        public int? DogID { get; set; }
         public string PaymentMethod { get; set; }
 
         // Filter by Status
