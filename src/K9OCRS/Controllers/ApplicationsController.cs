@@ -3,6 +3,7 @@ using DataAccess.Clients.Contracts;
 using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
 using K9OCRS.Models;
+using K9OCRS.Models.ApplicationsManagement;
 using K9OCRS.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +52,7 @@ namespace K9OCRS.Controllers
             var result = await connectionOwner.Use(conn =>
                 dbOwner.ClassApplications.GetAll(
                     conn,
+                    request.DogID,
                     request.PaymentMethod,
                     request.includePending,
                     request.includeActive,
@@ -75,8 +77,20 @@ namespace K9OCRS.Controllers
         // Create
         [HttpPost]
         [ProducesResponseType(typeof(ClassApplication), 200)]
-        public async Task<IActionResult> CreateApplication([FromBody] ClassApplication entity)
+        public async Task<IActionResult> CreateApplication([FromBody] ApplicationAddRequest request)
         {
+            var entity = new ClassApplication
+            {
+                ClassTypeID = request.ClassTypeID,
+                ClassSectionID = request.ClassSectionID,
+                DogID = request.DogID,
+                Status = request.Status,
+                MainAttendee = request.MainAttendee,
+                AdditionalAttendees = request.AdditionalAttendees,
+                PaymentMethod = request.PaymentMethod,
+                isPaid = request.isPaid,
+            };
+
             var result = await connectionOwner.Use(conn => dbOwner.ClassApplications.Add(conn, entity));
 
             return Ok(result);

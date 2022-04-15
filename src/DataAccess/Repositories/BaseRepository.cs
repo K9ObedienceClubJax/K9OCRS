@@ -28,8 +28,9 @@ namespace DataAccess.Repositories
     {
         protected readonly ModifierIdentity _identity;
         public readonly string _tableName;
+        public readonly string _tableNameRaw;
 
-        protected BaseRepository(string tablename, IHttpContextAccessor httpContextAccessor)
+        protected BaseRepository(string className, IHttpContextAccessor httpContextAccessor)
         {
             var user = httpContextAccessor.HttpContext.User;
             if (user.Identity.IsAuthenticated) {
@@ -40,7 +41,8 @@ namespace DataAccess.Repositories
                     Email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value,
                 };
             }
-            _tableName = tablename;
+            _tableName = DbTables.Get(className);
+            _tableNameRaw = DbTables.GetRaw(className);
         }
 
         public virtual async Task<T> GetByID(IDbConnection conn, int id)
