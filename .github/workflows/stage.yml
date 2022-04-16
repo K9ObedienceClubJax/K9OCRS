@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build -t unfignitech.azurecr.io/k9ocrs:${{ github.sha }} --build-arg NODE_ENV_OVERRIDE=${{ secrets.NODE_ENV }} .
+          docker build -t unfignitech.azurecr.io/k9ocrs:${{ github.sha }} --build-arg NODE_HOST_ENV=${{ secrets.NODE_HOST_ENV }} .
           docker push unfignitech.azurecr.io/k9ocrs:${{ github.sha }}
   deploy:
     runs-on: ubuntu-latest

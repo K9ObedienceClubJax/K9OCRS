@@ -16,7 +16,7 @@ export const storeCreator = (props) => {
     // Use browser's Redux dev tools extension if installed
     const enhancers = [];
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const isStaging = process.env.NODE_ENV === 'staging';
+    const isStaging = process.env.REACT_APP_HOST_ENV === 'staging';
 
     if (
         (isDevelopment || isStaging) &&
