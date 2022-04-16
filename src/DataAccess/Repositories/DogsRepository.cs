@@ -20,11 +20,5 @@ namespace DataAccess.Repositories
             var query = $"UPDATE {_tableName} SET ProfilePictureFilename=@Filename WHERE ID=@ID";
             return await conn.ExecuteAsync(query, new { ID = dogId, Filename = filename });
         }
-
-        public async Task<int> UpdateImage(IDbConnection conn, int dogId, string filename)
-        {
-            var query = $"UPDATE {_tableName} SET ImageFilename=@Filename WHERE ID=@ID";
-            return await conn.ExecuteAsync(query, new { ID = dogId, Filename = filename });
-        }
     }
 }

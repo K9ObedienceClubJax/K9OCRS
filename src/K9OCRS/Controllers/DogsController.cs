@@ -10,12 +10,9 @@ using System.Collections.Generic;
 using System.IO;
 using K9OCRS.Utils.Extensions;
 using Serilog;
-using K9OCRS.Utils.Configuration;
 using System.Linq;
-using System.Collections.Generic;
 using K9OCRS.Models.DogManagement;
 using K9OCRS.Utils.Constants;
-using K9OCRS.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using K9OCRS.Models;
 
