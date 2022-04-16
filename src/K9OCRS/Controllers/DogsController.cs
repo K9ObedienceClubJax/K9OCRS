@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using DataAccess;
 using DataAccess.Entities;
@@ -93,7 +93,7 @@ namespace K9OCRS.Controllers
         }
 
         //get a dog by Id
-        [HttpGet("{id}")]
+        [HttpGet("{Id}")]
         [ProducesResponseType(typeof(IEnumerable<DogResult>), 200)]
         public async Task<IActionResult> GetDog(int Id)
         {
