@@ -1,3 +1,5 @@
+ARG NODE_ENV_OVERRIDE='production'
+
 # NETCORE BUILD
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /app
@@ -8,6 +10,8 @@ RUN apt-get install -y nodejs
 
 COPY ./*.sln ./
 COPY ./src ./src/
+
+ENV NODE_ENV=$NODE_ENV_OVERRIDE
 
 RUN dotnet restore
 RUN dotnet publish -o /app/build
