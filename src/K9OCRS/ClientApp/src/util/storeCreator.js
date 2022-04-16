@@ -16,10 +16,9 @@ export const storeCreator = (props) => {
     // Use browser's Redux dev tools extension if installed
     const enhancers = [];
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const isStaging = process.env.REACT_APP_HOST_ENV === 'staging';
 
     if (
-        (isDevelopment || isStaging) &&
+        isDevelopment &&
         typeof window !== 'undefined' &&
         typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined'
     ) {
@@ -39,6 +38,9 @@ export const storeCreator = (props) => {
     );
 
     sagaMiddleware.run(sagas);
+
+    // This can help debug in prod or staging where there's no redux devtools
+    window.getState = store.getState;
 
     return store;
 };

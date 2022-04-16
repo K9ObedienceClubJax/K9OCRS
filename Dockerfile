@@ -1,5 +1,3 @@
-ARG NODE_HOST_ENV='production'
-
 # NETCORE BUILD
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /app
@@ -10,8 +8,6 @@ RUN apt-get install -y nodejs
 
 COPY ./*.sln ./
 COPY ./src ./src/
-
-ENV REACT_APP_HOST_ENV=$NODE_HOST_ENV
 
 RUN dotnet restore
 RUN dotnet publish -o /app/build
