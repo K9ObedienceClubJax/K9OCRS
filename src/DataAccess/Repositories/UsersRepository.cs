@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +12,7 @@ namespace DataAccess.Repositories
     {
         // Everytime that you create a repository, make sure you include a constructor that calls the "base constructor"
         // passing in the Db table name that is associated to it by using this syntax
-        public UsersRepository(IHttpContextAccessor _httpContextAccessor) : base(DbTables.Get(nameof(User)), _httpContextAccessor) { }
+        public UsersRepository(IHttpContextAccessor _httpContextAccessor) : base(nameof(User), _httpContextAccessor) { }
 
         public async Task<User> GetByEmail(IDbConnection conn, string email)
         {

@@ -1,10 +1,21 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTable, useExpanded, usePagination  } from 'react-table';
 import CustomPagination from '../Pagination';
 import defaultColumns from './columns';
 
 import './style.scss';
+
+function debounce(fn, ms) {
+  let timer;
+  return (_) => {
+      clearTimeout(timer);
+      timer = setTimeout((_) => {
+          timer = null;
+          fn.apply(this, arguments);
+      }, ms);
+  };
+}
 
 const Table = props => {
   const {
@@ -67,6 +78,19 @@ const Table = props => {
 
   const cn = 'k9-table';
 
+  const collapseWidth = '(min-width: 992px)';
+  const [breakpointHit, setBreakpointHit] = useState(window.matchMedia(collapseWidth).matches);
+
+  useEffect(() => {
+      const debouncedHandleResize = debounce(function updateBreakpointHit() {
+          setBreakpointHit(window.matchMedia(collapseWidth).matches);
+      }, 1000);
+
+      window.addEventListener('resize', debouncedHandleResize);
+
+      return (_) => window.removeEventListener('resize', debouncedHandleResize);
+  });
+
   return (
     <div className={cn}>
       <table className={`${cn}__table`} {...getTableProps()}>
@@ -92,19 +116,30 @@ const Table = props => {
           activeRows.map(row => {
             // Prepare the row for display
             prepareRow(row)
+            const isChildRow = `${row.id}`.includes('.');
+            const toggleProps = !isChildRow && row.canExpand ? row.getToggleRowExpandedProps() : {};
             return (
               // Apply the row props
-              <tr className={`${row.id}`.includes('.') ? '' : 'k9-table__top-row'} {...row.getRowProps()}>
+              <tr className={isChildRow ? '' : 'k9-table__top-row'} {...row.getRowProps()} {...toggleProps}>
                 {// Loop over the rows cells
-                row.cells.map(cell => {
-                  // Apply the cell props
-                  return (
-                    <td {...cell.getCellProps()}>
-                      {// Render the cell contents
-                      cell.render('Cell')}
-                    </td>
-                  )
-                })}
+                  row.cells.map(cell => {
+                    const hideCell = cell.value !== 0 && (!cell.value || (cell.value === 'expander' && !row.canExpand));
+
+                    if (!breakpointHit && hideCell) {
+                      return null;
+                    }
+
+                    const headingData = typeof cell?.column?.Header === 'string' ? cell?.column?.Header : '';
+
+                    // Apply the cell props
+                    return (
+                      <td {...cell.getCellProps()} data-heading={headingData}>
+                        {// Render the cell contents
+                        cell.render('Cell')}
+                      </td>
+                    )
+                  })
+                }
               </tr>
             )
           })}
