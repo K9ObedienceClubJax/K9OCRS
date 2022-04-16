@@ -181,6 +181,23 @@ namespace K9OCRS.Controllers
             return BadRequest();
         }
 
+        [HttpDelete("{dogId/image}")]
+        private async Task<int> DeleteImage(int dogId, string fileName)
+        {
+            if (!String.IsNullOrEmpty(fileName) && !String.IsNullOrWhiteSpace(fileName))
+            {
+                var filename = String.Concat(dogId.ToString(), "/", fileName);
+
+                await storageClient.DeleteFile(UploadType.DogProfilePicture, filename);
+
+                return await connectionOwner.Use(conn => {
+                    return dbOwner.Dogs.UpdateImage(conn, dogId, "ClassPlaceholder.png");
+                });
+            }
+
+            throw new ArgumentException();
+        }
+
         #endregion
     }
 }
