@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using DataAccess;
 using DataAccess.Entities;
@@ -178,8 +178,8 @@ namespace K9OCRS.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("{dogId/image}")]
-        private async Task<int> DeleteImage(int dogId, string fileName)
+        [HttpDelete("{dogId}/image")]
+        public async Task<int> DeleteImage(int dogId, string fileName)
         {
             if (!String.IsNullOrEmpty(fileName) && !String.IsNullOrWhiteSpace(fileName))
             {
@@ -188,7 +188,7 @@ namespace K9OCRS.Controllers
                 await storageClient.DeleteFile(UploadType.DogProfilePicture, filename);
 
                 return await connectionOwner.Use(conn => {
-                    return dbOwner.Dogs.UpdateImage(conn, dogId, "ClassPlaceholder.png");
+                    return dbOwner.Dogs.UpdateImage(conn, dogId, "DogPlaceholder.png");
                 });
             }
 
