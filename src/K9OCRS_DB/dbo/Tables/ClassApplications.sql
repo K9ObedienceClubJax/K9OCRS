@@ -4,6 +4,8 @@
     [ClassSectionID] INT          DEFAULT (1) NOT NULL,
     [DogID]          INT          NOT NULL,
     [Status]         VARCHAR (15) NOT NULL,
+    [MainAttendee]   VARCHAR (128) NOT NULL,
+    [AdditionalAttendees] VARCHAR (512) NULL,
     [PaymentMethod]  VARCHAR (70) NOT NULL,
     [isPaid]         BIT          NOT NULL DEFAULT 0,
     [isRefunded]     BIT          NOT NULL DEFAULT 0,

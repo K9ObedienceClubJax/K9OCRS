@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +13,7 @@ namespace DataAccess.Repositories
     {
         // Everytime that you create a repository, make sure you include a constructor that calls the "base constructor"
         // passing in the Db table name that is associated to it by using this syntax
-        public ClassSectionsRepository(IHttpContextAccessor _httpContextAccessor) : base(DbTables.Get(nameof(ClassSection)), _httpContextAccessor) { }
+        public ClassSectionsRepository(IHttpContextAccessor _httpContextAccessor) : base(nameof(ClassSection), _httpContextAccessor) { }
 
         public override async Task<IReadOnlyList<ClassSection>> GetAll(IDbConnection conn, bool includeDrafts = false)
         {
@@ -47,8 +46,7 @@ namespace DataAccess.Repositories
             ";
 
             var result = await conn.QueryAsync<ClassSection, User, ClassSection>(query,
-            (section, instructor) =>
-            {
+            (section, instructor) => {
                 section.Instructor = new User
                 {
                     ID = section.InstructorID,
@@ -109,8 +107,7 @@ namespace DataAccess.Repositories
             ";
 
             var classSection = (await conn.QueryAsync<ClassSection, User, ClassType, ClassSection>(query,
-                (section, instructor, type) =>
-                {
+                (section, instructor, type) => {
                     section.Instructor = new User
                     {
                         ID = section.InstructorID,
@@ -175,8 +172,7 @@ namespace DataAccess.Repositories
             ";
 
             var result = await conn.QueryAsync<ClassSection, User, ClassSection>(query,
-            (section, instructor) =>
-            {
+            (section, instructor) => {
                 section.Instructor = new User
                 {
                     ID = section.InstructorID,

@@ -1,9 +1,8 @@
-﻿using System;
-
-namespace K9OCRS.Models
+﻿namespace K9OCRS.Models
 {
     public class ApplicationsListRequest
     {
+        public int? DogID { get; set; }
         public string PaymentMethod { get; set; }
 
         // Filter by Status
