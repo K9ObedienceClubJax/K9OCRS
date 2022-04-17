@@ -8,7 +8,7 @@ import PageHeader from '../../../shared/components/PageHeader';
 
 const cn = 'dogSetup';
 
-const dogSetup = (props) => {
+const DogSetup = (props) => {
     const {
         dogName,
         dogBreed,
@@ -185,12 +185,12 @@ export default connect(
         classType: state.classes?.classDetails,
     }),
     {
-        fetchClassDetails: actions.fetchClassDetails,
-        init: actions.initializeTypeAddition,
-        saveNewClassType: actions.saveNewClassType,
-        updateClassType: actions.updateClassType,
-        deleteClassType: actions.deleteClassType,
-        archiveClassType: actions.archiveClassType,
-        unarchiveClassType: actions.unarchiveClassType,
+        // fetchClassDetails: actions.fetchClassDetails,
+        // init: actions.initializeTypeAddition,
+        // saveNewClassType: actions.saveNewClassType,
+        // updateClassType: actions.updateClassType,
+        // deleteClassType: actions.deleteClassType,
+        // archiveClassType: actions.archiveClassType,
+        // unarchiveClassType: actions.unarchiveClassType,
     }
-)(ClassTypeSetup);
+)(DogSetup);

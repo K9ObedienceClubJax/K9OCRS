@@ -1,17 +1,20 @@
 import React from 'react'
 import Picture from './Picture'
 import {Link} from 'react-router-dom'
+import { Row, Col } from 'reactstrap';
 import classNames from 'classnames';
 import '../style.scss'
 
-const DogCard = ({
-    id = 1,
-    name = "Max",
-    vaccineApproval = "Pending",
-    activeClasses = [],
-    pendingApplications = [],
-    completedClasses = []
-}) => {
+const DogCard = (props) => {
+    const {
+        id = 1,
+        name = "Max",
+        profilePictureUrl,
+        vaccineApproval = "Pending",
+        activeClasses = [],
+        pendingApplications = [],
+        completedClasses = []
+    } = props;
 
     const cnVaccineStatus = classNames(
         'vaccine-status',
@@ -24,18 +27,29 @@ const DogCard = ({
 
     return (
         <Link to={`/Account/MyDogs/${id}`}>
-            <div className='dogCard'>
-                <div className='dogCard__image col-xl-3'>
-                    <Picture/>
-                </div>
-                <div className='dogCard__content'>
-                    <div className='dogCard__content-top'>
-                        <h3>{name}</h3>
-                        <p>
-                            <span className='dogCardLabel'>Vaccination Record:</span>
-                            <span className={`cardLabelValue ${cnVaccineStatus}`}>{vaccineApproval}</span>
-                        </p>
-                    </div>
+            <Row className='dogCard' md="2" xs="1">
+                <Col className='dogCard__image' md="4" xs="12">
+                    <img className="dogProfilePic" src={profilePictureUrl} alt="dog"/>
+                </Col>
+                <Col
+                    className='dogCard__content'
+                    md="8"
+                >
+                    <Row
+                        className='dogCard__content-top'
+                        md="2"
+                        xs="1"
+                    >
+                        <Col xs="12">
+                            <h3>{name}</h3>
+                        </Col>
+                        <Col sm="8" xs="12" className='text-end'>
+                            <p>
+                                <span className='dogCardLabel'>Vaccination Record:</span>
+                                <span className={`cardLabelValue ${cnVaccineStatus}`}>{vaccineApproval}</span>
+                            </p>
+                        </Col>
+                    </Row>
                     <div className='dogCard__content-bottom'>
                         <p>
                             <span className='dogCardLabel'>Active Classes:</span>
@@ -50,8 +64,8 @@ const DogCard = ({
                             <span className='cardLabelValue'>{completedClasses.length}</span>
                         </p>
                     </div>
-                </div>
-            </div>
+                </Col>
+            </Row>
         </Link>
     );
 }

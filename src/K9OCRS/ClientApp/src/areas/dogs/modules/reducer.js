@@ -1,7 +1,7 @@
-import { handleAction } from "redux-actions";
+import { handleActions } from "redux-actions";
 import * as actions from './actions';
 
-const INITIAL_STATE ={
+const INITIAL_STATE = {
     dogManagement: {
         loading: false,
         dogList: [],
@@ -13,7 +13,7 @@ const INITIAL_STATE ={
     },
 };
 
-export default handleAction(
+export default handleActions(
     {
         [actions.fetchingDogList]: (state) => ({
             ...state,
@@ -48,5 +48,5 @@ export default handleAction(
             }
         }),
     },
-    INITIAL_STATE()
+    INITIAL_STATE
 );

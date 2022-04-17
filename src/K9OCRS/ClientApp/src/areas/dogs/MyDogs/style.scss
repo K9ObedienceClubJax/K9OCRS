@@ -1,16 +1,16 @@
 @use '../../../app.scss';
 
 .dogProfilePic {
-    position: static;
     width: 156px;
     height: 156px;
     border-radius: 50%;
-    /* Inside Auto Layout */
 
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-    margin: 0px;
+    /* Inside Auto Layout */
+    @supports (aspect-ratio: 1/1) {
+        height: auto;
+        width: 100%;
+        aspect-ratio: 1/1;
+    }
 }
 
 //Self note: make media queries
@@ -18,11 +18,10 @@
     display: flex;
     flex-direction: row;
 
-    padding: 20px;
+    padding: 2rem;
+    width: 100%;
 
-    position: absolute;
-    width: 670px;
-    height: 196px;
+    margin-bottom: 2rem;
 
     background: #f5f5f5;
 
@@ -30,18 +29,24 @@
     box-sizing: border-box;
 
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.075);
-    border-radius: 10px;
+    border-radius: .5rem;
 
     color: app.$body-color;
 
     &__image {
-        margin-right: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+            object-fit: cover;
+            object-position: center;
+        }
     }
 
     &__content {
         display: flex;
         flex-direction: column;
-        flex: 1;
 
         &-top {
             display: flex;
