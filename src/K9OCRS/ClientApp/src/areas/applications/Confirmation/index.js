@@ -17,14 +17,16 @@ const Confirm = (props) => {
 
     const [dogs, setDogs] = useState([]);
 
-    const [dogSelected, setDogSelected] = useState([]);
+    const [dogSelected, setDogSelected] = useState(null);
+    const [handlerInput, setHandlerInput] = useState('');
+    const [attendeeInput, setAttendeeInput] = useState('');
 
     const handleSelectDog = (event) => {
         let setIndex = event.target.value;
         setIndex && setDogSelected(dogs[setIndex]);
         !setIndex && setDogSelected(null);
     };
-    //const { currentUser } = props;
+    const { currentUser } = props;
 
     useEffect(() => {
         async function getTest() {
@@ -159,17 +161,22 @@ const Confirm = (props) => {
                         <p><b>Breed:</b> {dogSelected?.breed ? dogSelected.breed : "Not Selected"}</p>
                         {/* todo: I don't see vaccination record status in the dogs api */}
                         <p className='pb-3'><b>Vaccination Record:</b> Not in api</p>
+                        <p>{handlerInput}</p>
+                        <p>{attendeeInput}</p>
+                        <p>{currentUser.firstName} {currentUser.lastName} ID: {currentUser.id}</p>
 
                         <h4>Attendees</h4>
                             <FormGroup >
                                 <Label for="handler">Person working the dog*</Label>
                                 <Col sm={5}>
                                 <Input
+                                    onChange={(e) => setHandlerInput(e.target.value)}
                                     type='text'
                                     placeholder='List the full name of the person that will handle the dog'
                                     htmlFor='handler'
                                     name='handler'
                                     id='handler'
+                                    value={handlerInput}
                                 />
                                 </Col>
                             </FormGroup>
@@ -177,11 +184,13 @@ const Confirm = (props) => {
                                 <Label for='attendee'>Other Attendees</Label>
                                 <Col sm={8}>
                                 <Input
+                                onChange={(e) => setAttendeeInput(e.target.value)}
                                 type="textarea"
                                 placeholder='List the names of every additonal person that will attend the class with this dog'
                                 htmlFor='attendee'
                                 name='attendee'
                                 id='attendee'
+                                value={attendeeInput}
                                 />
                                 </Col>
                             </FormGroup>
@@ -204,6 +213,7 @@ const Confirm = (props) => {
                                     </Label>
                                 </FormGroup>
                             </FormGroup>
+                           {dogSelected ? <Button color='primary' size='lg'>Submit Application</Button> : <Button color="secondary" size="lg" disabled>Submit Application</Button>}
                         </Form>
                         
 
