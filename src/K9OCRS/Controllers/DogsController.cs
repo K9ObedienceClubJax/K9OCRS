@@ -179,7 +179,7 @@ namespace K9OCRS.Controllers
         }
 
         [HttpDelete("{dogId}/image")]
-        public async Task<int> DeleteImage(int dogId, string fileName)
+        public async Task<int> DeleteImage(int dogId, [FromQuery] string fileName)
         {
             if (!String.IsNullOrEmpty(fileName) && !String.IsNullOrWhiteSpace(fileName))
             {

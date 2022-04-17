@@ -3,24 +3,50 @@ import * as actions from './actions';
 
 const INITIAL_STATE ={
     dogManagement: {
+        loading: false,
         dogList: [],
         dogDetails: {},
     },
     myDog: {
+        loading: false,
         details: {},
     },
 };
 
 export default handleAction(
     {
-        [actions.fetchedDogList]: (state, {payload}) => ({
+        [actions.fetchingDogList]: (state) => ({
             ...state,
-            dogList: payload,
+            dogManagement: {
+                ...state.dogManagement,
+                loading: true,
+                dogList: [],
+            },
         }),
-        [actions.fetchedDogDetails]: (state, {payload}) => ({
+        [actions.fetchedDogList]: (state, { payload }) => ({
             ...state,
-            dogDetails: payload,
-        })
+            dogManagement:{
+                ...state.dogManagement,
+                loading: false,
+                dogList: payload,
+            }
+        }),
+        [actions.fetchingDogDetails]: (state) => ({
+            ...state,
+            dogManagement: {
+                ...state.dogManagement,
+                loading: true,
+                dogDetails: {},
+            },
+        }),
+        [actions.fetchedDogDetails]: (state, { payload }) => ({
+            ...state,
+            dogManagement:{
+                ...state.dogManagement,
+                loading: false,
+                dogDetails: payload,
+            }
+        }),
     },
     INITIAL_STATE()
 );
