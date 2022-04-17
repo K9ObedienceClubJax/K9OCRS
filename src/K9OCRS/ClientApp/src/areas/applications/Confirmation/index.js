@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import moment from 'moment-timezone';
 import selectors from '../../../shared/modules/selectors';
 import PageHeader from '../../../shared/components/PageHeader';
-import { Alert, Button, Spinner, Input } from 'reactstrap';
+import { Alert, Button, Spinner, Input, Form, FormGroup, Label, Col } from 'reactstrap';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
 import PageBody from '../../../shared/components/PageBody';
 
@@ -19,8 +19,6 @@ const Confirm = (props) => {
 
     const [dogSelected, setDogSelected] = useState([]);
 
-    // todo: how to put setDogSelected back to null if user chooses
-    //Please select a dog from dropdown list after selecting a dog???
     const handleSelectDog = (event) => {
         let setIndex = event.target.value;
         setIndex && setDogSelected(dogs[setIndex]);
@@ -144,10 +142,10 @@ const Confirm = (props) => {
                         <h4>Class Requirements</h4>
                         <p className='pb-3'>{sectionDetail?.classType?.requirements}</p>
 
-
+                        <Form className='form'>
                         <h4>Dog Selection</h4>
                         <p>Select a Dog*</p>
-                        <div className='pb-3'><label htmlFor="dogs">Choose a dog: &nbsp;</label>
+                        <div className='pb-3'>
                         <select onChange={handleSelectDog}>
                             <option value="">Please select a dog:</option>
                             {dogs?.map((canine, index) =>
@@ -163,27 +161,50 @@ const Confirm = (props) => {
                         <p className='pb-3'><b>Vaccination Record:</b> Not in api</p>
 
                         <h4>Attendees</h4>
-                        
-                        
-                            <p>Person working the dog*</p>
-                            {/* todo: need to adjust size of input boxes - too long */}
-                            <div className='input-group mb-3'>
-                            <Input
-                                type='text'
-                                className='form-control'
-                                placeholder='List the full name of the person that will handle the dog'
-                                htmlFor='handler'
-                                name='handler'
-                            /></div>
-                            <p>Other Attendees</p>
-                            <div className='input-group mb-3'>
-                            <Input
-                                type="text"
-                                className='form-control'
+                            <FormGroup >
+                                <Label for="handler">Person working the dog*</Label>
+                                <Col sm={5}>
+                                <Input
+                                    type='text'
+                                    placeholder='List the full name of the person that will handle the dog'
+                                    htmlFor='handler'
+                                    name='handler'
+                                    id='handler'
+                                />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup >
+                                <Label for='attendee'>Other Attendees</Label>
+                                <Col sm={8}>
+                                <Input
+                                type="textarea"
                                 placeholder='List the names of every additonal person that will attend the class with this dog'
                                 htmlFor='attendee'
                                 name='attendee'
-                            /></div>
+                                id='attendee'
+                                />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup tag='fieldset'>
+                                <legend><h4>Payment Method</h4></legend>
+                                <Label for='payment'>Select the method you want to use to submit your payment, your payment must be submitted before your application can be approved</Label>
+                                <FormGroup check>
+                                    <Label check>
+                                        <Input type='radio' name='radio1' />{''} Paypal
+                                    </Label>
+                                </FormGroup>
+                                <FormGroup check>
+                                    <Label check>
+                                        <Input type='radio' name='radio1' />{''} Zelle
+                                    </Label>
+                                </FormGroup>
+                                <FormGroup check>
+                                    <Label check>
+                                        <Input type='radio' name='radio1' />{''} Check
+                                    </Label>
+                                </FormGroup>
+                            </FormGroup>
+                        </Form>
                         
 
                     </>
