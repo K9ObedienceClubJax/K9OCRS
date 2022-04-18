@@ -10,6 +10,10 @@ export const createDog = async (dogEntity) =>
 export const getAllDogs = async () =>
     axios.get(base);
 
+// read owned
+export const getOwnedDogs = async () =>
+    axios.get(`${base}/owned`);
+
 // read by id
 export const getById = async (dogId) =>
     axios.get(`${base}/${dogId}`);

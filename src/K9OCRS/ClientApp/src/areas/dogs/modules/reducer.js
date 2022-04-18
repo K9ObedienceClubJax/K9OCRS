@@ -7,14 +7,31 @@ const INITIAL_STATE = {
         dogList: [],
         dogDetails: {},
     },
-    myDog: {
+    myDogs: {
         loading: false,
+        dogList: [],
         details: {},
     },
 };
 
 export default handleActions(
     {
+        [actions.fetchingMyDogsList]: (state) => ({
+            ...state,
+            myDogs: {
+                ...state.myDogs,
+                loading: true,
+                dogList: [],
+            },
+        }),
+        [actions.fetchedMyDogsList]: (state, { payload }) => ({
+            ...state,
+            myDogs:{
+                ...state.myDogs,
+                loading: false,
+                dogList: payload,
+            }
+        }),
         [actions.fetchingDogList]: (state) => ({
             ...state,
             dogManagement: {

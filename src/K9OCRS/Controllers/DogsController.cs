@@ -92,6 +92,29 @@ namespace K9OCRS.Controllers
             }
         }
 
+        // Get current user's dogs
+        [HttpGet("owned")]
+        [ProducesResponseType(typeof(IEnumerable<DogResult>), 200)]
+        public async Task<IActionResult> GetCurrentUserDogs()
+        {
+            try
+            {
+                var dogs = await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Dogs.GetOwnedDogs(conn);
+                });
+
+                var dogResults = dogs.Select(d => d.ToDogResult(serviceConstants.storageBasePath));
+
+                //returns list of dogs
+                return Ok(dogResults);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         //get a dog by Id
         [HttpGet("{Id}")]
         [ProducesResponseType(typeof(IEnumerable<DogResult>), 200)]

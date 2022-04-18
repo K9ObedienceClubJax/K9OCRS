@@ -53,8 +53,8 @@ const MyDogs = (props) => {
 }
 
 export default connect(state => ({
-    loading: state.dogs.dogManagement.loading,
-    dogList: state.dogs.dogManagement.dogList,
+    loading: state.dogs.myDogs.loading,
+    dogList: state.dogs.myDogs.dogList,
 }), {
-    getData: actions.fetchDogList,
+    getData: actions.fetchMyDogsList,
 })(MyDogs);
