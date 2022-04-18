@@ -14,19 +14,25 @@ const Confirm = (props) => {
     const [sectionDetail, setSectionDetail] = useState([]);
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
+    const classTypeConverted = parseInt(sectionDetail?.classType?.id)
+    //const { currentUser } = props;
 
     const [dogs, setDogs] = useState([]);
 
     const [dogSelected, setDogSelected] = useState(null);
     const [handlerInput, setHandlerInput] = useState('');
     const [attendeeInput, setAttendeeInput] = useState('');
+    const [payment, setPayment] = useState('');
+
+    
+    let filledOut = dogSelected && payment;
 
     const handleSelectDog = (event) => {
         let setIndex = event.target.value;
         setIndex && setDogSelected(dogs[setIndex]);
         !setIndex && setDogSelected(null);
     };
-    const { currentUser } = props;
+    
 
     useEffect(() => {
         async function getTest() {
@@ -68,6 +74,24 @@ const Confirm = (props) => {
         getTest();
     }, []);
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const Payload = {
+            classTypeID: classTypeConverted,
+            classSectionID: sectionId,
+            dogID: dogSelected?.id,
+            mainAttendee: handlerInput,
+            additionalAttendees: attendeeInput,
+            paymentMethod: payment,
+        };
+        axios.post('/api/Applications', Payload).then(response => {
+            console.log(response.status);
+            console.log(response.data.token);
+        })
+
+    }
+
+
     return (
         <>
             <PageHeader className="container"
@@ -87,12 +111,6 @@ const Confirm = (props) => {
                     Cancel
                 </Button>
                 <Button color="primary">Submit Application</Button>
-                {/* todo: create a function to post to api/Applications
-                    but need to figure out how to deduct available seats in class roster
-                    and check dog vaccination records
-                    Make try/catch - if value of dogSelected === 'none' throw error
-                */}
-
             
             </PageHeader>
             <PageBody>
@@ -144,7 +162,7 @@ const Confirm = (props) => {
                         <h4>Class Requirements</h4>
                         <p className='pb-3'>{sectionDetail?.classType?.requirements}</p>
 
-                        <Form className='form'>
+                        <Form className='form' onSubmit={handleSubmit}>
                         <h4>Dog Selection</h4>
                         <p>Select a Dog*</p>
                         <div className='pb-3'>
@@ -157,13 +175,11 @@ const Confirm = (props) => {
                         </select>
                         </div>
                         {/* todo: need to format the age */}
+                    {/* moment.js use dif to get age  */}
                         <p><b>Age:</b> { dogSelected?.dateOfBirth ? dogSelected?.dateOfBirth : "Not Selected" }</p>
                         <p><b>Breed:</b> {dogSelected?.breed ? dogSelected.breed : "Not Selected"}</p>
                         {/* todo: I don't see vaccination record status in the dogs api */}
                         <p className='pb-3'><b>Vaccination Record:</b> Not in api</p>
-                        <p>{handlerInput}</p>
-                        <p>{attendeeInput}</p>
-                        <p>{currentUser.firstName} {currentUser.lastName} ID: {currentUser.id}</p>
 
                         <h4>Attendees</h4>
                             <FormGroup >
@@ -199,21 +215,21 @@ const Confirm = (props) => {
                                 <Label for='payment'>Select the method you want to use to submit your payment, your payment must be submitted before your application can be approved</Label>
                                 <FormGroup check>
                                     <Label check>
-                                        <Input type='radio' name='radio1' />{''} Paypal
+                                        <Input type='radio' name='radio1' onClick={() => setPayment('Paypal')} />{''} Paypal
                                     </Label>
                                 </FormGroup>
                                 <FormGroup check>
                                     <Label check>
-                                        <Input type='radio' name='radio1' />{''} Zelle
+                                        <Input type='radio' name='radio1' onClick={() => setPayment('Zelle')} />{''} Zelle
                                     </Label>
                                 </FormGroup>
                                 <FormGroup check>
                                     <Label check>
-                                        <Input type='radio' name='radio1' />{''} Check
+                                        <Input type='radio' name='radio1' onClick={() => setPayment('Check')}/>{''} Check
                                     </Label>
                                 </FormGroup>
                             </FormGroup>
-                           {dogSelected ? <Button color='primary' size='lg'>Submit Application</Button> : <Button color="secondary" size="lg" disabled>Submit Application</Button>}
+                           {filledOut ? <Button color='primary' size='lg'>Submit Application</Button> : <Button color="secondary" size="lg" disabled>Submit Application</Button>}
                         </Form>
                         
 
