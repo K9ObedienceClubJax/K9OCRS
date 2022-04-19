@@ -196,5 +196,20 @@ namespace K9OCRS.Controllers
         }
 
         #endregion
+
+        #region Vaccines
+        [HttpPost("[dogId/vaccine")]
+        public async Task<IActionResult> UploadVaccine(int dogId, string vaccineFile)
+        {
+            if(!string.IsNullOrEmpty(vaccineFile) && !String.IsNullOrWhiteSpace(vaccineFile))
+            {
+                var vaccinefile = String.Concat(dogId.ToString(), "/", vaccineFile);
+
+                await storageClient
+
+            }
+        }
+
+        #endregion
     }
 }
