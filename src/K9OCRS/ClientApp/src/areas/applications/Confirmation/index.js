@@ -15,7 +15,7 @@ const Confirm = (props) => {
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
     const classTypeConverted = parseInt(sectionDetail?.classType?.id)
-    //const { currentUser } = props;
+    const { currentUser } = props;
 
     const [dogs, setDogs] = useState([]);
 
@@ -80,7 +80,7 @@ const Confirm = (props) => {
             classTypeID: classTypeConverted,
             classSectionID: sectionId,
             dogID: dogSelected?.id,
-            mainAttendee: handlerInput,
+            mainAttendee: handlerInput ? handlerInput : currentUser.firstName + " " + currentUser.lastName,
             additionalAttendees: attendeeInput,
             paymentMethod: payment,
         };
