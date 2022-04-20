@@ -2,9 +2,9 @@ import React from 'react';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { alignmentWrapper } from '../../../../util/columns';
+import { alignmentWrapper } from 'Util/columns';
 import ProfileBadge from '../../../../shared/components/ProfileBadge';
-import { timespanToMoment } from '../../../../util/dates';
+import { timespanToMoment } from 'Util/dates';
 
 const dateTemplate = ({ value }) => {
     if (!value) return '';

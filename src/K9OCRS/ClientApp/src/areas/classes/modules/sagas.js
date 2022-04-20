@@ -1,11 +1,8 @@
 import { put, call, takeEvery, takeLatest } from 'redux-saga/effects';
 import debug from 'debug';
 import * as actions from './actions';
-import * as classTypesClient from '../../../util/apiClients/classTypes';
-import {
-    classTypeAddRequestToFormData,
-    classTypeUpdateRequestToFormData,
-} from '../../../util/formData';
+import * as classTypesClient from 'Util/apiClients/classTypes';
+import { classTypeAddRequestToFormData, classTypeUpdateRequestToFormData } from 'Util/formData';
 
 const log = debug('saga:classes');
 

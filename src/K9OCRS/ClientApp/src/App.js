@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Switch, Route } from 'react-router';
 import ProtectedRoute from './shared/components/Routing/ProtectedRoute';
 import GuestOnlyRoute from './shared/components/Routing/GuestOnlyRoute';
-import { USER_ROLES } from './util/accessEvaluator';
+import { USER_ROLES } from 'Util/accessEvaluator';
 import Layout from './shared/components/Layout';
 
 // Page imports

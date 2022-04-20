@@ -5,9 +5,9 @@ import PageHeader from '../../../shared/components/PageHeader/index';
 import { Spinner } from 'reactstrap';
 import Table from '../../../shared/components/Table/index';
 import columns from './columns';
-import * as accountsApi from '../../../util/apiClients/userAccounts';
+import * as accountsApi from 'Util/apiClients/userAccounts';
 import PageBody from '../../../shared/components/PageBody';
-import { USER_ROLES } from '../../../util/accessEvaluator';
+import { USER_ROLES } from 'Util/accessEvaluator';
 
 const Users = (props) => {
     const [users, setUsers] = useState([]);
@@ -32,7 +32,7 @@ const Users = (props) => {
 
     const userRoleRadios = [];
 
-    for(const [key, value] of Object.entries(USER_ROLES)) {
+    for (const [key, value] of Object.entries(USER_ROLES)) {
         userRoleRadios.push(
             <>
                 <input

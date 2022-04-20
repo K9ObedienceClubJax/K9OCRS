@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getClassTypeOptions } from '../../../util/apiClients/classTypes';
+import { getClassTypeOptions } from 'Util/apiClients/classTypes';
 import {
     Button,
     Modal,

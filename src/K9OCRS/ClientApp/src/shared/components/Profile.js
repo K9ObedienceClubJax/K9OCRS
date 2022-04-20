@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Input } from 'reactstrap';
 import { connect } from 'react-redux';
 import selectors from '../../shared/modules/selectors';
-import * as accountsApi from '../../util/apiClients/userAccounts';
+import * as accountsApi from 'Util/apiClients/userAccounts';
 import ProfileContainer from './ProfileContainer';
-import { USER_ROLES } from '../../util/accessEvaluator';
+import { USER_ROLES } from 'Util/accessEvaluator';
 
 function ValidateEmail(e) {
     //Validate email
@@ -32,14 +32,7 @@ function ValidatePassword(e) {
     }
 }
 
-async function getUserData(
-    id,
-    setFirst,
-    setLast,
-    setEmail,
-    setRole,
-    setPicture
-) {
+async function getUserData(id, setFirst, setLast, setEmail, setRole, setPicture) {
     //API call to get user data
     const inspectedUser = await accountsApi.getUser(id);
     //Set user data
@@ -160,20 +153,13 @@ const Profile = (props) => {
         }
         if (inspectMode) {
             setUserID(paramsId);
-            getUserData(
-                paramsId,
-                setFirst,
-                setLast,
-                setEmail,
-                setRole,
-                setPicture
-            );
+            getUserData(paramsId, setFirst, setLast, setEmail, setRole, setPicture);
         }
     }, []); // eslint-disable-line
 
     const userRoleRadios = [];
 
-    for(const [key, value] of Object.entries(USER_ROLES)) {
+    for (const [key, value] of Object.entries(USER_ROLES)) {
         userRoleRadios.push(
             <>
                 <input
@@ -326,9 +312,7 @@ const Profile = (props) => {
 
                 {(inspectMode === true || createMode === true) && (
                     <div className=" mx-auto text-center mt-3">
-                        <div className="btn-group">
-                            {userRoleRadios}
-                        </div>
+                        <div className="btn-group">{userRoleRadios}</div>
                     </div>
                 )}
             </Col>

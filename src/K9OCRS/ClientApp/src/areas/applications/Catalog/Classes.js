@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import * as classTypesClient from '../../../util/apiClients/classTypes';
+import * as classTypesClient from 'Util/apiClients/classTypes';
 import { Container, Spinner, Row, Col, Button } from 'reactstrap';
-import { isAdmin as verifyIsAdmin } from '../../../util/accessEvaluator';
+import { isAdmin as verifyIsAdmin } from 'Util/accessEvaluator';
 import Table from '../../../shared/components/Table';
 import sectionColumns from './components/sectionColumns';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -52,7 +52,7 @@ const Classes = (props) => {
                 ]}
                 setAlerts={setAlerts}
             >
-                { !isAdmin ? null : (
+                {!isAdmin ? null : (
                     <Button
                         tag="a"
                         href={`/Manage/Classes/Types/${classTypeId}`}
@@ -130,6 +130,9 @@ const Classes = (props) => {
     );
 };
 
-export default connect((state) => ({
-    isAdmin: verifyIsAdmin(state?.shared?.currentUser),
-}), {})(Classes);
+export default connect(
+    (state) => ({
+        isAdmin: verifyIsAdmin(state?.shared?.currentUser),
+    }),
+    {}
+)(Classes);
