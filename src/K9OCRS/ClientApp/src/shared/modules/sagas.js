@@ -30,6 +30,7 @@ function* refreshLogin() {
         }
     } catch (err) {
         log('An error ocurred on login', err);
+        yield put(actions.loginRefreshed(null));
     }
 }
 
