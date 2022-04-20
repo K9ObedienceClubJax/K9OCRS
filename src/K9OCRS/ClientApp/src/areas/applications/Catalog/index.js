@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Spinner } from 'reactstrap';
-import * as classTypesClient from 'Util/apiClients/classTypes';
+import * as classTypesClient from '../../../util/apiClients/classTypes';
 import PageHeader from '../../../shared/components/PageHeader';
 import ClassCard from './components/ClassCard';
 import CustomPagination from '../../../shared/components/Pagination';

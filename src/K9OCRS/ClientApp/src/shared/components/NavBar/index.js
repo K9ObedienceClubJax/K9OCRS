@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, NavItem, NavLink, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Nav } from 'reactstrap';
-import { isLoggedIn, isAtLeastInstructor, isAdmin } from 'Util/accessEvaluator';
+import { isLoggedIn, isAtLeastInstructor, isAdmin } from '../../../util/accessEvaluator';
 import selectors from '../../modules/selectors';
 import { logout as logoutAction } from '../../../areas/accounts/modules/actions';
 
