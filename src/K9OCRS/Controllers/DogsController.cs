@@ -198,16 +198,26 @@ namespace K9OCRS.Controllers
         #endregion
 
         #region Vaccines
-        [HttpPost("[dogId/vaccine")]
-        public async Task<IActionResult> UploadVaccine(int dogId, string vaccineFile)
+        [HttpPut("{dogId}/vaccine")]
+        public async Task<IActionResult> UploadRecord(int dogId, [FromForm] FileUpload upload)
         {
-            if(!string.IsNullOrEmpty(vaccineFile) && !String.IsNullOrWhiteSpace(vaccineFile))
+            if (upload.Files != null && upload.Files.Count > 0)
             {
-                var vaccinefile = String.Concat(dogId.ToString(), "/", vaccineFile);
+                var data = await upload.Files[0].ToBinaryData();
 
-                await storageClient
+                var filePath = String.Concat(dogId.ToString(), "/", dogId, Path.GetExtension(upload.Files[0].FileName));
+                var filename = Path.GetFileName(filePath);
 
+                await storageClient.UploadFile(UploadType.VaccinationRecord, filePath, upload.Files[0].ContentType, data);
+
+                await connectionOwner.Use(conn => {
+                    return dbOwner.VaccinationRecords.VaccineUpload(conn, dogId, filename);
+                });
+
+                return Ok();
             }
+
+            return BadRequest();
         }
 
         #endregion
