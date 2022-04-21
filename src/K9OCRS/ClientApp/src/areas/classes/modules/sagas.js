@@ -2,6 +2,7 @@ import { put, call, takeEvery, takeLatest } from 'redux-saga/effects';
 import debug from 'debug';
 import * as actions from './actions';
 import * as classTypesClient from '../../../util/apiClients/classTypes';
+import * as classSectionsClient from '../../../util/apiClients/classSections';
 import {
     classTypeAddRequestToFormData,
     classTypeUpdateRequestToFormData,
@@ -188,8 +189,26 @@ function* deleteClassType({ payload }) {
     }
 }
 
+function* fetchSectionDetails({ payload: { sectionId, setAlerts } }) {
+    log(`Fetching section details for id: ${sectionId}`);
+    try {
+        yield put(actions.fetchingSectionDetails());
+        const res = yield call(classSectionsClient.getSectionByID, sectionId);
+        yield put(actions.fetchedSectionDetails(res?.data));
+        log(`Fetched section details for id: ${sectionId}`, res?.data);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having trouble retrieving the class section's details.",
+            },
+        ]);
+    }
+}
+
 const sagas = [
     takeEvery(actions.fetchClassList, fetchClassList),
+    // Class Types
     takeEvery(actions.fetchClassDetails, fetchClassDetails),
     takeEvery(actions.initializeTypeAddition, initializeTypeAddition),
     takeLatest(actions.saveNewClassType, saveNewClassType),
@@ -197,6 +216,8 @@ const sagas = [
     takeLatest(actions.archiveClassType, archiveClassType),
     takeLatest(actions.unarchiveClassType, unarchiveClassType),
     takeLatest(actions.deleteClassType, deleteClassType),
+    // Class Sections
+    takeEvery(actions.fetchSectionDetails, fetchSectionDetails),
 ];
 
 export default sagas;

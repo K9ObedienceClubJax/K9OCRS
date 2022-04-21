@@ -28,6 +28,7 @@ import Create from './areas/management/Users/Create';
 import User from './areas/management/Users/User';
 import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
+import ClassSectionSetup from './areas/classes/ClassSectionSetup';
 import TestUpload from './areas/classes/TestUpload';
 
 import './app.scss';
@@ -100,6 +101,18 @@ export default class App extends Component {
                     <ProtectedRoute
                         path="/Manage/Classes/Types/:classTypeId"
                         component={ClassTypeSetup}
+                        minimumAccess={USER_ROLES.Administrator}
+                        exact
+                    />
+                    <ProtectedRoute
+                        path="/Manage/Classes/Sections/Add"
+                        component={ClassSectionSetup}
+                        minimumAccess={USER_ROLES.Administrator}
+                        exact
+                    />
+                    <ProtectedRoute
+                        path="/Manage/Classes/Sections/:classSectionId"
+                        component={ClassSectionSetup}
                         minimumAccess={USER_ROLES.Administrator}
                         exact
                     />

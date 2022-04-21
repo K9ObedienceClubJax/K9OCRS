@@ -10,7 +10,11 @@ const INITIAL_STATE = () => {
         includeDrafts: preferences?.includeDrafts ?? false,
         classList: [],
         classDetails: null,
-        sectionDetails: null,
+        section: {
+            loading: true,
+            submitting: false,
+            details: null,
+        },
     };
 };
 
@@ -25,21 +29,10 @@ const savePreferences = (state) =>
 
 export default handleActions(
     {
+        // Classes
         [actions.fetchedClassList]: (state, { payload }) => ({
             ...state,
             classList: payload,
-        }),
-        [actions.fetchedClassDetails]: (state, { payload }) => ({
-            ...state,
-            classDetails: payload,
-        }),
-        [actions.initializedClassDetails]: (state, { payload }) => ({
-            ...state,
-            classDetails: { imageUrl: payload },
-        }),
-        [actions.fetchedSectionDetails]: (state, { payload }) => ({
-            ...state,
-            sectionDetails: payload,
         }),
         [actions.toggledIncludeArchived]: (state) => {
             const updatedState = {
@@ -57,6 +50,31 @@ export default handleActions(
             savePreferences(updatedState);
             return updatedState;
         },
+        // Class Types
+        [actions.fetchedClassDetails]: (state, { payload }) => ({
+            ...state,
+            classDetails: payload,
+        }),
+        [actions.initializedClassDetails]: (state, { payload }) => ({
+            ...state,
+            classDetails: { imageUrl: payload },
+        }),
+        // Class Sections
+        [actions.fetchingSectionDetails]: (state) => ({
+            ...state,
+            section: {
+                ...state.section,
+                loading: true,
+            },
+        }),
+        [actions.fetchedSectionDetails]: (state, { payload }) => ({
+            ...state,
+            section: {
+                ...state.section,
+                loading: false,
+                details: payload ?? null,
+            },
+        }),
     },
     INITIAL_STATE()
 );
