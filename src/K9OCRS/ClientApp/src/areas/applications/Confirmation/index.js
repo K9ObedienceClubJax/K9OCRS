@@ -15,7 +15,7 @@ const Confirm = (props) => {
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
     const classTypeConverted = parseInt(sectionDetail?.classType?.id)
-    //const { currentUser } = props;
+    const { currentUser } = props;
 
     const [dogs, setDogs] = useState([]);
 
@@ -26,6 +26,7 @@ const Confirm = (props) => {
 
     
     let filledOut = dogSelected && payment;
+    let defaultAttendee = currentUser.firstName + " " + currentUser.lastName;
 
     const handleSelectDog = (event) => {
         let setIndex = event.target.value;
@@ -80,7 +81,7 @@ const Confirm = (props) => {
             classTypeID: classTypeConverted,
             classSectionID: sectionId,
             dogID: dogSelected?.id,
-            mainAttendee: handlerInput,
+            mainAttendee: handlerInput ? handlerInput : defaultAttendee,
             additionalAttendees: attendeeInput,
             paymentMethod: payment,
         };
@@ -90,7 +91,6 @@ const Confirm = (props) => {
         })
 
     }
-
 
     return (
         <>
@@ -174,14 +174,15 @@ const Confirm = (props) => {
                             })}
                         </select>
                         </div>
-                        {/* todo: need to format the age */}
-                    {/* moment.js use dif to get age  */}
-                        <p><b>Age:</b> { dogSelected?.dateOfBirth ? dogSelected?.dateOfBirth : "Not Selected" }</p>
+
+                        <p><b>DOB </b>(date of birth): { dogSelected?.dateOfBirth ? moment(dogSelected?.dateOfBirth).format('MMM d, YYYY') : "Not Selected" }</p>
+                        <p><b>Age:</b> {moment().diff(dogSelected?.dateOfBirth, 'months') < 12 ? moment().diff(dogSelected?.dateOfBirth, 'months') + " months" : moment().diff(dogSelected?.dateOfBirth, 'years') + " year(s), " + moment().diff(dogSelected?.dateOfBirth, 'months') %12 + ' months'}</p>
                         <p><b>Breed:</b> {dogSelected?.breed ? dogSelected.breed : "Not Selected"}</p>
                         {/* todo: I don't see vaccination record status in the dogs api */}
                         <p className='pb-3'><b>Vaccination Record:</b> Not in api</p>
 
                         <h4>Attendees</h4>
+                        <p>{defaultAttendee}</p>
                             <FormGroup >
                                 <Label for="handler">Person working the dog*</Label>
                                 <Col sm={5}>
