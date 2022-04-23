@@ -7,9 +7,15 @@ const makeAction = (action) => createAction(`${base}${action}`);
 // Shared actions (used by sagas and reducers)
 export const toggledIncludeArchived = makeAction('TOGGLED_INCLUDE_ARCHIVED');
 export const toggledIncludeDrafts = makeAction('TOGGLED_INCLUDE_DRAFTS');
+export const fetchedOptions = makeAction('FETCHED_OPTIONS');
+export const fetchedTypeOptions = makeAction('FETCHED_TYPE_OPTIONS');
+export const fetchedInstructorOptions = makeAction('FETCHED_INSTRUCTOR_OPTIONS');
 
 // Saga-only actions
 export const fetchClassList = makeAction('FETCH_CLASS_LIST');
+export const fetchOptions = makeAction('FETCH_OPTIONS');
+export const fetchClassTypeOptions = makeAction('FETCH_TYPE_OPTIONS');
+export const fetchInstructorOptions = makeAction('FETCH_INSTRUCTOR_OPTIONS');
 //#endregion
 
 //#region Class Type

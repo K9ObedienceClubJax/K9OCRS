@@ -6,8 +6,14 @@ const savedPreferencesKey = 'classManagementPreferences';
 const INITIAL_STATE = () => {
     const preferences = JSON.parse(localStorage.getItem(savedPreferencesKey));
     return {
+        // settings
         includeArchived: preferences?.includeArchived ?? false,
         includeDrafts: preferences?.includeDrafts ?? false,
+        // options
+        loadingOptions: true,
+        typeOptions: [],
+        instructorOptions: [],
+        // pages
         classList: [],
         classDetails: null,
         section: {
@@ -74,6 +80,22 @@ export default handleActions(
                 loading: false,
                 details: payload ?? null,
             },
+        }),
+        [actions.fetchOptions]: (state) => ({
+            ...state,
+            loadingOptions: true,
+        }),
+        [actions.fetchedOptions]: (state) => ({
+            ...state,
+            loadingOptions: false,
+        }),
+        [actions.fetchedTypeOptions]: (state, { payload }) => ({
+            ...state,
+            typeOptions: payload ?? [],
+        }),
+        [actions.fetchedInstructorOptions]: (state, { payload }) => ({
+            ...state,
+            instructorOptions: payload ?? [],
         }),
     },
     INITIAL_STATE()

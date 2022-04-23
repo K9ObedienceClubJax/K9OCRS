@@ -9,6 +9,14 @@ body {
     overflow: hidden visible;
 }
 
+.cardsurface {
+    background-color: bootstrapOverrides.$gray-100;
+    border: 1px solid rgba(bootstrapOverrides.$gray-900, 0.2);
+    border-radius: 0.25rem;
+    box-shadow: bootstrapOverrides.$box-shadow;
+    padding: 2rem;
+}
+
 @include bootstrapOverrides.media-breakpoint-up(sm) {
     body {
         padding-top: var(

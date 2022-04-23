@@ -32,6 +32,12 @@ namespace DataAccess.Repositories
             return await conn.QueryAsync<User>(query, new { Role = role });
         }
 
+        public async Task<IEnumerable<User>> GetInstructorOptions(IDbConnection conn)
+        {
+            var query = $"SELECT * FROM {_tableName} WHERE UserRoleID IN (1,2) AND isSystemOwned = 0";
+            return await conn.QueryAsync<User>(query);
+        }
+
         public async Task<int> UpdateProfilePicture(IDbConnection conn, int userId, string filename)
         {
             var query = $"UPDATE {_tableName} SET ProfilePictureFilename=@Filename, {GenerateTrackingSection()} WHERE ID=@ID";
