@@ -7,13 +7,17 @@ body {
 
 .pagebody {
     overflow: hidden visible;
+    // Adding some space for things that might need to overflow to look right,
+    // such as the shadows of elements that are right up against the border
+    margin: -2rem;
+    padding: 2rem;
 }
 
 .cardsurface {
     background-color: bootstrapOverrides.$gray-100;
     border: 1px solid rgba(bootstrapOverrides.$gray-900, 0.2);
     border-radius: 0.25rem;
-    box-shadow: bootstrapOverrides.$box-shadow;
+    box-shadow: bootstrapOverrides.$box-shadow-sm;
     padding: 2rem;
 }
 

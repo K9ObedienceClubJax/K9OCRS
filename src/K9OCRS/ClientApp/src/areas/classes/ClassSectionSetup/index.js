@@ -134,7 +134,7 @@ const ClassTypeSetup = (props) => {
                     )}
                 </Button>
             </PageHeader>
-            <PageBody>
+            <PageBody className="pb-5">
                 {loading ? (
                     <Spinner />
                 ) : (
@@ -145,7 +145,7 @@ const ClassTypeSetup = (props) => {
                             modifiedDate={details.modifiedDate}
                         />
                         <Row lg="2" xs="1">
-                            <Col lg="3">
+                            <Col xxl="3" xl="4" lg="5">
                                 <SectionDetailsCard
                                     loading={loading}
                                     loadingOptions={loadingOptions}
@@ -162,7 +162,7 @@ const ClassTypeSetup = (props) => {
                                     details={details}
                                 />
                             </Col>
-                            <Col lg="9"></Col>
+                            <Col xxl="9" xl="8" lg="7"></Col>
                         </Row>
                     </>
                 )}

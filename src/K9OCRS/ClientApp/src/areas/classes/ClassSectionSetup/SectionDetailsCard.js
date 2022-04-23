@@ -45,7 +45,7 @@ const SectionDetailsCard = (props) => {
                         lastName={option.lastName}
                     />
                 </Col>
-                <Col>
+                <Col className="d-flex justify-content-start align-items-center">
                     {option.isMember && (
                         <Badge color="info" className="me-1">
                             Member
