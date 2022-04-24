@@ -7,6 +7,8 @@ import FileDropzone from '../../../shared/components/FileDropzone';
 import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
 import FileThumbnail from '../../../shared/components/FileThumbnail';
 import { useReducer } from 'react';
+import './styles.scss';
+
 
 const reducer = (state, action) => ({
     ...state,
@@ -14,59 +16,54 @@ const reducer = (state, action) => ({
 });
 
 const DogEditor = (props) => {
-    const { classType, formRef, handleSubmit, setData, addingNewType } = props;
+    const { dog, formRef, handleSubmit, setData, addingNewDog } = props;
 
-    // const initialState = {
-    //     title: addingNewType ? '' : classType.title,
-    //     duration: addingNewType ? '' : classType.duration,
-    //     price: addingNewType ? '' : classType.price,
-    //     requirements: addingNewType ? '' : classType.requirements,
-    //     description: addingNewType ? '' : classType.description,
-    // };
+    const initialState = {
+        name: addingNewDog ? '' : dog.name,
+        breed: addingNewDog ? '' : dog.breed,
+        dateOfBirth : addingNewDog ? '' : dog.dateOfBirth
+    };
 
-    // const [classTypeDetails, dispatch] = useReducer(reducer, initialState);
+    const [dogDetails, dispatch] = useReducer(reducer, initialState);
 
-    // const [photos, setPhotos] = useState(classType?.photos);
+    const [picture, setPicture] = useState(dog?.picture);
 
-    // const [imageToUpdate, setImageToUpdate] = useState(null);
-    // const [photosToAdd, setPhotosToAdd] = useState([]);
-    // const [photosToRemove, setPhotosToRemove] = useState([]);
+    const [pictureToUpdate, setPictureToUpdate] = useState(null);
+    const [pictureToAdd, setPictureToAdd] = useState([]);
+    const [pictureToRemove, setPictureToRemove] = useState([]);
 
-    // const [showPhotosAdd, setShowPhotosAdd] = useState(addingNewType);
+    const [showPictureAdd, setShowPictureAdd] = useState([]);
 
-    // const cn = 'dogSetupEditor';
+    const cn = 'dogSetupEditor';
 
-    // // Update the data object that will be saved
-    // useEffect(() => {
-    //     if (addingNewType) {
-    //         setData({
-    //             image: imageToUpdate,
-    //             ...classTypeDetails,
-    //             photos: photosToAdd,
-    //         });
-    //     } else {
-    //         setData({
-    //             id: classType.id,
-    //             imageUpdate: imageToUpdate,
-    //             ...classTypeDetails,
-    //             photosToAdd,
-    //             photosToRemove,
-    //         });
-    //     }
-    // }, [
-    //     setData,
-    //     addingNewType,
-    //     imageToUpdate,
-    //     classTypeDetails,
-    //     photosToAdd,
-    //     photosToRemove,
-    //     classType,
-    // ]);
+    useEffect(() => {
+        if(addingNewDog){
+            setData({
+                picture: pictureToUpdate,
+                ...dogDetails,
+            });
+        } else{
+            setData({
+                id: dog.id,
+                picture: pictureToUpdate,
+                ...dogDetails,
+                pictureToAdd,
+                pictureToRemove
+            });
+        }
+        
+    }, [
+        setData,
+        addingNewDog,
+        pictureToUpdate,
+        dogDetails,
+        pictureToAdd,
+        pictureToRemove,
+        dog,
+    ]);
 
-    // const handleRemove = (photo, idx) => {
-    //     setPhotos((currentPhotos) => currentPhotos.filter((p, i) => i !== idx));
-    //     setPhotosToRemove(photosToRemove.concat(photo));
-    // };
+    //implement handleRemove function
+
 
     return (
         <form
@@ -76,6 +73,18 @@ const DogEditor = (props) => {
                 handleSubmit();
             }}
         >
+            <Row className={`${cn}__container`}>
+                <Col className='dogCard'>
+                    <Col className='profilePicZone'>
+                        <ProfileFileDropzone
+                                maxSize="5MB"
+                                maxFiles={1}
+                                onChange={(files) => setPictureToUpdate(files[0])}
+                                currentImage={dog?.picture}
+                            />
+                    </Col>
+                </Col>
+            </Row>
             {/* <Row className={`${cn}__top`}>
                 <Col className="d-flex" xs="12" md="5" lg="4" xl="3">
                     <ProfileFileDropzone

@@ -1,0 +1,26 @@
+.dogCard{
+    position: absolute;
+    width: 383px;
+    height: 519px;
+    left: 40px;
+    top: 374px;
+}
+
+
+
+.profilePicZone{
+    position: static;
+    width: 160px;
+    height: 160px;
+    left: 0px;
+    top: 0px;
+    border-radius: 50%;
+
+
+/* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 16px 0px;
+}
