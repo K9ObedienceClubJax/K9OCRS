@@ -23,7 +23,7 @@ const ProfileBadge = (props) => {
     );
 
     return (
-        <div className={topCn} onClick={() => history.push(userSetupPath)}>
+        <div className={topCn} onClick={link ? () => history.push(userSetupPath) : undefined}>
             <Avatar imageUrl={imageUrl} />
             <span className={`${cn}__name`}>{`${firstName} ${lastName}`}</span>
         </div>
