@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useTable, useExpanded, usePagination } from 'react-table';
 import { useSearchParams } from 'react-router-dom';
@@ -23,6 +23,8 @@ const Table = (props) => {
 
     const plugins = [];
     const initialState = {};
+
+    const isMounted = useRef(false);
 
     const activeColumns = useMemo(() => {
         const result = columns;
@@ -55,6 +57,8 @@ const Table = (props) => {
         initialState.pageSize = pageSize;
         if (searchParams.has('page')) {
             initialState.pageIndex = searchParams.get('page') - 1;
+        } else {
+            initialState.pageIndex = 0;
         }
     }
 
@@ -81,11 +85,12 @@ const Table = (props) => {
         gotoPage,
     } = tableInstance;
 
+    // This actually just updates the page param
+    // the actual page change is handled by useEffect
     const handlePageChange = (targetPage) => {
         const params = new URLSearchParams(searchParams);
         params.set('page', targetPage + 1);
         setSearchParams(params);
-        gotoPage(targetPage);
     };
 
     const activeRows = withPagination ? page : rows;
@@ -107,11 +112,24 @@ const Table = (props) => {
 
     // reset the page if the row count changes
     useEffect(() => {
-        const params = new URLSearchParams(searchParams);
-        params.delete('page');
-        setSearchParams(params);
-        gotoPage(0);
+        if (isMounted.current) {
+            const params = new URLSearchParams(searchParams);
+            params.delete('page');
+            setSearchParams(params);
+        } else {
+            isMounted.current = true;
+        }
     }, [rows.length]); // eslint-disable-line
+
+    // actually change page when the param changes
+    const searchParamsString = searchParams.toString();
+    useEffect(() => {
+        if (searchParams.has('page')) {
+            gotoPage(searchParams.get('page') - 1);
+        } else {
+            gotoPage(0);
+        }
+    }, [searchParamsString]); // eslint-disable-line
 
     return (
         <div className={cn}>
