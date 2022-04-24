@@ -178,6 +178,15 @@ namespace K9OCRS.Controllers
         #endregion
 
         #region Dog_Photos
+        [HttpGet("placeholderImageUrl")]
+        [ProducesResponseType(typeof(string), 200)]
+        public IActionResult GetPlaceholderImageUrl()
+        {
+            return Ok((new Dog { ProfilePictureFilename = "DogPlaceholder.png" })
+                .ToDogResult(serviceConstants.storageBasePath)
+                .ProfilePictureUrl);
+        }
+
         [HttpPut("{dogId}/image")]
         public async Task<IActionResult> UpdateImage(int dogId, [FromForm] FileUpload upload)
         {

@@ -16,57 +16,57 @@ const reducer = (state, action) => ({
 const DogEditor = (props) => {
     const { classType, formRef, handleSubmit, setData, addingNewType } = props;
 
-    const initialState = {
-        title: addingNewType ? '' : classType.title,
-        duration: addingNewType ? '' : classType.duration,
-        price: addingNewType ? '' : classType.price,
-        requirements: addingNewType ? '' : classType.requirements,
-        description: addingNewType ? '' : classType.description,
-    };
+    // const initialState = {
+    //     title: addingNewType ? '' : classType.title,
+    //     duration: addingNewType ? '' : classType.duration,
+    //     price: addingNewType ? '' : classType.price,
+    //     requirements: addingNewType ? '' : classType.requirements,
+    //     description: addingNewType ? '' : classType.description,
+    // };
 
-    const [classTypeDetails, dispatch] = useReducer(reducer, initialState);
+    // const [classTypeDetails, dispatch] = useReducer(reducer, initialState);
 
-    const [photos, setPhotos] = useState(classType?.photos);
+    // const [photos, setPhotos] = useState(classType?.photos);
 
-    const [imageToUpdate, setImageToUpdate] = useState(null);
-    const [photosToAdd, setPhotosToAdd] = useState([]);
-    const [photosToRemove, setPhotosToRemove] = useState([]);
+    // const [imageToUpdate, setImageToUpdate] = useState(null);
+    // const [photosToAdd, setPhotosToAdd] = useState([]);
+    // const [photosToRemove, setPhotosToRemove] = useState([]);
 
-    const [showPhotosAdd, setShowPhotosAdd] = useState(addingNewType);
+    // const [showPhotosAdd, setShowPhotosAdd] = useState(addingNewType);
 
-    const cn = 'dogSetupEditor';
+    // const cn = 'dogSetupEditor';
 
-    // Update the data object that will be saved
-    useEffect(() => {
-        if (addingNewType) {
-            setData({
-                image: imageToUpdate,
-                ...classTypeDetails,
-                photos: photosToAdd,
-            });
-        } else {
-            setData({
-                id: classType.id,
-                imageUpdate: imageToUpdate,
-                ...classTypeDetails,
-                photosToAdd,
-                photosToRemove,
-            });
-        }
-    }, [
-        setData,
-        addingNewType,
-        imageToUpdate,
-        classTypeDetails,
-        photosToAdd,
-        photosToRemove,
-        classType,
-    ]);
+    // // Update the data object that will be saved
+    // useEffect(() => {
+    //     if (addingNewType) {
+    //         setData({
+    //             image: imageToUpdate,
+    //             ...classTypeDetails,
+    //             photos: photosToAdd,
+    //         });
+    //     } else {
+    //         setData({
+    //             id: classType.id,
+    //             imageUpdate: imageToUpdate,
+    //             ...classTypeDetails,
+    //             photosToAdd,
+    //             photosToRemove,
+    //         });
+    //     }
+    // }, [
+    //     setData,
+    //     addingNewType,
+    //     imageToUpdate,
+    //     classTypeDetails,
+    //     photosToAdd,
+    //     photosToRemove,
+    //     classType,
+    // ]);
 
-    const handleRemove = (photo, idx) => {
-        setPhotos((currentPhotos) => currentPhotos.filter((p, i) => i !== idx));
-        setPhotosToRemove(photosToRemove.concat(photo));
-    };
+    // const handleRemove = (photo, idx) => {
+    //     setPhotos((currentPhotos) => currentPhotos.filter((p, i) => i !== idx));
+    //     setPhotosToRemove(photosToRemove.concat(photo));
+    // };
 
     return (
         <form
@@ -76,7 +76,7 @@ const DogEditor = (props) => {
                 handleSubmit();
             }}
         >
-            <Row className={`${cn}__top`}>
+            {/* <Row className={`${cn}__top`}>
                 <Col className="d-flex" xs="12" md="5" lg="4" xl="3">
                     <ProfileFileDropzone
                         maxSize="5MB"
@@ -206,10 +206,9 @@ const DogEditor = (props) => {
                         removable
                     />
                 ))}
-            </section>
+            </section> */}
         </form>
     );
 };
-
 
 export default DogEditor;

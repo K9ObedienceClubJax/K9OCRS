@@ -1,37 +1,31 @@
-import React, { useEffect, useState, useRef } from 'react'
-import {connect} from 'react-redux'
+import React, { useEffect, useState, useRef } from 'react';
+import { connect } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PageHeader from '../../../shared/components/PageHeader';
 import * as actions from '../modules/actions';
 import PageBody from '../../../shared/components/PageBody';
-import DogEditor from '../DogSetup/DogEditor'
+import DogEditor from '../DogSetup/DogEditor';
 //import DeleteModal from './DeleteModal';
 
 const cn = 'dogSetup';
 
 const DogSetup = (props) => {
-    const {
-        dogName,
-        fetchDogDetails,
-        init,
-        saveNewDog,
-        updateDog,
-        deleteDog,
-    } = props;
+    const { dogDetails, fetchDogDetails, init, saveNewDog, updateDog, deleteDog } = props;
 
-    const addingNewDog = !fetchDogDetails;
+    const historyInstance = useHistory();
+    const { dogId } = useParams();
+    const addingNewDog = !dogId;
+
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const [data, setData] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+
     const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
     const formRef = useRef(null);
-
-    const historyInstance = useHistory();
-    const { dogId } = useParams();
 
     useEffect(() => {
         if (addingNewDog) {
@@ -41,12 +35,11 @@ const DogSetup = (props) => {
         }
     }, [dogId]); // eslint-disable-line
 
-
     const requestFormSubmit = () => {
-        if(formRef.current.reportValidity()){
-            handleSubmit()
+        if (formRef.current.reportValidity()) {
+            handleSubmit();
         }
-    }
+    };
 
     const handleSubmit = () => {
         setSubmitting(true);
@@ -78,21 +71,18 @@ const DogSetup = (props) => {
         });
     };
 
-
     return (
         <div className={cn}>
             <PageHeader
                 title={
-                    !addingNewDog
-                        ? `Dog Setup: ${dogName?.title ?? 'Loading...'}`
-                        : 'Dog Setup'
+                    !addingNewDog ? `Dog Setup: ${dogDetails?.name ?? 'Loading...'}` : 'Dog Setup'
                 }
                 breadCrumbItems={[
                     { label: 'My Account', path: '/Account' },
                     { label: 'My Dogs', path: '/Account/MyDogs' },
                     {
                         label: !addingNewDog
-                            ? `Dog Setup: ${dogName?.title ?? 'Loading...'}`
+                            ? `Dog Setup: ${dogDetails?.name ?? 'Loading...'}`
                             : 'Dog Setup',
                         active: true,
                     },
@@ -133,42 +123,35 @@ const DogSetup = (props) => {
                 </Button>
             </PageHeader>
             <PageBody>
-                
-            </PageBody>
-            
-            {/* <PageBody>
                 {loading ? (
                     <Spinner />
                 ) : (
                     <>
                         <DogEditor
-                            dogName={dogName}
+                            dogDetails={dogDetails}
                             setData={setData}
                             addingNewDog={addingNewDog}
                             formRef={formRef}
                             handleSubmit={handleSubmit}
                         />
-                        <DeleteModal
+                        {/* <DeleteModal
                             dogId={dogId}
                             toggle={toggleDeleteModal}
                             handleDelete={handleDelete}
                             isOpen={showDeleteModal}
                             loading={loading}
                             submitting={submitting}
-                        />
-                        
+                        /> */}
                     </>
                 )}
-                
-            </PageBody> */}
-        
+            </PageBody>
         </div>
     );
-}
+};
 
 export default connect(
     (state) => ({
-        dogName: state.dogs?.dogDetails,
+        dogDetails: state.dogs?.dogManagement?.dogDetails,
     }),
     {
         fetchDogDetails: actions.fetchDogDetails,

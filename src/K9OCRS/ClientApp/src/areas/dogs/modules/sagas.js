@@ -6,12 +6,16 @@ import * as dogApi from '../../../util/apiClients/dogs';
 const log = debug('saga:dogs');
 
 function* initializeDogAddition({ payload }) {
-    var res = yield call(dogApi.getPlaceholderImageUrl);
-    yield put(actions.initializedDogDetails(res?.data));
-    payload.setLoading(false);
+    try {
+        var res = yield call(dogApi.getPlaceholderImageUrl);
+        yield put(actions.initializedDogDetails(res?.data));
+        payload.setLoading(false);
+    } catch (error) {
+        log('An error ocurred while initializing a dog addition.', error);
+    }
 }
 
-function* fetchMyDogsList( {payload} ) {
+function* fetchMyDogsList({ payload }) {
     try {
         log('Fetching my dogs list');
         yield put(actions.fetchingMyDogsList());
@@ -25,7 +29,7 @@ function* fetchMyDogsList( {payload} ) {
     }
 }
 
-function* fetchDogList({payload}) {
+function* fetchDogList({ payload }) {
     try {
         log('Fetching dogs list');
         yield put(actions.fetchingDogList());
@@ -49,7 +53,7 @@ function* fetchDogDetails({ payload: dogId }) {
         log('Fetched a dogs details', result);
         yield put(actions.fetchedDogDetails(result));
     } catch (err) {
-        log('An error ocurred while fetching a dog\'s details', err);
+        log("An error ocurred while fetching a dog's details", err);
     }
 }
 
@@ -59,5 +63,5 @@ const sagas = [
     takeEvery(actions.fetchDogDetails, fetchDogDetails),
     takeEvery(actions.initializeDogAddition, initializeDogAddition),
 ];
-  
-  export default sagas;
+
+export default sagas;
