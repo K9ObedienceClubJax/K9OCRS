@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Col, Row, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -26,7 +26,7 @@ const ClassTypeSetup = (props) => {
         saveChanges,
     } = props;
 
-    const historyInstance = useHistory();
+    const navigate = useNavigate();
     const { classSectionId } = useParams();
     const isCreatingNewSection = !classSectionId;
     const cn = 'classSectionSetup';
@@ -144,7 +144,7 @@ const ClassTypeSetup = (props) => {
                             data,
                             setAlerts,
                             redirect: (createdId) =>
-                                historyInstance.push(`/Manage/Classes/Sections/${createdId}`),
+                                navigate(`/Manage/Classes/Sections/${createdId}`),
                         })
                     }
                 >

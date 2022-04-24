@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -25,7 +25,7 @@ const ClassTypeSetup = (props) => {
         unarchiveClassType,
     } = props;
 
-    const historyInstance = useHistory();
+    const navigate = useNavigate();
     const { classTypeId } = useParams();
 
     const [loading, setLoading] = useState(true);
@@ -59,7 +59,7 @@ const ClassTypeSetup = (props) => {
                 setSubmitting,
                 setLoading,
                 setAlerts,
-                redirect: (created) => historyInstance.push(`/Manage/Classes/Types/${created.id}`),
+                redirect: (created) => navigate(`/Manage/Classes/Types/${created.id}`),
             });
         } else {
             updateClassType({
@@ -84,7 +84,7 @@ const ClassTypeSetup = (props) => {
             targetId,
             setAlerts,
             setSubmitting,
-            redirect: () => historyInstance.push('/Manage/Classes'),
+            redirect: () => navigate('/Manage/Classes'),
         });
     };
 
