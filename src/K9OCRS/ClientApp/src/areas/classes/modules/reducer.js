@@ -56,6 +56,22 @@ export default handleActions(
             savePreferences(updatedState);
             return updatedState;
         },
+        [actions.fetchOptions]: (state) => ({
+            ...state,
+            loadingOptions: true,
+        }),
+        [actions.fetchedOptions]: (state) => ({
+            ...state,
+            loadingOptions: false,
+        }),
+        [actions.fetchedTypeOptions]: (state, { payload }) => ({
+            ...state,
+            typeOptions: payload ?? [],
+        }),
+        [actions.fetchedInstructorOptions]: (state, { payload }) => ({
+            ...state,
+            instructorOptions: payload ?? [],
+        }),
         // Class Types
         [actions.fetchedClassDetails]: (state, { payload }) => ({
             ...state,
@@ -81,21 +97,17 @@ export default handleActions(
                 details: payload ?? null,
             },
         }),
-        [actions.fetchOptions]: (state) => ({
+        [actions.initializedSectionAddition]: (state) => ({
             ...state,
-            loadingOptions: true,
-        }),
-        [actions.fetchedOptions]: (state) => ({
-            ...state,
-            loadingOptions: false,
-        }),
-        [actions.fetchedTypeOptions]: (state, { payload }) => ({
-            ...state,
-            typeOptions: payload ?? [],
-        }),
-        [actions.fetchedInstructorOptions]: (state, { payload }) => ({
-            ...state,
-            instructorOptions: payload ?? [],
+            section: {
+                ...state.section,
+                loading: false,
+                details: {
+                    rosterActual: 0,
+                    rosterCapacity: 0,
+                    meetings: [],
+                },
+            },
         }),
     },
     INITIAL_STATE()

@@ -237,6 +237,10 @@ function* fetchSectionDetails({ payload: { sectionId, setAlerts } }) {
     }
 }
 
+function* initializeSectionAddition() {
+    yield put(actions.initializedSectionAddition());
+}
+
 //#endregion
 
 const sagas = [
@@ -254,6 +258,7 @@ const sagas = [
     takeLatest(actions.deleteClassType, deleteClassType),
     // Class Sections
     takeEvery(actions.fetchSectionDetails, fetchSectionDetails),
+    takeEvery(actions.initializeSectionAddition, initializeSectionAddition),
 ];
 
 export default sagas;

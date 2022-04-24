@@ -18,6 +18,8 @@ const SectionDetailsCard = (props) => {
         setInstructorSelections,
         rosterCapacity,
         setRosterCapacity,
+        isDraft,
+        setIsDraft,
         details,
     } = props;
 
@@ -119,10 +121,20 @@ const SectionDetailsCard = (props) => {
                     onChange={(e) => setRosterCapacity(e.target.value)}
                     min={loading || isCreatingNewSection ? 0 : details?.rosterActual}
                     max="9999"
+                    disabled={submitting}
                 />
                 {!(loading || isCreatingNewSection) && (
                     <FormText>Currently Enrolled: {details?.rosterActual}</FormText>
                 )}
+            </FormGroup>
+            <FormGroup check>
+                <Label check>Mark section as a draft</Label>
+                <Input
+                    type="checkbox"
+                    checked={isDraft}
+                    onChange={(e) => setIsDraft(e.target.checked)}
+                    disabled={submitting}
+                />
             </FormGroup>
         </div>
     );
@@ -139,8 +151,10 @@ SectionDetailsCard.propTypes = {
     instructorOptions: PropTypes.array.isRequired,
     instructorSelections: PropTypes.array.isRequired,
     setInstructorSelections: PropTypes.func.isRequired,
-    rosterCapacity: PropTypes.string.isRequired,
+    rosterCapacity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     setRosterCapacity: PropTypes.func.isRequired,
+    isDraft: PropTypes.bool.isRequired,
+    setIsDraft: PropTypes.func.isRequired,
     details: PropTypes.object.isRequired,
 };
 

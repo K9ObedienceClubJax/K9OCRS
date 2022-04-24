@@ -38,7 +38,9 @@ export const unarchiveClassType = makeAction('UNARCHIVE_CLASS_TYPE');
 // Shared actions (used by sagas and reducers)
 export const fetchingSectionDetails = makeAction('FETCHING_SECTION_DETAILS');
 export const fetchedSectionDetails = makeAction('FETCHED_SECTION_DETAILS');
+export const initializedSectionAddition = makeAction('INITIALIZED_SECTION_ADDITION');
 
 // Saga-only actions
 export const fetchSectionDetails = makeAction('FETCH_SECTION_DETAILS');
+export const initializeSectionAddition = makeAction('INIT_SECTION_ADDITION');
 //#endregion
