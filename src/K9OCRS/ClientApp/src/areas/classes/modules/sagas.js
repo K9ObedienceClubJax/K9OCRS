@@ -1,7 +1,9 @@
-import { put, call, takeEvery, takeLatest } from 'redux-saga/effects';
+import { put, call, takeEvery, takeLatest, all } from 'redux-saga/effects';
 import debug from 'debug';
 import * as actions from './actions';
 import * as classTypesClient from '../../../util/apiClients/classTypes';
+import * as usersClient from '../../../util/apiClients/userAccounts';
+import * as classSectionsClient from '../../../util/apiClients/classSections';
 import {
     classTypeAddRequestToFormData,
     classTypeUpdateRequestToFormData,
@@ -32,6 +34,34 @@ function* fetchClassList({ payload }) {
     }
 }
 
+function* fetchClassTypeOptions() {
+    log('Fetching class type options');
+    try {
+        const res = yield call(classTypesClient.getClassTypeOptions);
+        yield put(actions.fetchedTypeOptions(res?.data));
+        log('Fetched class type options', res?.data);
+    } catch (err) {
+        log('Failed to fetch class type options');
+    }
+}
+
+function* fetchInstructorOptions() {
+    log('Fetching instructor options');
+    try {
+        const res = yield call(usersClient.getInstructorOptions);
+        yield put(actions.fetchedInstructorOptions(res?.data));
+        log('Fetched instructor options', res?.data);
+    } catch (err) {
+        log('Failed to fetch instructor options');
+    }
+}
+
+function* fetchOptions() {
+    yield all([put(actions.fetchClassTypeOptions()), put(actions.fetchInstructorOptions())]);
+    yield put(actions.fetchedOptions());
+}
+
+//#region Class Types
 function* fetchClassDetails({ payload }) {
     log(`Fetching class details for id: ${payload.classTypeId}`);
     try {
@@ -187,9 +217,74 @@ function* deleteClassType({ payload }) {
         ]);
     }
 }
+//#endregion
+
+//#region Class Sections
+function* fetchSectionDetails({ payload: { sectionId, setAlerts } }) {
+    log(`Fetching section details for id: ${sectionId}`);
+    try {
+        yield put(actions.fetchingSectionDetails());
+        const res = yield call(classSectionsClient.getSectionByID, sectionId);
+        yield put(actions.fetchedSectionDetails(res?.data));
+        log(`Fetched section details for id: ${sectionId}`, res?.data);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having trouble retrieving the class section's details.",
+            },
+        ]);
+    }
+}
+
+function* initializeSectionAddition() {
+    yield put(actions.initializedSectionAddition());
+}
+
+function* saveSectionChanges({ payload }) {
+    const { creating, data, setAlerts, redirect } = payload;
+    try {
+        if (creating) {
+            const res = yield call(classSectionsClient.createClassSection, data);
+            yield put(actions.savedSectionChanges());
+            redirect(res?.data);
+            setAlerts([
+                {
+                    color: 'success',
+                    message: 'The class section was saved successfully!',
+                },
+            ]);
+            return;
+        } else {
+            yield call(classSectionsClient.updateSection, data);
+            setAlerts([
+                {
+                    color: 'success',
+                    message: 'Your changes are saved!',
+                },
+            ]);
+            yield call(fetchSectionDetails, { payload: { sectionId: data.id, setAlerts } });
+            yield put(actions.savedSectionChanges());
+        }
+        log('Saved section changes!', data);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having trouble retrieving the class section's details.",
+            },
+        ]);
+    }
+}
+
+//#endregion
 
 const sagas = [
     takeEvery(actions.fetchClassList, fetchClassList),
+    takeLatest(actions.fetchOptions, fetchOptions),
+    takeEvery(actions.fetchClassTypeOptions, fetchClassTypeOptions),
+    takeEvery(actions.fetchInstructorOptions, fetchInstructorOptions),
+    // Class Types
     takeEvery(actions.fetchClassDetails, fetchClassDetails),
     takeEvery(actions.initializeTypeAddition, initializeTypeAddition),
     takeLatest(actions.saveNewClassType, saveNewClassType),
@@ -197,6 +292,10 @@ const sagas = [
     takeLatest(actions.archiveClassType, archiveClassType),
     takeLatest(actions.unarchiveClassType, unarchiveClassType),
     takeLatest(actions.deleteClassType, deleteClassType),
+    // Class Sections
+    takeEvery(actions.fetchSectionDetails, fetchSectionDetails),
+    takeEvery(actions.initializeSectionAddition, initializeSectionAddition),
+    takeLatest(actions.saveSectionChanges, saveSectionChanges),
 ];
 
 export default sagas;
