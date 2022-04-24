@@ -1,6 +1,6 @@
-@import '../MyDogs/style.scss';
+@use '../MyDogs/style.scss';
 
-.dogName{
+.dogName {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -9,6 +9,6 @@
     height: 48px;
 }
 
-.labelValue{
+.labelValue {
     font-size: 23px;
 }

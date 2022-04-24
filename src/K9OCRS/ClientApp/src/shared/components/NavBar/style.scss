@@ -1,11 +1,11 @@
-@import '../../../app.scss';
+@use '../../../app.scss';
 
 .k9-navbar.navbar {
-    position: fixed !important;
+    position: sticky !important;
     top: 0;
     left: 0;
     width: 100vw;
-    z-index: 50;
+    z-index: 51;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
 
@@ -14,8 +14,9 @@
     }
 }
 
-@include media-breakpoint-up(sm) {
+@include app.media-breakpoint-up(sm) {
     .k9-navbar.navbar {
+        position: fixed !important;
         font-size: 0.95rem;
         .btn {
             font-size: 0.95rem;
@@ -23,7 +24,7 @@
     }
 }
 
-@include media-breakpoint-up(xl) {
+@include app.media-breakpoint-up(xl) {
     .k9-navbar.navbar {
         font-size: 1rem;
         .btn {

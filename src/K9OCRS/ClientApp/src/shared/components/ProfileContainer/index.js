@@ -10,11 +10,15 @@ const ProfileContainer = (props) => {
         setImageToUpdate,
         currentUser,
         picture,
-        setPicture,
+        // setPicture,
     } = props;
     return (
         <div className="d-flex container">
-            <img className="mx-auto" src={picture} />
+            <img
+                className="mx-auto profile-picture"
+                alt="profile"
+                src={picture}
+            />
             <div
                 className="overlay mx-auto"
                 onClick={(e) => setModal(true)}
