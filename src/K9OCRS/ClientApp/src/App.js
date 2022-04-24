@@ -72,7 +72,7 @@ export default class App extends Component {
                     />
                     <Route
                         path="/Account"
-                        component={
+                        element={
                             <ProtectedRoute>
                                 <MyAccount />
                             </ProtectedRoute>
