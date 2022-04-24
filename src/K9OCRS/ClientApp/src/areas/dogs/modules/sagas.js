@@ -5,7 +5,13 @@ import * as dogApi from '../../../util/apiClients/dogs';
 
 const log = debug('saga:dogs');
 
-function* fetchMyDogsList() {
+function* initializeDogAddition({ payload }) {
+    var res = yield call(dogApi.getPlaceholderImageUrl);
+    yield put(actions.initializedDogDetails(res?.data));
+    payload.setLoading(false);
+}
+
+function* fetchMyDogsList( {payload} ) {
     try {
         log('Fetching my dogs list');
         yield put(actions.fetchingMyDogsList());
@@ -19,7 +25,7 @@ function* fetchMyDogsList() {
     }
 }
 
-function* fetchDogList() {
+function* fetchDogList({payload}) {
     try {
         log('Fetching dogs list');
         yield put(actions.fetchingDogList());
@@ -51,6 +57,7 @@ const sagas = [
     takeEvery(actions.fetchMyDogsList, fetchMyDogsList),
     takeEvery(actions.fetchDogList, fetchDogList),
     takeEvery(actions.fetchDogDetails, fetchDogDetails),
+    takeEvery(actions.initializeDogAddition, initializeDogAddition),
 ];
   
   export default sagas;

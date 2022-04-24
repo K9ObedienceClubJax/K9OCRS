@@ -133,6 +133,10 @@ const DogSetup = (props) => {
                 </Button>
             </PageHeader>
             <PageBody>
+                
+            </PageBody>
+            
+            {/* <PageBody>
                 {loading ? (
                     <Spinner />
                 ) : (
@@ -144,17 +148,19 @@ const DogSetup = (props) => {
                             formRef={formRef}
                             handleSubmit={handleSubmit}
                         />
-                        {/* <DeleteModal
+                        <DeleteModal
                             dogId={dogId}
                             toggle={toggleDeleteModal}
                             handleDelete={handleDelete}
                             isOpen={showDeleteModal}
                             loading={loading}
                             submitting={submitting}
-                        /> */}
+                        />
+                        
                     </>
                 )}
-            </PageBody>
+                
+            </PageBody> */}
         
         </div>
     );

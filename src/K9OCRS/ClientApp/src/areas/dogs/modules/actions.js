@@ -18,6 +18,7 @@ export const fetchMyDogsList = makeAction('FETCH_MY_DOGS_LIST');
 export const fetchDogList = makeAction('FETCH_DOG_LIST');
 export const fetchDogDetails = makeAction('FETCH_DOG_DETAILS');
 export const initializeDogAddition = makeAction('INIT_TYPE_ADD');
+export const initializedDogDetails = makeAction('INITIALIZED_DOG_DETAILS');
 export const saveNewDog = makeAction('SAVE_NEW_DOG');
 export const updateDog = makeAction('UPDATE_DOG');
 export const deleteDog = makeAction('DELETE_DOG');

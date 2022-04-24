@@ -37,3 +37,5 @@ export const postPicture = async (dogId, formData) =>
 // delete image by id
 export const deleteImageById = async (dogId, fileName) =>
     axios.delete(`${base}/${dogId}/image`, { params: { fileName } } );
+
+export const getPlaceholderImageUrl = async () => await axios.get(`${base}/placeholderImageUrl`);

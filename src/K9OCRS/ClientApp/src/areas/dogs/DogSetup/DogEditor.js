@@ -13,7 +13,7 @@ const reducer = (state, action) => ({
     [action.type]: action.payload,
 });
 
-const ClassTypeEditor = (props) => {
+const DogEditor = (props) => {
     const { classType, formRef, handleSubmit, setData, addingNewType } = props;
 
     const initialState = {
@@ -212,4 +212,4 @@ const ClassTypeEditor = (props) => {
 };
 
 
-export default ClassTypeEditor;
+export default DogEditor;
