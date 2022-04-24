@@ -94,6 +94,7 @@ namespace K9OCRS.Controllers
                     ClassTypeID = request.ClassTypeID,
                     InstructorID = request.InstructorID,
                     RosterCapacity = request.RosterCapacity,
+                    isDraft = request.isDraft,
                 });
 
                 // Update meetings to have the correct section id
@@ -129,6 +130,7 @@ namespace K9OCRS.Controllers
                         ClassTypeID = request.ClassTypeID,
                         InstructorID = request.InstructorID,
                         RosterCapacity = request.RosterCapacity,
+                        isDraft = request.isDraft,
                     });
 
                     if (updatedCount < 1) throw new KeyNotFoundException();

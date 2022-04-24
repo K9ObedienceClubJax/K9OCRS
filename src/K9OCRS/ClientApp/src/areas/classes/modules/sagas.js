@@ -241,6 +241,42 @@ function* initializeSectionAddition() {
     yield put(actions.initializedSectionAddition());
 }
 
+function* saveSectionChanges({ payload }) {
+    const { creating, data, setAlerts, redirect } = payload;
+    try {
+        if (creating) {
+            const res = yield call(classSectionsClient.createClassSection, data);
+            yield put(actions.savedSectionChanges());
+            redirect(res?.data);
+            setAlerts([
+                {
+                    color: 'success',
+                    message: 'The class section was saved successfully!',
+                },
+            ]);
+            return;
+        } else {
+            yield call(classSectionsClient.updateSection, data);
+            setAlerts([
+                {
+                    color: 'success',
+                    message: 'Your changes are saved!',
+                },
+            ]);
+            yield call(fetchSectionDetails, { payload: { sectionId: data.id, setAlerts } });
+            yield put(actions.savedSectionChanges());
+        }
+        log('Saved section changes!', data);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having trouble retrieving the class section's details.",
+            },
+        ]);
+    }
+}
+
 //#endregion
 
 const sagas = [
@@ -259,6 +295,7 @@ const sagas = [
     // Class Sections
     takeEvery(actions.fetchSectionDetails, fetchSectionDetails),
     takeEvery(actions.initializeSectionAddition, initializeSectionAddition),
+    takeLatest(actions.saveSectionChanges, saveSectionChanges),
 ];
 
 export default sagas;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { Button, Col, Row, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -23,8 +23,10 @@ const ClassTypeSetup = (props) => {
         initAddition,
         getData,
         getOptions,
+        saveChanges,
     } = props;
 
+    const historyInstance = useHistory();
     const { classSectionId } = useParams();
     const isCreatingNewSection = !classSectionId;
     const cn = 'classSectionSetup';
@@ -39,14 +41,17 @@ const ClassTypeSetup = (props) => {
     // Current meetings (already existing and new - deleted)
     const [meetings, setMeetings] = useState([]);
 
-    const payload = {
+    // Including the bogus id would cause errors
+    const sanitizedMeetingsToInsert = meetingsToInsert.map((m) => ({ ...m, id: undefined }));
+
+    const data = {
         id: details?.id,
         classTypeID: classTypeSelections[0]?.id,
         rosterCapacity: parseInt(rosterCapacity),
         instructorID: instructorSelections[0]?.id,
-        meetings: !isCreatingNewSection ? undefined : meetingsToInsert,
+        meetings: !isCreatingNewSection ? undefined : sanitizedMeetingsToInsert,
         meetingIdsToDelete,
-        meetingsToInsert,
+        meetingsToInsert: sanitizedMeetingsToInsert,
         isDraft,
     };
 
@@ -133,7 +138,15 @@ const ClassTypeSetup = (props) => {
                 <Button
                     color="primary"
                     disabled={loading || submitting}
-                    // onClick={requestFormSubmit}
+                    onClick={() =>
+                        saveChanges({
+                            creating: isCreatingNewSection,
+                            data,
+                            setAlerts,
+                            redirect: (createdId) =>
+                                historyInstance.push(`/Manage/Classes/Sections/${createdId}`),
+                        })
+                    }
                 >
                     {submitting ? (
                         <>
@@ -215,5 +228,6 @@ export default connect(
         initAddition: actions.initializeSectionAddition,
         getData: actions.fetchSectionDetails,
         getOptions: actions.fetchOptions,
+        saveChanges: actions.saveSectionChanges,
     }
 )(ClassTypeSetup);

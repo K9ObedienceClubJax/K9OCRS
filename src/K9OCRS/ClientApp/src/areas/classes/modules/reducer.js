@@ -106,7 +106,22 @@ export default handleActions(
                     rosterActual: 0,
                     rosterCapacity: 0,
                     meetings: [],
+                    isDraft: false,
                 },
+            },
+        }),
+        [actions.saveSectionChanges]: (state) => ({
+            ...state,
+            section: {
+                ...state.section,
+                submitting: true,
+            },
+        }),
+        [actions.savedSectionChanges]: (state) => ({
+            ...state,
+            section: {
+                ...state.section,
+                submitting: false,
             },
         }),
     },

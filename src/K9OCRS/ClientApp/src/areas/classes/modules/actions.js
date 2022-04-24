@@ -39,8 +39,10 @@ export const unarchiveClassType = makeAction('UNARCHIVE_CLASS_TYPE');
 export const fetchingSectionDetails = makeAction('FETCHING_SECTION_DETAILS');
 export const fetchedSectionDetails = makeAction('FETCHED_SECTION_DETAILS');
 export const initializedSectionAddition = makeAction('INITIALIZED_SECTION_ADDITION');
+export const savedSectionChanges = makeAction('SAVED_SECTION_CHANGES');
 
 // Saga-only actions
 export const fetchSectionDetails = makeAction('FETCH_SECTION_DETAILS');
 export const initializeSectionAddition = makeAction('INIT_SECTION_ADDITION');
+export const saveSectionChanges = makeAction('SAVE_SECTION_CHANGES');
 //#endregion
