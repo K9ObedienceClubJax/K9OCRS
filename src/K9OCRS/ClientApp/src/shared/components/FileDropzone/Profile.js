@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import numbro from 'numbro';
 import { useDropzone } from 'react-dropzone';
 import { BsCloudUpload } from 'react-icons/bs';
@@ -6,15 +6,8 @@ import { BsCloudUpload } from 'react-icons/bs';
 import './styles.scss';
 
 const ProfileFileDropzone = (props) => {
-    const {
-        accept,
-        acceptText,
-        maxFiles,
-        maxSize,
-        onChange,
-        currentImage,
-        round,
-    } = props;
+    const { accept, acceptText, maxFiles, maxSize, onChange, currentImage, round, setPicture } =
+        props;
 
     const numericMaxSize = numbro.unformat(maxSize);
 
@@ -22,23 +15,35 @@ const ProfileFileDropzone = (props) => {
         accept,
         maxFiles,
         maxSize: maxSize ? numericMaxSize : null,
+        onDropAccepted: (files) => updateDisplayProfile(files),
     });
+
+    const selectedFilesString = JSON.stringify(acceptedFiles);
 
     useEffect(() => {
         if (onChange) {
             onChange(acceptedFiles);
         }
-    }, [onChange, acceptedFiles]);
+    }, [onChange, acceptedFiles, selectedFilesString]);
 
     const cn = 'fileDropZone-profile';
 
     // If this isn't memoized, the image will flicker
     // everytime the component re-renders
     const imageUrl = useMemo(() => {
-        return acceptedFiles[0]
+        let result = acceptedFiles[0]
             ? `url(${URL.createObjectURL(acceptedFiles[0])})`
             : `url(${currentImage})`;
+        // setPicture(result);
+        return result;
     }, [acceptedFiles, currentImage]);
+
+    function updateDisplayProfile(files) {
+        if (files?.length > 0) {
+            let result = files[0] ? `${URL.createObjectURL(files[0])}` : `${currentImage}`;
+            setPicture(result);
+        }
+    }
 
     return (
         <div

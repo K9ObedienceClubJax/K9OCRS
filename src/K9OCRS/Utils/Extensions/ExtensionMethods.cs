@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities;
+using K9OCRS.Models;
 using K9OCRS.Models.ClassManagement;
 using K9OCRS.Models.DogManagement;
 using K9OCRS.Models.Reporting;
@@ -46,6 +47,9 @@ namespace K9OCRS.Utils.Extensions
             new ClassSectionResult(section, storageBasePath);
 
         public static ClassSectionExport ToClassSectionExport(this ClassSection type) => new ClassSectionExport(type);
+
+        public static UserResult ToClassTypeResult(this User type, string storageBasePath) =>
+            new UserResult(type, storageBasePath);
 
         public static DogResult ToDogResult(this Dog dog, string storageBasePath) =>
             new DogResult(dog, storageBasePath);

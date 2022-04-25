@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
@@ -18,6 +19,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -186,11 +188,15 @@ namespace K9OCRS.Controllers
 
         [HttpPost("forgotpassword")]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        public async Task<IActionResult> ForgotPassword([FromBody] PasswordResetRequest request)
         {
+            var email = request.Email;
+            var sendEmail = request.Send;
+
             //Check if email is in database
             var accountResult = await connectionOwner.Use(conn => {
                 return dbOwner.Users.GetByEmail(conn, email);
+
             });
             if (accountResult == null)
             {
@@ -200,20 +206,24 @@ namespace K9OCRS.Controllers
             //Write token with account info
             var token = GenerateForgotPasswordToken(email, accountResult);
 
-            //Create url with token
-            var callbackUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "/Account/ChangePassword?token=" + token.Result;
+            var callbackUrl = "/Account/ChangePassword?token=" + token.Result;
 
             //Send email
-            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
-            var subject = "K9 Obedience Club Password Reset";
-            var to = new EmailAddress(email, email);
-            var plainTextContent = "Use the link to reset your password." + callbackUrl;
-            var htmlContent = "Click <a href=" + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            await client.SendEmailAsync(msg);
-            return Ok("Email sent");
+            if(sendEmail)
+            {
+                var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
+                var subject = "K9 Obedience Club Password Reset";
+                var to = new EmailAddress(email, email);
+                var plainTextContent = "Use the link to reset your password." + callbackUrl;
+                var htmlContent = "Click <a href=" + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                await client.SendEmailAsync(msg);
+                return Ok("Email sent");
+            }
+
+            return Ok(callbackUrl);
         }
 
         [HttpPost("changepassword")]
@@ -377,6 +387,15 @@ namespace K9OCRS.Controllers
             var users = await connectionOwner.Use(conn => dbOwner.Users.GetInstructorOptions(conn));
             var userResults = users.Select(u => new UserResult(u, serviceConstants.storageBasePath));
             return Ok(userResults);
+        }
+
+        [HttpGet("placeholderImageUrl")]
+        [ProducesResponseType(typeof(string), 200)]
+        public IActionResult GetPlaceholderImageUrl()
+        {
+            return Ok((new User { ProfilePictureFilename = "UserPlaceholder.png" })
+                .ToClassTypeResult(serviceConstants.storageBasePath)
+                .ProfilePictureUrl);
         }
 
 

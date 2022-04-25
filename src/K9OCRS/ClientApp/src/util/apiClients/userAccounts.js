@@ -5,16 +5,8 @@ const base = '/api/account';
 // Create
 export const createAccount = async (accountEntity) => axios.post(base, accountEntity);
 
-export const forgotPassword = async (email) =>
-    axios({
-        url: `${base}/forgotpassword`,
-        data: email,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
-    });
+export const forgotPassword = async (email, send) =>
+    axios.post(`${base}/forgotpassword`, { email, send });
 
 export const createUser = async (changeUserInfoRequest) =>
     await axios.put(`${base}/createuser`, changeUserInfoRequest);
@@ -35,6 +27,9 @@ export const getUser = async (id) =>
         .then((response) => response.data);
 
 export const getInstructorOptions = async () => axios.get(`${base}/options`);
+
+export const placeholderImage = async () =>
+    axios.get(`${base}/placeholderImageUrl`).then((response) => response.data);
 
 //Update
 export const changePassword = async ({ token, password }) =>
