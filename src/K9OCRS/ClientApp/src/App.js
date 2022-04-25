@@ -146,17 +146,21 @@ export default class App extends Component {
                             </ProtectedRoute>
                         }
                     />
-                    <ProtectedRoute
+                    <Route
                         path="/Manage/Applications"
-                        component={AppManagement}
-                        minimumAccess={USER_ROLES.Administrator}
-                        exact
+                        element={
+                        <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                            <AppManagement />
+                        </ProtectedRoute>
+                        }
                     />
-                    <ProtectedRoute 
+                    <Route
                         path="/Manage/Applications/Details/:id"
-                        component={AppDetails}
-                        //minimumAccess={USER_ROLES.Administrator}
-                        exact
+                        element={
+                        <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                            <AppDetails />
+                        </ProtectedRoute>
+                        }
                     />
                     {/* This route is just for a quick test, it will be removed */}
                     <Route
