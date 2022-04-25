@@ -369,6 +369,16 @@ namespace K9OCRS.Controllers
             return Ok(userResults);
         }
 
+        [HttpGet("options")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        public async Task<IActionResult> GetInstructorOptions()
+        {
+            var users = await connectionOwner.Use(conn => dbOwner.Users.GetInstructorOptions(conn));
+            var userResults = users.Select(u => new UserResult(u, serviceConstants.storageBasePath));
+            return Ok(userResults);
+        }
+
 
         //Non-API functions
         private async Task<string> GenerateToken(Login login, User loginResult)

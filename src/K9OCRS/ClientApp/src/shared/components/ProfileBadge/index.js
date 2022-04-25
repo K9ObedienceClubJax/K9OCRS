@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Avatar from '../Avatar';
 
 import './styles.scss';
@@ -9,7 +9,7 @@ import './styles.scss';
 const ProfileBadge = (props) => {
     const { className, id, imageUrl, firstName, lastName, link } = props;
 
-    const history = useHistory();
+    const navigate = useNavigate();
     const userSetupPath = `/Manage/Users/${id}`;
 
     const cn = 'profileBadge';
@@ -23,7 +23,7 @@ const ProfileBadge = (props) => {
     );
 
     return (
-        <div className={topCn} onClick={() => history.push(userSetupPath)}>
+        <div className={topCn} onClick={link ? () => navigate(userSetupPath) : undefined}>
             <Avatar imageUrl={imageUrl} />
             <span className={`${cn}__name`}>{`${firstName} ${lastName}`}</span>
         </div>

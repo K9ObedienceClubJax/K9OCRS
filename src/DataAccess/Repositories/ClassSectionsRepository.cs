@@ -62,10 +62,8 @@ namespace DataAccess.Repositories
             return result.ToList();
         }
 
-        public async Task<ClassSection> GetByID(IDbConnection conn, int id, bool includeDrafts = false)
+        public override async Task<ClassSection> GetByID(IDbConnection conn, int id)
         {
-            var draftFilter = !includeDrafts ? "AND cs.isDraft = 0" : "";
-
             var query = @$"
                 SELECT
 	                cs.ID,
@@ -97,7 +95,7 @@ namespace DataAccess.Repositories
                 LEFT JOIN ClassSectionsStatus css ON css.ClassSectionID = cs.ID
                 LEFT JOIN Users u ON cs.InstructorID = u.ID
                 LEFT JOIN ClassTypes ct ON cs.ClassTypeID = ct.ID
-                WHERE cs.ID = @Id {draftFilter}
+                WHERE cs.ID = @Id
             ";
 
             var meetingsQuery = @"
@@ -133,6 +131,8 @@ namespace DataAccess.Repositories
                 },
                 new { Id = id },
                 splitOn: "FirstName,Title")).FirstOrDefault();
+
+            if (classSection == null) throw new KeyNotFoundException($"Class Section with id {id} not found");
 
             var meetings = await conn.QueryAsync<ClassMeeting>(meetingsQuery, new { ClassSectionID = classSection.ID });
 

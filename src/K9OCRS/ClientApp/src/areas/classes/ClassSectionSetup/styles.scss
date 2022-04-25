@@ -1,0 +1,12 @@
+@use '../../../app.scss';
+
+.sectionSetup {
+    &__meeting-remover {
+        cursor: pointer;
+        color: app.$danger;
+
+        &:hover {
+            color: darken(app.$danger, 20);
+        }
+    }
+}
