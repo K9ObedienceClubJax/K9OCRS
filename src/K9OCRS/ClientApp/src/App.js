@@ -28,7 +28,9 @@ import Create from './areas/management/Users/Create';
 import User from './areas/management/Users/User';
 import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
+import AppManagement from './areas/applications/AppManagement';
 import TestUpload from './areas/classes/TestUpload';
+import AppDetails from './areas/applications/AppManagement/components/AppDetails';
 
 import './app.scss';
 
@@ -82,6 +84,18 @@ export default class App extends Component {
                         path="/Manage/Classes"
                         component={ClassManagement}
                         minimumAccess={USER_ROLES.Administrator}
+                        exact
+                    />
+                    <ProtectedRoute
+                        path="/Manage/Applications"
+                        component={AppManagement}
+                        minimumAccess={USER_ROLES.Administrator}
+                        exact
+                    />
+                    <ProtectedRoute 
+                        path="/Manage/Applications/Details/:id"
+                        component={AppDetails}
+                        //minimumAccess={USER_ROLES.Administrator}
                         exact
                     />
                     {/* This route is just for a quick test, it will be removed */}
