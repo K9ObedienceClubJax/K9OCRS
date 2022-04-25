@@ -2,13 +2,13 @@
 -- Users (The password for all is "Test123456")
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE isSystemOwned = 0)
 BEGIN
-	INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], [isMember])
+	INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], [isMember], [HasDiscounts])
 	VALUES
-		(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1),
-		(2, 'Cloud', 'Strife', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1),
-		(3, 'Jack', 'Sparrow', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1),
-		(3, 'Tom', 'Riddle', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 0),
-		(2, 'Darude', 'Sandstorm', 'guestinstructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 0);
+		(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1, 1),
+		(2, 'Cloud', 'Strife', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1, 1),
+		(3, 'Jack', 'Sparrow', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1, 0),
+		(3, 'Tom', 'Riddle', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 0, 0),
+		(2, 'Darude', 'Sandstorm', 'guestinstructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 0, 0);
 END
 
 -- Dogs
