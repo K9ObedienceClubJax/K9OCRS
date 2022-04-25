@@ -6,6 +6,12 @@ Debug Post-Deployment Script
 */
 
 /*
+	Clean Tables
+*/
+PRINT '*****  Cleaning Tables  *****';
+:r ..\Utility\CleanTables.sql
+
+/*
 	Generally Required Scripts
 */
 PRINT '*****  Executing Generally Required Scripts  *****';
