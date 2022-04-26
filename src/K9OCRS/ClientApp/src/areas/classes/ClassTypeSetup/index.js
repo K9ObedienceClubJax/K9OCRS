@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import moment from 'moment-timezone';
 import PageHeader from '../../../shared/components/PageHeader';
+import PageBody from '../../../shared/components/PageBody';
+import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 import * as actions from '../modules/actions';
 
 import ClassTypeEditor from './ClassTypeEditor';
 import DeleteModal from './DeleteModal';
 
 import './styles.scss';
-import PageBody from '../../../shared/components/PageBody';
 
 const ClassTypeSetup = (props) => {
     const {
@@ -25,7 +25,7 @@ const ClassTypeSetup = (props) => {
         unarchiveClassType,
     } = props;
 
-    const historyInstance = useHistory();
+    const navigate = useNavigate();
     const { classTypeId } = useParams();
 
     const [loading, setLoading] = useState(true);
@@ -38,13 +38,6 @@ const ClassTypeSetup = (props) => {
     const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
     const addingNewType = !classTypeId;
-
-    const lastUpdatedDate = loading
-        ? ''
-        : moment(classType.modifiedDate).format('MMMM Do, YYYY [at] h:mm A');
-    const lastUpdateInfo = loading
-        ? ''
-        : `last updated by ${classType.modifiedByName} (id: ${classType.modifiedByID}) on ${lastUpdatedDate}`;
 
     useEffect(() => {
         if (addingNewType) {
@@ -66,7 +59,7 @@ const ClassTypeSetup = (props) => {
                 setSubmitting,
                 setLoading,
                 setAlerts,
-                redirect: (created) => historyInstance.push(`/Manage/Classes/Types/${created.id}`),
+                redirect: (created) => navigate(`/Manage/Classes/Types/${created.id}`),
             });
         } else {
             updateClassType({
@@ -80,10 +73,10 @@ const ClassTypeSetup = (props) => {
 
     // Safari doesn't support form.requestSubmit() so we have to do this the long way...
     const requestFormSubmit = () => {
-        if(formRef.current.reportValidity()){
-            handleSubmit()
+        if (formRef.current.reportValidity()) {
+            handleSubmit();
         }
-    }
+    };
 
     const handleDelete = (targetId) => {
         deleteClassType({
@@ -91,7 +84,7 @@ const ClassTypeSetup = (props) => {
             targetId,
             setAlerts,
             setSubmitting,
-            redirect: () => historyInstance.push('/Manage/Classes'),
+            redirect: () => navigate('/Manage/Classes'),
         });
     };
 
@@ -200,9 +193,11 @@ const ClassTypeSetup = (props) => {
                     <Spinner />
                 ) : (
                     <>
-                        <p className="text-muted text-center text-sm-end fst-italic fs-6">
-                            {lastUpdateInfo}
-                        </p>
+                        <LastUpdatedNote
+                            modifiedByID={classType.modifiedByID}
+                            modifiedByName={classType.modifiedByName}
+                            modifiedDate={classType.modifiedDate}
+                        />
                         <ClassTypeEditor
                             classType={classType}
                             setData={setData}

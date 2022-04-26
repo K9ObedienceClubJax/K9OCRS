@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,21 +25,14 @@ namespace DataAccess.Repositories
     /// </summary>
     public abstract class BaseRepository<T> : IRepository<T> where T : BaseEntity
     {
-        protected readonly ModifierIdentity _identity;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
         public readonly string _tableName;
         public readonly string _tableNameRaw;
 
         protected BaseRepository(string className, IHttpContextAccessor httpContextAccessor)
         {
-            var user = httpContextAccessor.HttpContext.User;
-            if (user.Identity.IsAuthenticated) {
-                _identity = new ModifierIdentity
-                {
-                    ID = Int32.Parse(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value),
-                    Name = user.Identity.Name,
-                    Email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value,
-                };
-            }
+            // use it like this: var identity = new ModifierIdentity(_httpContextAccessor);
+            _httpContextAccessor = httpContextAccessor;
             _tableName = DbTables.Get(className);
             _tableNameRaw = DbTables.GetRaw(className);
         }
@@ -110,29 +102,32 @@ namespace DataAccess.Repositories
 
         public virtual async Task<T> Add(IDbConnection conn, T entity)
         {
-            entity.ModifiedByID = _identity.ID;
-            entity.ModifiedByName = _identity.Name;
+            var identity = new ModifierIdentity(_httpContextAccessor);
+            entity.ModifiedByID = identity.ID;
+            entity.ModifiedByName = identity.Name;
             var insertQuery = GenerateInsertQuery();
             return await conn.QueryFirstOrDefaultAsync<T>(insertQuery, entity);
         }
 
         public virtual async Task<T> Add(IDbConnection conn, IDbTransaction tr, T entity)
         {
-            entity.ModifiedByID = _identity.ID;
-            entity.ModifiedByName = _identity.Name;
+            var identity = new ModifierIdentity(_httpContextAccessor);
+            entity.ModifiedByID = identity.ID;
+            entity.ModifiedByName = identity.Name;
             var insertQuery = GenerateInsertQuery();
             return await conn.QueryFirstOrDefaultAsync<T>(insertQuery, entity, tr);
         }
 
         public virtual async Task<IReadOnlyList<T>> AddMany(IDbConnection conn, IDbTransaction tr, List<T> entities)
         {
+            var identity = new ModifierIdentity(_httpContextAccessor);
             var insertQuery = GenerateInsertQuery();
             var results = new List<T>();
 
             foreach (var entity in entities)
             {
-                entity.ModifiedByID = _identity.ID;
-                entity.ModifiedByName = _identity.Name;
+                entity.ModifiedByID = identity.ID;
+                entity.ModifiedByName = identity.Name;
                 var result = await conn.QuerySingleAsync<T>(insertQuery, entity, tr);
                 results.Add(result);
             }
@@ -142,16 +137,18 @@ namespace DataAccess.Repositories
 
         public virtual async Task<int> Update(IDbConnection conn, T entity)
         {
-            entity.ModifiedByID = _identity.ID;
-            entity.ModifiedByName = _identity.Name;
+            var identity = new ModifierIdentity(_httpContextAccessor);
+            entity.ModifiedByID = identity.ID;
+            entity.ModifiedByName = identity.Name;
             var updateQuery = GenerateUpdateQuery();
             return await conn.ExecuteAsync(updateQuery, entity);
         }
 
         public virtual async Task<int> Update(IDbConnection conn, IDbTransaction tr, T entity)
         {
-            entity.ModifiedByID = _identity.ID;
-            entity.ModifiedByName = _identity.Name;
+            var identity = new ModifierIdentity(_httpContextAccessor);
+            entity.ModifiedByID = identity.ID;
+            entity.ModifiedByName = identity.Name;
             var updateQuery = GenerateUpdateQuery();
             return await conn.ExecuteAsync(updateQuery, entity, tr);
         }
@@ -256,8 +253,9 @@ namespace DataAccess.Repositories
 
         internal string GenerateTrackingSection()
         {
-            return $"ModifiedByID = {_identity.ID}, ModifiedByName = '{_identity.Name}', ModifiedDate=GETDATE()";
-        } 
+            var identity = new ModifierIdentity(_httpContextAccessor);
+            return $"ModifiedByID = {identity.ID}, ModifiedByName = '{identity.Name}', ModifiedDate=GETDATE()";
+        }
         #endregion
 
         #region Private Methods
@@ -294,7 +292,8 @@ namespace DataAccess.Repositories
 
                 var insertIgnored = prop.GetCustomAttributes(typeof(InsertIgnoreAttribute), false);
                 return transactionIgnored.Concat(insertIgnored).ToArray();
-            } else
+            }
+            else
             {
                 var exportIgnored = prop.GetCustomAttributes(typeof(ExportIgnoreAttribute), false);
                 return exportIgnored.ToArray();
@@ -384,8 +383,7 @@ namespace DataAccess.Repositories
             var updateQuery = new StringBuilder($"UPDATE {_tableName} SET ");
             var properties = GenerateListOfPropertyNames(GetProperties, true);
 
-            properties.ForEach(property =>
-            {
+            properties.ForEach(property => {
                 if (!property.Equals("ID"))
                 {
                     updateQuery.Append($"{property}=@{property},");

@@ -141,7 +141,7 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(IEnumerable<ClassTypeOptionResult>), 200)]
         public async Task<IActionResult> GetClassTypeOptions([FromQuery] int? excludedId = null)
         {
-            var types = await connectionOwner.Use(conn => dbOwner.ClassTypes.GetAll(conn, true));
+            var types = await connectionOwner.Use(conn => dbOwner.ClassTypes.GetOptions(conn));
             var options = types.Select(t => t.ToClassTypeOptionResult()).Where(t => t.ID != excludedId);
             return Ok(options);
         }
