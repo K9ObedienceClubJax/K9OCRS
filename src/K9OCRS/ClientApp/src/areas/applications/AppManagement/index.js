@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Button, FormGroup, Input, Label, Spinner, Form, Row, Col } from 'reactstrap';
+import { Button, FormGroup, Input, Label, Spinner, Form, Row, Col, Badge } from 'reactstrap';
 import { Highlighter, Typeahead, Token } from 'react-bootstrap-typeahead';
 import { getClassTypeOptions } from 'src/util/apiClients/classTypes';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -10,6 +10,7 @@ import Table from '../../../shared/components/Table';
 import PageBody from '../../../shared/components/PageBody';
 import selectors from '../../../shared/modules/selectors';
 import sectionColumns from './components/sectionColumns';
+import ProfileBadge from 'src/shared/components/ProfileBadge';
 
 
 const AppManagement = (props) => {
@@ -20,13 +21,15 @@ const AppManagement = (props) => {
     const [appDetails, setAppDetails] = useState([]);
 
     const [classTypeOptions, setClassTypeOptions] = useState([]);
+    const [dogOptions, setDogOptions] = useState([]);
 
     // When the page loads, fetch the typeahead options
     useEffect(() => {
         async function getOptions() {
-            const response = await getClassTypeOptions();
-            setClassTypeOptions(response?.data);
-            // const dog = await getDogOptions();
+            const classTypesresponse = await getClassTypeOptions();
+            setClassTypeOptions(classTypesresponse?.data);
+            const dogsResponse = await axios.get('/api/dogs');
+            setDogOptions(dogsResponse?.data)
             setLoadingOptions(false);
         }
         getOptions();
@@ -34,7 +37,7 @@ const AppManagement = (props) => {
 
     //Not implemented in API:
     const [selectedClassTypes, setSelectedClassTypes] = useState([]);
-    const [selectedDogIDs, setSelectedDogIDs] = useState([]);
+    const [selectedDogs, setSelectedDogs] = useState([]);
     const [PaymentMethod, setPaymentMethod] = useState('');
 
     const [includePaid, setIncludePaid] = useState(true);
@@ -52,13 +55,13 @@ const AppManagement = (props) => {
 
 
     const selectedClassTypesString = JSON.stringify(selectedClassTypes);
-    const selectedDogIDsString = JSON.stringify(selectedDogIDs);
+    const selectedDogsString = JSON.stringify(selectedDogs);
     useEffect(() => {
         async function getTest() {
                 try {
-                    const res = await axios.post(`/api/Applications/query`, {
+                    const res = await axios.post('/api/Applications/query', {
                         classTypeIDs: selectedClassTypes?.map(ct => ct.id),
-                        dogIDs: selectedDogIDs?.map(d => d.id),
+                        dogIDs: selectedDogs?.map(d => d.id),
                         PaymentMethod,
                         includePaid,
                         includeRefunded,
@@ -82,7 +85,7 @@ const AppManagement = (props) => {
 
         }
         getTest();
-    }, [selectedClassTypesString, selectedDogIDsString, PaymentMethod, includePaid, includeRefunded, includePending, includeActive, includeCompleted, includeCancelled]); // eslint-disable-line
+    }, [selectedClassTypesString, selectedDogsString, PaymentMethod, includePaid, includeRefunded, includePending, includeActive, includeCompleted, includeCancelled]); // eslint-disable-line
 
     const typeRenderMenuItemChildren = (option, { text }, index) => (
         <Fragment>
@@ -106,6 +109,46 @@ const AppManagement = (props) => {
             ? 'Loading...'
             : `${option.title} ${option.isArchived ? '- [Archived]' : ''}`;
 
+    const dogRenderMenuItemChildren = (option, { text }, index) => (
+        <Fragment>
+            <Row key={index}>
+                <Col className="d-flex justify-content-start align-items-center">
+                    <ProfileBadge
+                        id={option.id}
+                        imageUrl={option.profilePictureUrl}
+                        fullName={option.name}
+                    />
+                </Col>
+                <Col className="d-flex justify-content-start align-items-center">
+                    {option.isArchived && (
+                        <Badge color="dark" className="me-1">
+                            Archived
+                        </Badge>
+                    )}
+                    <span />
+                </Col>
+            </Row>
+        </Fragment>
+    );
+
+    const dogRenderToken = (option, { onRemove }, index) => (
+        <Token
+            key={index}
+            onRemove={onRemove}
+            option={option}>
+            <ProfileBadge
+                    id={option.id}
+                    imageUrl={option.profilePictureUrl}
+                    fullName={option.name}
+                />
+        </Token>
+    );
+
+    const dogLabelKey = (option) =>
+        loadingOptions
+            ? 'Loading...'
+            : `${option.name} ${option.isArchived ? '- [Archived]' : ''}`;
+
     return (
         <div>
             <PageHeader
@@ -119,7 +162,7 @@ const AppManagement = (props) => {
             >
             </PageHeader>
             <PageBody>
-                <Form>
+                <Form className="cardsurface">
                     <Row>
                         <Col>
                             <FormGroup>
@@ -127,7 +170,7 @@ const AppManagement = (props) => {
                                 <Typeahead
                                     id="ClassTypesTypeahead"
                                     labelKey={typeLabelKey}
-                                    placeholder="Choose a class type..."
+                                    placeholder="Choose class types..."
                                     selected={selectedClassTypes}
                                     onChange={setSelectedClassTypes}
                                     disabled={loadingOptions}
@@ -144,11 +187,20 @@ const AppManagement = (props) => {
                         <Col>
                             <FormGroup>
                                 <Label for='dogInput'>Dog</Label>
-                                <Input
-                                    id='dogInput'
-                                    name='dogInput'
-                                    placeholder='Search by Dog Name'
-                                    type='text'
+                                <Typeahead
+                                    id="DogsTypeahead"
+                                    labelKey={dogLabelKey}
+                                    placeholder="Choose dogs..."
+                                    selected={selectedDogs}
+                                    onChange={setSelectedDogs}
+                                    disabled={loadingOptions}
+                                    options={dogOptions}
+                                    renderMenuItemChildren={dogRenderMenuItemChildren}
+                                    renderToken={dogRenderToken}
+                                    multiple
+                                    flip
+                                    clearButton
+                                    positionFixed
                                 />
                             </FormGroup>
                         </Col>

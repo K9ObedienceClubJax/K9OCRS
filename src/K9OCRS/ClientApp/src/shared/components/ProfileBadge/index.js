@@ -7,7 +7,7 @@ import Avatar from '../Avatar';
 import './styles.scss';
 
 const ProfileBadge = (props) => {
-    const { className, id, imageUrl, firstName, lastName, link } = props;
+    const { className, id, imageUrl, fullName, firstName, lastName, link } = props;
 
     const navigate = useNavigate();
     const userSetupPath = `/Manage/Users/${id}`;
@@ -25,7 +25,7 @@ const ProfileBadge = (props) => {
     return (
         <div className={topCn} onClick={link ? () => navigate(userSetupPath) : undefined}>
             <Avatar imageUrl={imageUrl} />
-            <span className={`${cn}__name`}>{`${firstName} ${lastName}`}</span>
+            <span className={`${cn}__name`}>{fullName ? fullName : `${firstName} ${lastName}`}</span>
         </div>
     );
 };
@@ -40,6 +40,7 @@ ProfileBadge.propTypes = {
     className: PropTypes.string,
     id: PropTypes.number,
     imageUrl: PropTypes.string.isRequired,
+    fullName: PropTypes.string.isRequired,
     firstName: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
     link: PropTypes.bool,
