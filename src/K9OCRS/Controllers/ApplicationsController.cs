@@ -44,16 +44,19 @@ namespace K9OCRS.Controllers
         }
 
         //Get all
-        [HttpGet]
+        [HttpPost("query")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(IEnumerable<ClassApplication>), 200)]
-        public async Task<IActionResult> GetAllApplications([FromQuery] ApplicationsListRequest request)
+        public async Task<IActionResult> GetAllApplications([FromBody] ApplicationsListRequest request)
         {
             var result = await connectionOwner.Use(conn =>
                 dbOwner.ClassApplications.GetAll(
                     conn,
-                    request.DogID,
+                    request.ClassTypeIDs,
+                    request.DogIDs,
                     request.PaymentMethod,
+                    request.includePaid,
+                    request.includeRefunded,
                     request.includePending,
                     request.includeActive,
                     request.includeCompleted,

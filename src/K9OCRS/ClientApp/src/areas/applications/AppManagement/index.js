@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Button, FormGroup, Input, Label, Spinner, Form, Row, Col } from 'reactstrap';
+import { Highlighter, Typeahead, Token } from 'react-bootstrap-typeahead';
+import { getClassTypeOptions } from 'src/util/apiClients/classTypes';
 import PageHeader from '../../../shared/components/PageHeader';
 import Table from '../../../shared/components/Table';
 import PageBody from '../../../shared/components/PageBody';
@@ -11,35 +13,61 @@ import sectionColumns from './components/sectionColumns';
 
 
 const AppManagement = (props) => {
-/*     const {
-        classesState: { includeArchived, includeDrafts, classList },
-        fetchClassList,
-        toggleIncludeArchived,
-        toggleIncludeDrafts,
-    } = props;
- */
 
     const [loading, setLoading] = useState(true);
+    const [loadingOptions, setLoadingOptions] = useState(true);
     const [alerts, setAlerts] = useState((c) => c, []);
     const [appDetails, setAppDetails] = useState([]);
 
+    const [classTypeOptions, setClassTypeOptions] = useState([]);
+
+    // When the page loads, fetch the typeahead options
+    useEffect(() => {
+        async function getOptions() {
+            const response = await getClassTypeOptions();
+            setClassTypeOptions(response?.data);
+            // const dog = await getDogOptions();
+            setLoadingOptions(false);
+        }
+        getOptions();
+    }, []);
+
     //Not implemented in API:
-   //const [useClassName, setUseClassName] = useState('');
-   // const [usePaid, setUsePaid] = useState('');
-   // const [useRefunded, setUseRefunded] = useState(true);
+    const [selectedClassTypes, setSelectedClassTypes] = useState([]);
+    const [selectedDogIDs, setSelectedDogIDs] = useState([]);
+    const [PaymentMethod, setPaymentMethod] = useState('');
 
-    const [useDogId, setUseDogId] = useState('');
-    const [usePayment, setUsePayment] = useState('');
+    const [includePaid, setIncludePaid] = useState(true);
+    const [includeRefunded, setIncludeRefunded] = useState(true);
 
-    const [usePending, setusePending] = useState(true);
-    const [useActive, setUseActive] = useState(false);
-    const [useCompleted, setUseCompleted] = useState(false);
-    const [useCancelled, setUseCancelled] = useState(false);
+    const [includePending, setIncludePending] = useState(true);
+    const [includeActive, setIncludeActive] = useState(false);
+    const [includeCompleted, setIncludeCompleted] = useState(false);
+    const [includeCancelled, setIncludeCancelled] = useState(false);
 
+    const handleSelectPayment = (event) => {
+        setPaymentMethod(event.target.value);
+    };
+
+
+
+    const selectedClassTypesString = JSON.stringify(selectedClassTypes);
+    const selectedDogIDsString = JSON.stringify(selectedDogIDs);
     useEffect(() => {
         async function getTest() {
                 try {
-                    const res = await axios.get(`/api/Applications`, {params: {useDogId, usePayment, usePending, useActive, useCompleted, useCancelled}});
+                    const res = await axios.post(`/api/Applications/query`, {
+                        classTypeIDs: selectedClassTypes?.map(ct => ct.id),
+                        dogIDs: selectedDogIDs?.map(d => d.id),
+                        PaymentMethod,
+                        includePaid,
+                        includeRefunded,
+                        includePending,
+                        includeActive,
+                        includeCompleted,
+                        includeCancelled,
+                    });
+                    console.log(res);
                     setAppDetails(res?.data);
                     setLoading(false);
                 } catch (err) {
@@ -54,7 +82,29 @@ const AppManagement = (props) => {
 
         }
         getTest();
-    }, [useDogId, usePayment, usePending, useActive, useCompleted, useCancelled]);
+    }, [selectedClassTypesString, selectedDogIDsString, PaymentMethod, includePaid, includeRefunded, includePending, includeActive, includeCompleted, includeCancelled]); // eslint-disable-line
+
+    const typeRenderMenuItemChildren = (option, { text }, index) => (
+        <Fragment>
+            <Highlighter key={index} search={text}>
+                {`${option.title} ${option.isArchived ? '- [Archived]' : ''}`}
+            </Highlighter>
+        </Fragment>
+    );
+
+    const typeRenderToken = (option, { onRemove }, index) => (
+        <Token
+            key={index}
+            onRemove={onRemove}
+            option={option}>
+            {`${option.title} ${option.isArchived ? '- [Archived]' : ''}`}
+        </Token>
+    );
+
+    const typeLabelKey = (option) =>
+        loadingOptions
+            ? 'Loading...'
+            : `${option.title} ${option.isArchived ? '- [Archived]' : ''}`;
 
     return (
         <div>
@@ -74,11 +124,20 @@ const AppManagement = (props) => {
                         <Col>
                             <FormGroup>
                                 <Label for='classTypeInput'>Class Type</Label>
-                                <Input
-                                    id="classTypeInput"
-                                    name='classType'
-                                    placeholder='Type a class name here'
-                                    type='text'
+                                <Typeahead
+                                    id="ClassTypesTypeahead"
+                                    labelKey={typeLabelKey}
+                                    placeholder="Choose a class type..."
+                                    selected={selectedClassTypes}
+                                    onChange={setSelectedClassTypes}
+                                    disabled={loadingOptions}
+                                    options={classTypeOptions}
+                                    renderMenuItemChildren={typeRenderMenuItemChildren}
+                                    renderToken={typeRenderToken}
+                                    multiple
+                                    flip
+                                    clearButton
+                                    positionFixed
                                 />
                             </FormGroup>
                         </Col>
@@ -100,8 +159,9 @@ const AppManagement = (props) => {
                                     id='payMethod'
                                     name='paySelect'
                                     type='select'
+                                    onChange={handleSelectPayment}
                                 >
-                                <option value='allPayments' selected>All Payment Types</option>
+                                <option value=''>All Payment Types</option>
                                 <option value='paypal'>Paypal</option>
                                 <option value='zelle'>Zelle</option>
                                 <option value='check'>Check</option>
@@ -116,15 +176,17 @@ const AppManagement = (props) => {
                                 <Row>
                                     <Col>
                                 <FormGroup check inline>
-                                    <Input type='checkbox' 
-                                        onChange=''
-                                        disabled={loading}                                    />
+                                    <Input type='checkbox'
+                                        checked={includePaid}
+                                        onChange={(e) => setIncludePaid(e.target.checked)}
+                                        disabled={loading} />
                                     <Label check>Paid</Label>
                                 </FormGroup></Col>
                                 <Col>
                                 <FormGroup check inline>
                                     <Input type='checkbox'
-                                        onChange=''
+                                        checked={includeRefunded}
+                                        onChange={(e) => setIncludeRefunded(e.target.checked)}
                                         disabled={loading} />
                                     <Label check>Refunded</Label>
                                 </FormGroup></Col></Row>
@@ -136,29 +198,29 @@ const AppManagement = (props) => {
                     </Row>
                         <FormGroup check inline>
                             <Input type='checkbox' 
-                                checked=''
-                                onChange=''
+                                checked={includePending}
+                                onChange={(e) => setIncludePending(e.target.checked)}
                                 disabled={loading}/>
                             <Label check>Pending</Label>
                         </FormGroup>
                         <FormGroup check inline>
                             <Input type='checkbox'
-                                checked=''
-                                onChange=''
+                                checked={includeActive}
+                                onChange={(e) => setIncludeActive(e.target.checked)}
                                 disabled={loading}/>
                             <Label check>Active</Label>
                         </FormGroup>
                         <FormGroup check inline>
                             <Input type='checkbox'
-                                checked=''
-                                onChange=''
+                                checked={includeCompleted}
+                                onChange={(e) => setIncludeCompleted(e.target.checked)}
                                 disabled={loading} />
                             <Label check>Completed</Label>
                         </FormGroup> 
                         <FormGroup check inline>
                             <Input type='checkbox'
-                                checked=''
-                                onChange=''
+                                checked={includeCancelled}
+                                onChange={(e) => setIncludeCancelled(e.target.checked)}
                                 disabled={loading}                             />
                             <Label check>Cancelled</Label>
                         </FormGroup>
