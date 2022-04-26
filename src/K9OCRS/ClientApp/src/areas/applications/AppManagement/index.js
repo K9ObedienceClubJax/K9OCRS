@@ -1,8 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { Button, FormGroup, Input, Label, Spinner, Form, Row, Col, Badge } from 'reactstrap';
+import { FormGroup, Input, Label, Spinner, Form, Row, Col, Badge } from 'reactstrap';
 import { Highlighter, Typeahead, Token } from 'react-bootstrap-typeahead';
 import { getClassTypeOptions } from 'src/util/apiClients/classTypes';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -35,7 +34,6 @@ const AppManagement = (props) => {
         getOptions();
     }, []);
 
-    //Not implemented in API:
     const [selectedClassTypes, setSelectedClassTypes] = useState([]);
     const [selectedDogs, setSelectedDogs] = useState([]);
     const [PaymentMethod, setPaymentMethod] = useState('');
@@ -276,25 +274,15 @@ const AppManagement = (props) => {
                                 disabled={loading}                             />
                             <Label check>Cancelled</Label>
                         </FormGroup>
-
-                        {/* <FormGroup className="me-5" check>
-                        <Input
-                            type="checkbox"
-                            checked={includeArchived}
-                            onChange={() => toggleIncludeArchived()}
-                            disabled={loading}
-                        />
-                        <Label check>Show Archived Types</Label>
-                        </FormGroup> */}
                 </Form>
-                <Table
+                { loading ? <Spinner /> : (
+                    <Table
                         columns={sectionColumns}
                         data={appDetails}
                         pageSize={12}
                         withPagination
                     />
-
-          
+                )}
             </PageBody>
         </div>
     );
