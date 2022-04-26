@@ -16,17 +16,19 @@ const statusTemplate = ({ value }) => <Badge color={statusColors[value]}>{value}
 
 const checkMarkTemplate = ({ value }) => value ? <BsCheckLg className="text-success" /> : <BsXLg className='text-danger' />;
 
-/* const dogTemplate = ({ value }) => {
+const dogTemplate = ({ value }) => {
     return (
-      <div>
-        <ProfileBadge
-          {...value}
-          imageUrl={value.profilePictureUrl}
-          link
-        />
-      </div>
+        <div>
+            <ProfileBadge
+                id={value.id}
+                fullName={value.name}
+                imageUrl={value.profilePictureUrl}
+                isDog
+                link
+            />
+        </div>
     );
-  }; */
+};
 
 
 const applicationIdTemplate = ({ value }) => {
@@ -67,8 +69,8 @@ const columns = [
     },
     {
         Header: "Dog's Name",
-        accessor: 'dogName',
-        Cell: alignmentWrapper('center'),
+        accessor: (row) => ({ id: row.dogID, name: row.dogName, profilePictureUrl: row.dogProfilePictureUrl }),
+        Cell: alignmentWrapper('left', dogTemplate),
     },
     {
         Header: 'Main Attendee',

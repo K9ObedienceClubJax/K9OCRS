@@ -68,7 +68,6 @@ const AppManagement = (props) => {
                         includeCompleted,
                         includeCancelled,
                     });
-                    console.log(res);
                     setAppDetails(res?.data);
                     setLoading(false);
                 } catch (err) {
@@ -115,6 +114,7 @@ const AppManagement = (props) => {
                         id={option.id}
                         imageUrl={option.profilePictureUrl}
                         fullName={option.name}
+                        isDog
                     />
                 </Col>
                 <Col className="d-flex justify-content-start align-items-center">
@@ -135,10 +135,11 @@ const AppManagement = (props) => {
             onRemove={onRemove}
             option={option}>
             <ProfileBadge
-                    id={option.id}
-                    imageUrl={option.profilePictureUrl}
-                    fullName={option.name}
-                />
+                id={option.id}
+                imageUrl={option.profilePictureUrl}
+                fullName={option.name}
+                isDog
+            />
         </Token>
     );
 

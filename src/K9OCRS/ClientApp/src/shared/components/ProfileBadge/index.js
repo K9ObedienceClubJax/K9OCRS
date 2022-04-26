@@ -7,10 +7,13 @@ import Avatar from '../Avatar';
 import './styles.scss';
 
 const ProfileBadge = (props) => {
-    const { className, id, imageUrl, fullName, firstName, lastName, link } = props;
+    const { className, id, imageUrl, fullName, firstName, lastName, link, isDog } = props;
 
     const navigate = useNavigate();
     const userSetupPath = `/Manage/Users/${id}`;
+    const dogsSetupPath = `/Manage/Dogs/${id}`;
+
+    const linkPath = isDog ? dogsSetupPath : userSetupPath;
 
     const cn = 'profileBadge';
 
@@ -23,7 +26,7 @@ const ProfileBadge = (props) => {
     );
 
     return (
-        <div className={topCn} onClick={link ? () => navigate(userSetupPath) : undefined}>
+        <div className={topCn} onClick={link ? () => navigate(linkPath) : undefined}>
             <Avatar imageUrl={imageUrl} />
             <span className={`${cn}__name`}>{fullName ? fullName : `${firstName} ${lastName}`}</span>
         </div>
@@ -34,6 +37,7 @@ ProfileBadge.defaultProps = {
     className: '',
     id: null,
     link: false,
+    isDog: false,
 };
 
 ProfileBadge.propTypes = {
@@ -44,6 +48,7 @@ ProfileBadge.propTypes = {
     firstName: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
     link: PropTypes.bool,
+    isDog: PropTypes.bool,
 };
 
 export default ProfileBadge;

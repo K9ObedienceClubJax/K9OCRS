@@ -4,7 +4,9 @@ using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
 using K9OCRS.Models;
 using K9OCRS.Models.ApplicationsManagement;
+using K9OCRS.Models.DogManagement;
 using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -64,7 +66,19 @@ namespace K9OCRS.Controllers
                 )
             );
 
-            return Ok(result);
+            var mappedResults = result.Select(ca => {
+                var dogEntity = new Dog
+                {
+                    ProfilePictureFilename = ca.DogProfilePictureFilename,
+                };
+                var dogResult = dogEntity.ToDogResult(serviceConstants.storageBasePath);
+                
+                var updatedEntity = new ClassApplication(ca);
+                updatedEntity.DogProfilePictureUrl = dogResult.ProfilePictureUrl;
+                return updatedEntity;
+            });
+
+            return Ok(mappedResults);
         }
 
         // Get details

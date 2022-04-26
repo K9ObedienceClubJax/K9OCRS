@@ -37,6 +37,7 @@ namespace DataAccess.Repositories
                 .Select(
                     "ca.*",
                     "d.Name as DogName",
+                    "d.ProfilePictureFilename",
                     "ct.Title"
                 );
 
@@ -66,14 +67,15 @@ namespace DataAccess.Repositories
             // Only use this when using Dapper's parameters
             var query = sqlCompiler.Compile(queryBuilder).ToString();
 
-            var result = await conn.QueryAsync<ClassApplication, string, string, ClassApplication>(query,
-            (application, dogName, typeTitle) => {
+            var result = await conn.QueryAsync<ClassApplication, string, string, string, ClassApplication>(query,
+            (application, dogName, profilePictureFilename, typeTitle) => {
                 application.DogName = dogName;
+                application.DogProfilePictureFilename = profilePictureFilename;
                 application.ClassTypeTitle = typeTitle;
                 return application;
             },
             new { PaymentMethod, DogIDs, ClassTypeIDs },
-            splitOn: "DogName,Title");
+            splitOn: "DogName,ProfilePictureFilename,Title");
 
             return result.ToList();
         }
