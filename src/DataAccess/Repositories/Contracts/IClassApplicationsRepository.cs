@@ -9,8 +9,11 @@ namespace DataAccess.Repositories.Contracts
     {
         Task<IReadOnlyList<ClassApplication>> GetAll(
             IDbConnection conn,
-            int? DogID,
+            IEnumerable<int> ClassTypeIDs,
+            IEnumerable<int> DogIDs,
             string PaymentMethod,
+            bool includePaid,
+            bool includeRefunded,
             bool includePending,
             bool includeActive,
             bool includeCompleted,

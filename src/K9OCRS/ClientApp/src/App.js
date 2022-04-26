@@ -29,7 +29,9 @@ import User from './areas/management/Users/User';
 import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
 import ClassSectionSetup from './areas/classes/ClassSectionSetup';
+import AppManagement from './areas/applications/AppManagement';
 import TestUpload from './areas/classes/TestUpload';
+import AppDetails from './areas/applications/AppManagement/components/AppDetails';
 
 import './app.scss';
 
@@ -142,6 +144,22 @@ export default class App extends Component {
                             <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
                                 <ClassManagement />
                             </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Manage/Applications"
+                        element={
+                        <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                            <AppManagement />
+                        </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Manage/Applications/Details/:id"
+                        element={
+                        <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                            <AppDetails />
+                        </ProtectedRoute>
                         }
                     />
                     {/* This route is just for a quick test, it will be removed */}

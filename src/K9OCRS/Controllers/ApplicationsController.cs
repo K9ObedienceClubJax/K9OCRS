@@ -4,7 +4,9 @@ using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
 using K9OCRS.Models;
 using K9OCRS.Models.ApplicationsManagement;
+using K9OCRS.Models.DogManagement;
 using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,16 +46,19 @@ namespace K9OCRS.Controllers
         }
 
         //Get all
-        [HttpGet]
+        [HttpPost("query")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(IEnumerable<ClassApplication>), 200)]
-        public async Task<IActionResult> GetAllApplications([FromQuery] ApplicationsListRequest request)
+        public async Task<IActionResult> GetAllApplications([FromBody] ApplicationsListRequest request)
         {
             var result = await connectionOwner.Use(conn =>
                 dbOwner.ClassApplications.GetAll(
                     conn,
-                    request.DogID,
+                    request.ClassTypeIDs,
+                    request.DogIDs,
                     request.PaymentMethod,
+                    request.includePaid,
+                    request.includeRefunded,
                     request.includePending,
                     request.includeActive,
                     request.includeCompleted,
@@ -61,7 +66,19 @@ namespace K9OCRS.Controllers
                 )
             );
 
-            return Ok(result);
+            var mappedResults = result.Select(ca => {
+                var dogEntity = new Dog
+                {
+                    ProfilePictureFilename = ca.DogProfilePictureFilename,
+                };
+                var dogResult = dogEntity.ToDogResult(serviceConstants.storageBasePath);
+                
+                var updatedEntity = new ClassApplication(ca);
+                updatedEntity.DogProfilePictureUrl = dogResult.ProfilePictureUrl;
+                return updatedEntity;
+            });
+
+            return Ok(mappedResults);
         }
 
         // Get details
