@@ -1,15 +1,13 @@
-.dogCard{
+.dogCardInput{
     position: absolute;
     width: 383px;
     height: 519px;
     left: 40px;
     top: 374px;
+    align-items: center;
 }
 
-
-
 .profilePicZone{
-    position: static;
     width: 160px;
     height: 160px;
     left: 0px;
@@ -19,8 +17,45 @@
 
 /* Inside auto layout */
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex: none;
     order: 0;
     flex-grow: 0;
-    margin: 16px 0px;
+    margin: 16px 64px 0px 64px;
 }
+
+.dogInputField{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    padding: 0px;
+    font-weight: 500;
+    
+
+    position: static;
+    width: 255px;
+    height: 80px;
+    left: 64px;
+    top: 240px;
+
+    border-radius: 4px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    margin: 30px 64px 20px 64px;
+}
+
+.fileDropZoneForDog{
+    width: 954px;
+    height: 519px;
+    left: 446px;
+    top: 374px;
+    margin: 50px 50px 0px 0px;
+}
+

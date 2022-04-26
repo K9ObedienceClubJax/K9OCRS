@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Col, Row } from 'reactstrap';
+import { Button, Col, Row, Label, FormGroup, Form } from 'reactstrap';
 import Input from '../../../shared/components/FloatingLabelInput';
 import FileDropzone from '../../../shared/components/FileDropzone';
-import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
 import FileThumbnail from '../../../shared/components/FileThumbnail';
 import { useReducer } from 'react';
+import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
+import PageBody from '../../../shared/components/PageBody'
+
 import './styles.scss';
 
 
@@ -27,6 +29,7 @@ const DogEditor = (props) => {
     const [dogDetails, dispatch] = useReducer(reducer, initialState);
 
     const [picture, setPicture] = useState(dog?.picture);
+    const [modal, setModal] = useState('');
 
     const [pictureToUpdate, setPictureToUpdate] = useState(null);
     const [pictureToAdd, setPictureToAdd] = useState([]);
@@ -73,149 +76,90 @@ const DogEditor = (props) => {
                 handleSubmit();
             }}
         >
-            <Row className={`${cn}__container`}>
-                <Col className='dogCard'>
-                    <Col className='profilePicZone'>
-                        <ProfileFileDropzone
-                                maxSize="5MB"
-                                maxFiles={1}
-                                onChange={(files) => setPictureToUpdate(files[0])}
-                                currentImage={dog?.picture}
-                            />
-                    </Col>
-                </Col>
-            </Row>
-            {/* <Row className={`${cn}__top`}>
-                <Col className="d-flex" xs="12" md="5" lg="4" xl="3">
+            <Row className='DogSetupContainer'>
+            <Col className='DogCardInput' lg="2" md="4" sm="1">
+                <Row className='profilePicZone'>
                     <ProfileFileDropzone
                         maxSize="5MB"
                         maxFiles={1}
-                        onChange={(files) => setImageToUpdate(files[0])}
-                        currentImage={classType?.imageUrl}
+                        onChange={(files) => setPictureToUpdate(files[0])}
+                        currentImage={dog?.currentImage}
                     />
-                </Col>
-                <Col
-                    className="d-flex flex-column"
-                    xs="12"
-                    md="7"
-                    lg="8"
-                    xl="9"
-                >
-                    <Row className="g-2" xs="1" sm="1" md="3">
-                        <Col md="5" lg="7">
-                            <Input
-                                type="text"
-                                label="Title"
-                                labelFor="Title"
-                                className="mb-2"
-                                value={classTypeDetails?.title}
-                                onChange={(e) =>
-                                    dispatch({
-                                        type: 'title',
-                                        payload: e.target.value,
-                                    })
-                                }
-                                required
-                            />
-                        </Col>
-                        <Col md="5" lg="3">
-                            <Input
-                                type="text"
-                                label="Estimated Length"
-                                labelFor="EstimatedLength"
-                                className="mb-2"
-                                helpText={'for example: "7 weeks"'}
-                                value={classTypeDetails?.duration}
-                                onChange={(e) =>
-                                    dispatch({
-                                        type: 'duration',
-                                        payload: e.target.value,
-                                    })
-                                }
-                                pattern="^\d+\s[A-Z-a-z]+.*$"
-                                required
-                            />
-                        </Col>
-                        <Col md="2" lg="2">
-                            <Input
-                                type="number"
-                                label="Price"
-                                labelFor="Price"
-                                className="mb-2"
-                                value={classTypeDetails?.price}
-                                onChange={(e) =>
-                                    dispatch({
-                                        type: 'price',
-                                        payload: e.target.value,
-                                    })
-                                }
-                                required
-                            />
-                        </Col>
-                    </Row>
-                    <Row className="g-2">
-                        <Input
+                </Row>
+                <Row className='dogInputField'>
+                    <FormGroup>
+                        <Label for="dogNameInput">
+                            Name
+                        </Label>
+                        <Input 
                             type="text"
-                            label="Requirements"
-                            labelFor="Requirements"
-                            className="mb-2"
-                            value={classTypeDetails?.requirements}
+                            id="dogNameInput"
+                            label="e.g. 'Max'"
+                            labelFor="Name"
+                            value={dogDetails?.name}
                             onChange={(e) =>
                                 dispatch({
-                                    type: 'requirements',
-                                    payload: e.target.value,
-                                })
-                            }
-                        />
-                    </Row>
-                    <Row className="g-2">
-                        <Input
-                            type="textarea"
-                            label="Description"
-                            labelFor="Description"
-                            className="mb-2"
-                            rows="15"
-                            value={classTypeDetails?.description}
+                                    type: 'name',
+                                    payload: e.target.value
+                                })}
+                            Required>
+                        </Input>
+                    </FormGroup>
+                </Row>
+                <Row className='dogInputField'>
+                    <FormGroup>
+                        <Label for="dogBreedInput">
+                            Breed
+                        </Label>
+                        <Input 
+                            type="text"
+                            id="dogBreedInput"
+                            label="e.g. 'Golden Retriever'"
+                            labelFor="Breed"
+                            value={dogDetails?.breed}
                             onChange={(e) =>
                                 dispatch({
-                                    type: 'description',
-                                    payload: e.target.value,
-                                })
-                            }
-                            style={{ minHeight: '250px' }}
-                            required
-                        />
-                    </Row>
-                </Col>
-            </Row>
-            <section className={`${cn}__photos`}>
-                <div className={`${cn}__photos-header`}>
-                    <h3>Photos</h3>
-                    {!addingNewType ? (
-                        <Button
-                            color="primary"
-                            onClick={() => setShowPhotosAdd(true)}
-                        >
-                            Add More
-                        </Button>
-                    ) : null}
-                </div>
-                {showPhotosAdd ? (
+                                    type: 'breed',
+                                    payload: e.target.value
+                                })}
+                            Required>
+                        </Input>
+                    </FormGroup>
+                </Row>
+                <Row className='dogInputField'>
+                    <FormGroup>
+                        <Label for="dateOfBirthInput">
+                            Date of Birth
+                        </Label>
+                        <Input 
+                            type="date"
+                            name="date"
+                            label="Date of Birth"
+                            labelFor="dateOfBirth"
+                            id="dateOfBirthInput"
+                            value={dogDetails?.dateOfBirth}
+                            onChange={(e) =>
+                                dispatch({
+                                    type: 'dateOfBirth',
+                                    payload: e.target.value
+                                })}
+                            Required>
+                        </Input>
+                    </FormGroup>
+                </Row>
+            </Col>
+            <Col className='fileDropZoneForDog' lg="8" md="6" sm="2">
+                <Row>
+                <h3>Vaccination Records</h3>
                     <FileDropzone
                         maxSize="5MB"
-                        onChange={(files) => setPhotosToAdd(files)}
+                        onChange={(files) => setPictureToAdd(files)}
                         bordered
                     />
-                ) : null}
-                {photos?.map((p, idx) => (
-                    <FileThumbnail
-                        key={p.id}
-                        src={p.imageUrl}
-                        handleRemove={() => handleRemove(p, idx)}
-                        removable
-                    />
-                ))}
-            </section> */}
+                </Row>
+            </Col>
+            </Row>
+            
         </form>
     );
 };

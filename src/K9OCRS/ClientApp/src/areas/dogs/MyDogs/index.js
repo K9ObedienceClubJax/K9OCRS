@@ -18,7 +18,7 @@ const MyDogs = (props) => {
 
     useEffect(() => {
         getData();
-    }, []);
+    }, []); // eslint-disable-line
 
     return (
         <div>
