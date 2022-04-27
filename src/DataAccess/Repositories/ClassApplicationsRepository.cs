@@ -19,8 +19,11 @@ namespace DataAccess.Repositories
 
         public async Task<IReadOnlyList<ClassApplication>> GetAll(
             IDbConnection conn,
-            int? DogID,
+            IEnumerable<int> ClassTypeIDs,
+            IEnumerable<int> DogIDs,
             string PaymentMethod,
+            bool includePaid,
+            bool includeRefunded,
             bool includePending,
             bool includeActive,
             bool includeCompleted,
@@ -34,11 +37,15 @@ namespace DataAccess.Repositories
                 .Select(
                     "ca.*",
                     "d.Name as DogName",
+                    "d.ProfilePictureFilename",
                     "ct.Title"
                 );
 
-            // Add DogID Filter
-            if (DogID != null) queryBuilder.WhereRaw("ca.DogID = @DogID");
+            // Add DogIDs Filter
+            if (ClassTypeIDs.Count() > 0) queryBuilder.WhereRaw("ct.ID IN @ClassTypeIDs");
+
+            // Add DogIDs Filter
+            if (DogIDs.Count() > 0) queryBuilder.WhereRaw("ca.DogID IN @DogIDs");
 
             // Add PaymentMethod Filter
             if (!string.IsNullOrEmpty(PaymentMethod)) queryBuilder.WhereRaw("ca.PaymentMethod = @PaymentMethod");
@@ -53,17 +60,22 @@ namespace DataAccess.Repositories
             // Add Status Filter
             if (excludedStatusesList.Count > 0) queryBuilder.WhereNotIn("ca.Status", excludedStatusesList);
 
+            // Add Payment Status Filters
+            if (!includePaid) queryBuilder.WhereRaw("ca.isPaid = 0");
+            if (!includeRefunded) queryBuilder.WhereRaw("ca.isRefunded = 0");
+
             // Only use this when using Dapper's parameters
             var query = sqlCompiler.Compile(queryBuilder).ToString();
 
-            var result = await conn.QueryAsync<ClassApplication, string, string, ClassApplication>(query,
-            (application, dogName, typeTitle) => {
+            var result = await conn.QueryAsync<ClassApplication, string, string, string, ClassApplication>(query,
+            (application, dogName, profilePictureFilename, typeTitle) => {
                 application.DogName = dogName;
+                application.DogProfilePictureFilename = profilePictureFilename;
                 application.ClassTypeTitle = typeTitle;
                 return application;
             },
-            new { PaymentMethod, DogID },
-            splitOn: "DogName,Title");
+            new { PaymentMethod, DogIDs, ClassTypeIDs },
+            splitOn: "DogName,ProfilePictureFilename,Title");
 
             return result.ToList();
         }

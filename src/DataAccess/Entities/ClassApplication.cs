@@ -25,6 +25,10 @@ namespace DataAccess.Entities
         public string ClassTypeTitle { get; set; }
         [TransactionIgnore]
         public string DogName { get ; set; }
+        [TransactionIgnore]
+        public string DogProfilePictureFilename { get; set; }
+        [TransactionIgnore]
+        public string DogProfilePictureUrl { get; set; }
 
         #endregion
 
@@ -43,6 +47,12 @@ namespace DataAccess.Entities
             isRefunded = entity.isRefunded;
             ReviewedBy = entity.ReviewedBy;
             ReviewedDate = entity.ReviewedDate;
+
+            ClassTypeTitle = entity.ClassTypeTitle;
+            DogName = entity.DogName;
+            DogProfilePictureFilename = entity.DogProfilePictureFilename;
+            DogProfilePictureUrl = entity.DogProfilePictureUrl;
+
             ModifiedByID = entity.ModifiedByID;
             ModifiedByName = entity.ModifiedByName;
             ModifiedDate = entity.ModifiedDate;
