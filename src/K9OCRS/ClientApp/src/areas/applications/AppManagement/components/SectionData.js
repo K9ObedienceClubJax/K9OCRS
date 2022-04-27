@@ -36,10 +36,10 @@ const SectionData = (props) => {
         <h4>Class Details</h4>
         <div className='ps-3'>
             <p>Section:&nbsp;&nbsp;{sectionData?.id} </p>
-            <p>Instructor:&nbsp;&nbsp;{sectionData?.instructor.firstName} {sectionData?.instructor.lastName}</p>
-            <p>Type: &nbsp;&nbsp;{sectionData?.classType.title}</p>
-            <p>Price:&nbsp;&nbsp;${sectionData?.classType.price}</p>
-            <p>Requirements:&nbsp;&nbsp;{sectionData?.classType.requirements}</p>
+            <p>Instructor:&nbsp;&nbsp;{sectionData?.instructor?.firstName} {sectionData?.instructor?.lastName}</p>
+            <p>Type: &nbsp;&nbsp;{sectionData?.classType?.title}</p>
+            <p>Price:&nbsp;&nbsp;${sectionData?.classType?.price}</p>
+            <p>Requirements:&nbsp;&nbsp;{sectionData?.classType?.requirements}</p>
         </div>
         </>
     )
