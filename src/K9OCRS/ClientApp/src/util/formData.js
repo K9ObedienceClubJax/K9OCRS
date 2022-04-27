@@ -89,3 +89,49 @@ export const classTypeUpdateRequestToFormData = ({
 
     return formData;
 };
+
+// Dog Requests
+
+export const dogAddRequestToFormData = ({ name, breed, dateOfBirth, image, vaccinationRecord }) => {
+    var formData = new FormData();
+
+    formData.append('name', name);
+    formData.append('breed', breed);
+    formData.append('dateOfBirth', dateOfBirth);
+
+    if (image) {
+        formData.append('image', image, image.name);
+    }
+
+    if (vaccinationRecord) {
+        formData.append('vaccinationRecord', vaccinationRecord, vaccinationRecord.name);
+    }
+
+    return formData;
+};
+
+export const dogUpdateRequestToFormData = ({
+    id,
+    name,
+    breed,
+    dateOfBirth,
+    image,
+    vaccinationRecord,
+}) => {
+    var formData = new FormData();
+
+    formData.append('id', id);
+    formData.append('name', name);
+    formData.append('breed', breed);
+    formData.append('dateOfBirth', dateOfBirth);
+
+    if (image) {
+        formData.append('image', image, image.name);
+    }
+
+    if (vaccinationRecord) {
+        formData.append('vaccinationRecord', vaccinationRecord, vaccinationRecord.name);
+    }
+
+    return formData;
+};

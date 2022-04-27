@@ -19,7 +19,6 @@ import ChangePassword from './areas/accounts/ChangePassword';
 import MyAccount from './areas/accounts/index';
 
 import MyDogs from './areas/dogs/MyDogs';
-import DogDetails from './areas/dogs/DogDetails';
 import DogSetup from './areas/dogs/DogSetup';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
@@ -100,7 +99,7 @@ export default class App extends Component {
                         path="/Account/MyDogs/:dogId"
                         element={
                             <ProtectedRoute>
-                                <DogDetails />
+                                <DogSetup />
                             </ProtectedRoute>
                         }
                     />
@@ -149,17 +148,17 @@ export default class App extends Component {
                     <Route
                         path="/Manage/Applications"
                         element={
-                        <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
-                            <AppManagement />
-                        </ProtectedRoute>
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <AppManagement />
+                            </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/Manage/Applications/Details/:id"
                         element={
-                        <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
-                            <AppDetails />
-                        </ProtectedRoute>
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <AppDetails />
+                            </ProtectedRoute>
                         }
                     />
                     {/* This route is just for a quick test, it will be removed */}

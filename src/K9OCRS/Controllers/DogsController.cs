@@ -15,6 +15,7 @@ using K9OCRS.Models.DogManagement;
 using K9OCRS.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using K9OCRS.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace K9OCRS.Controllers
 {
@@ -52,14 +53,29 @@ namespace K9OCRS.Controllers
         #region Dogs
         //create dog
         [HttpPost]
-        public async Task<IActionResult> CreateDog(Dog entity)
+        public async Task<IActionResult> CreateDog([FromForm] DogAddRequest request)
         {
             try
             {
+                var entity = new Dog
+                {
+                    Name = request.Name,
+                    Breed = request.Breed,
+                    DateOfBirth = request.DateOfBirth,
+                };
+
                 var result = await connectionOwner.Use(conn =>
                 {
                     return dbOwner.Dogs.Add(conn, entity);
                 });
+
+                if (request.Image != null)
+                {
+                    await UpdateImage(result.ID, new FileUpload
+                    {
+                        Files = new List<IFormFile> { request.Image },
+                    });
+                }
 
                 return Ok(result);
             }
@@ -140,18 +156,37 @@ namespace K9OCRS.Controllers
 
         //update dog
         [HttpPut]
-        public async Task<IActionResult> UpdateDog(Dog entity)
+        public async Task<IActionResult> UpdateDog([FromForm] DogUpdateRequest request)
         {
             try
             {
                 var result = await connectionOwner.Use(conn =>
                 {
+
+                    var entity = new Dog
+                    {
+                        ID = request.ID,
+                        Name = request.Name,
+                        Breed = request.Breed,
+                        DateOfBirth = request.DateOfBirth,
+                    };
+
+
                     return dbOwner.Dogs.Update(conn, entity);
+
                 });
+
+                if (request.Image != null)
+                {
+                    await UpdateImage(request.ID, new FileUpload
+                    {
+                        Files = new List<IFormFile> { request.Image },
+                    });
+                }
 
                 return Ok(result);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }

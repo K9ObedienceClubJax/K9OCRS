@@ -13,14 +13,13 @@ import {
 } from 'reactstrap';
 
 const DeleteModal = (props) => {
-    const { dogId, toggle, isOpen, loading, submitting, handleDelete} = props;
+    const { dogId, toggle, isOpen, loading, submitting, handleDelete } = props;
 
     const [targetDog, setTargetDog] = useState(undefined);
 
     const disableDelete = loading || submitting || !targetDog;
 
-    const deleteHandler = () =>
-        mustReassignSections ? handleDelete(targetDog) : handleDelete();
+    const deleteHandler = () => (mustReassignSections ? handleDelete(targetDog) : handleDelete());
 
     const deleteWarning =
         "This action can't be reverted. This class type and all the photos related to it will be deleted.";
@@ -75,15 +74,6 @@ const DeleteModal = (props) => {
                     </>
                 )}
             </ModalBody>
-            <ModalFooter>
-                <Button color="danger" disabled={disableDelete} onClick={deleteHandler}>
-                    {mustReassignSections ? 'Reassign and Delete' : 'Delete'}
-                    {submitting && <Spinner className="ms-3" size="sm" />}
-                </Button>
-                <Button color="secondary" onClick={toggle} outline>
-                    Cancel
-                </Button>
-            </ModalFooter>
         </Modal>
     );
 };

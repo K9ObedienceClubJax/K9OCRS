@@ -8,11 +8,7 @@ import PageHeader from '../../../shared/components/PageHeader';
 import PageBody from '../../../shared/components/PageBody';
 
 const MyDogs = (props) => {
-    const {
-        loading,
-        dogList,
-        getData,
-    } = props;
+    const { loading, dogList, getData } = props;
 
     const [alerts, setAlerts] = useState([]);
 
@@ -36,25 +32,28 @@ const MyDogs = (props) => {
                 </Button>
             </PageHeader>
             <PageBody>
-                { loading ? <Spinner /> : (
+                {loading ? (
+                    <Spinner />
+                ) : (
                     <Row lg="2" xs="1">
-                        {
-                            dogList?.map(dog => (
-                                <Col key={dog.id}>
-                                    <DogCard {...dog} />
-                                </Col>
-                            ))
-                        }
+                        {dogList?.map((dog) => (
+                            <Col key={dog.id}>
+                                <DogCard {...dog} />
+                            </Col>
+                        ))}
                     </Row>
                 )}
             </PageBody>
         </div>
-    )
-}
+    );
+};
 
-export default connect(state => ({
-    loading: state.dogs.myDogs.loading,
-    dogList: state.dogs.myDogs.dogList,
-}), {
-    getData: actions.fetchMyDogsList,
-})(MyDogs);
+export default connect(
+    (state) => ({
+        loading: state.dogs.loading,
+        dogList: state.dogs.myDogsList,
+    }),
+    {
+        getData: actions.fetchMyDogsList,
+    }
+)(MyDogs);

@@ -1,166 +1,140 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Col, Row, Label, FormGroup, Form } from 'reactstrap';
-import Input from '../../../shared/components/FloatingLabelInput';
+import React, { useState, useEffect } from 'react';
+import moment from 'moment-timezone';
+import ClassNames from 'classnames';
+import { Row, Col, FormGroup, Label, Input, Button } from 'reactstrap';
 import FileDropzone from '../../../shared/components/FileDropzone';
-import FileThumbnail from '../../../shared/components/FileThumbnail';
-import { useReducer } from 'react';
 import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
-import PageBody from '../../../shared/components/PageBody'
-
-import './styles.scss';
-
-
-const reducer = (state, action) => ({
-    ...state,
-    [action.type]: action.payload,
-});
+import { BsFileEarmarkText, BsXLg } from 'react-icons/bs';
+import { formatToServerDateTime } from 'src/util/dates';
 
 const DogEditor = (props) => {
-    const { dog, formRef, handleSubmit, setData, addingNewDog } = props;
+    const { loading, submitting, dogDetails, setData, formRef } = props;
 
-    const initialState = {
-        name: addingNewDog ? '' : dog.name,
-        breed: addingNewDog ? '' : dog.breed,
-        dateOfBirth : addingNewDog ? '' : dog.dateOfBirth
-    };
+    const disableInputs = loading || submitting;
 
-    const [dogDetails, dispatch] = useReducer(reducer, initialState);
+    // From our form
+    const [profilePicture, setProfilePicture] = useState(null);
+    const [name, setName] = useState('');
+    const [breed, setBreed] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
+    const [vaccinationRecord, setVaccinationRecord] = useState(null);
 
-    const [picture, setPicture] = useState(dog?.picture);
-    const [modal, setModal] = useState('');
+    const cn = 'dogSetup__editor';
 
-    const [pictureToUpdate, setPictureToUpdate] = useState(null);
-    const [pictureToAdd, setPictureToAdd] = useState([]);
-    const [pictureToRemove, setPictureToRemove] = useState([]);
+    // make reference data types to strings so useEffect can tell when to update
+    const dogString = JSON.stringify(dogDetails);
+    const profilePictureString = JSON.stringify(profilePicture);
+    const vaccinationRecordString = JSON.stringify(vaccinationRecord);
 
-    const [showPictureAdd, setShowPictureAdd] = useState([]);
+    // Populate fields if we get data
+    useEffect(() => {
+        let isMounted = true;
 
-    const cn = 'dogSetupEditor';
+        if (isMounted) {
+            setName(dogDetails?.name);
+            setBreed(dogDetails?.breed);
+            setDateOfBirth(
+                dogDetails?.dateOfBirth ? moment(dogDetails?.dateOfBirth).format('YYYY-MM-DD') : ''
+            );
+        }
+
+        return () => {
+            isMounted = false;
+        };
+    }, [dogString]); // eslint-disable-line
 
     useEffect(() => {
-        if(addingNewDog){
-            setData({
-                picture: pictureToUpdate,
-                ...dogDetails,
-            });
-        } else{
-            setData({
-                id: dog.id,
-                picture: pictureToUpdate,
-                ...dogDetails,
-                pictureToAdd,
-                pictureToRemove
-            });
-        }
-        
-    }, [
-        setData,
-        addingNewDog,
-        pictureToUpdate,
-        dogDetails,
-        pictureToAdd,
-        pictureToRemove,
-        dog,
-    ]);
+        const data = {
+            id: dogDetails?.id,
+            name,
+            breed,
+            dateOfBirth: dateOfBirth ? formatToServerDateTime(dateOfBirth) : '',
+            image: profilePicture,
+            vaccinationRecord,
+        };
+        setData(data);
+    }, [setData, name, breed, dateOfBirth, profilePictureString, vaccinationRecordString]); // eslint-disable-line
 
     //implement handleRemove function
 
+    const vaxStatusCn = ClassNames(`${cn}__vax-status`);
 
     return (
-        <form
-            ref={formRef}
-            onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-            }}
-        >
-            <Row className='DogSetupContainer'>
-            <Col className='DogCardInput' lg="2" md="4" sm="1">
-                <Row className='profilePicZone'>
-                    <ProfileFileDropzone
-                        maxSize="5MB"
-                        maxFiles={1}
-                        onChange={(files) => setPictureToUpdate(files[0])}
-                        currentImage={dog?.currentImage}
-                    />
-                </Row>
-                <Row className='dogInputField'>
-                    <FormGroup>
-                        <Label for="dogNameInput">
-                            Name
-                        </Label>
-                        <Input 
-                            type="text"
-                            id="dogNameInput"
-                            label="e.g. 'Max'"
-                            labelFor="Name"
-                            value={dogDetails?.name}
-                            onChange={(e) =>
-                                dispatch({
-                                    type: 'name',
-                                    payload: e.target.value
-                                })}
-                            Required>
-                        </Input>
-                    </FormGroup>
-                </Row>
-                <Row className='dogInputField'>
-                    <FormGroup>
-                        <Label for="dogBreedInput">
-                            Breed
-                        </Label>
-                        <Input 
-                            type="text"
-                            id="dogBreedInput"
-                            label="e.g. 'Golden Retriever'"
-                            labelFor="Breed"
-                            value={dogDetails?.breed}
-                            onChange={(e) =>
-                                dispatch({
-                                    type: 'breed',
-                                    payload: e.target.value
-                                })}
-                            Required>
-                        </Input>
-                    </FormGroup>
-                </Row>
-                <Row className='dogInputField'>
-                    <FormGroup>
-                        <Label for="dateOfBirthInput">
-                            Date of Birth
-                        </Label>
-                        <Input 
-                            type="date"
-                            name="date"
-                            label="Date of Birth"
-                            labelFor="dateOfBirth"
-                            id="dateOfBirthInput"
-                            value={dogDetails?.dateOfBirth}
-                            onChange={(e) =>
-                                dispatch({
-                                    type: 'dateOfBirth',
-                                    payload: e.target.value
-                                })}
-                            Required>
-                        </Input>
-                    </FormGroup>
-                </Row>
-            </Col>
-            <Col className='fileDropZoneForDog' lg="8" md="6" sm="2">
-                <Row>
-                <h3>Vaccination Records</h3>
-                    <FileDropzone
-                        maxSize="5MB"
-                        onChange={(files) => setPictureToAdd(files)}
-                        bordered
-                    />
-                </Row>
-            </Col>
+        <div>
+            {/* <div className="cardsurface mb-4"></div> */}
+            <Row className={`${cn} gy-3`} lg="2" xs="1">
+                <Col xxl="4" xl="5" lg="6">
+                    <div className="cardsurface">
+                        <div className={`${cn}__profile-picture`}>
+                            <ProfileFileDropzone
+                                className="profilePicZone"
+                                maxSize="5MB"
+                                maxFiles={1}
+                                onChange={(files) => setProfilePicture(files[0])}
+                                currentImage={dogDetails?.profilePictureUrl}
+                                round
+                            />
+                        </div>
+                        <form ref={formRef}>
+                            <FormGroup>
+                                <Label>Name</Label>
+                                <Input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    disabled={disableInputs}
+                                    required
+                                ></Input>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label>Breed</Label>
+                                <Input
+                                    type="text"
+                                    value={breed}
+                                    onChange={(e) => setBreed(e.target.value)}
+                                    disabled={disableInputs}
+                                    required
+                                ></Input>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label>Date of Birth</Label>
+                                <Input
+                                    type="date"
+                                    value={dateOfBirth}
+                                    onChange={(e) => setDateOfBirth(e.target.value)}
+                                    disabled={disableInputs}
+                                    required
+                                ></Input>
+                            </FormGroup>
+                        </form>
+                    </div>
+                </Col>
+                <Col xxl="8" xl="7" lg="6">
+                    <div className="cardsurface">
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                            <h3 className="d-flex align-items-center">
+                                <BsFileEarmarkText size={42} />
+                                <span>
+                                    Vaccination Record -{' '}
+                                    <span className={vaxStatusCn}>Approved</span>
+                                </span>
+                            </h3>
+                            <Button color="danger" disabled={disableInputs} outline>
+                                Remove Current File <BsXLg />
+                            </Button>
+                        </div>
+                        <FileDropzone
+                            maxSize="5MB"
+                            maxFiles={1}
+                            accept="application/pdf, image/jpeg,image/png,image/bmp"
+                            acceptText="pdf, jpg, png, bmp"
+                            onChange={(files) => setVaccinationRecord(files[0])}
+                            bordered
+                        />
+                    </div>
+                </Col>
             </Row>
-            
-        </form>
+        </div>
     );
 };
 

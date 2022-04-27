@@ -1,15 +1,22 @@
-import { put, call, takeEvery } from 'redux-saga/effects';
+import { put, call, takeEvery, takeLatest } from 'redux-saga/effects';
 import debug from 'debug';
 import * as actions from './actions';
 import * as dogApi from '../../../util/apiClients/dogs';
+import { dogAddRequestToFormData, dogUpdateRequestToFormData } from 'src/util/formData';
 
 const log = debug('saga:dogs');
 
 function* initializeDogAddition({ payload }) {
     try {
         var res = yield call(dogApi.getPlaceholderImageUrl);
-        yield put(actions.initializedDogDetails(res?.data));
-        payload.setLoading(false);
+        yield put(
+            actions.fetchedDogDetails({
+                name: '',
+                breed: '',
+                dateOfBirth: '',
+                profilePictureUrl: res?.data,
+            })
+        );
     } catch (error) {
         log('An error ocurred while initializing a dog addition.', error);
     }
@@ -43,17 +50,119 @@ function* fetchDogList({ payload }) {
     }
 }
 
-function* fetchDogDetails({ payload: dogId }) {
+function* fetchDogDetails({ payload: { dogId, setAlerts } }) {
     try {
         log('Fetching dogs details');
-        yield put(actions.fetchingDogDetails);
+        yield put(actions.fetchingDogDetails());
 
         const result = yield call(dogApi.getById, dogId);
 
-        log('Fetched a dogs details', result);
-        yield put(actions.fetchedDogDetails(result));
+        log('Fetched a dogs details', result?.data);
+        yield put(actions.fetchedDogDetails(result?.data));
     } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having issues retrieving the dog's details.",
+            },
+        ]);
         log("An error ocurred while fetching a dog's details", err);
+    }
+}
+
+function* createDog({ payload: { data, setAlerts, redirect } }) {
+    try {
+        put(actions.savingChanges());
+        const formData = dogAddRequestToFormData(data);
+        const created = yield call(dogApi.createDog, formData);
+        put(actions.savedChanges());
+        redirect(created?.data);
+        setAlerts([
+            {
+                color: 'success',
+                message: 'Your changes were saved successfully!',
+            },
+        ]);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'An error ocurred while saving your changes.',
+            },
+        ]);
+    }
+}
+
+function* updateDog({ payload: { data, setAlerts } }) {
+    try {
+        put(actions.savingChanges());
+        const formData = dogUpdateRequestToFormData(data);
+        yield call(dogApi.updateDog, formData);
+        put(actions.savedChanges());
+        yield call(fetchDogDetails, { payload: { dogId: data?.id, setAlerts } });
+        setAlerts([
+            {
+                color: 'success',
+                message: 'Your changes were saved successfully!',
+            },
+        ]);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'An error ocurred while saving your changes.',
+            },
+        ]);
+    }
+}
+
+function* archiveDog({ payload }) {
+    const { dogId, setAlerts } = payload;
+
+    log(`Archiving dog id: ${dogId}`);
+    try {
+        var res = yield call(dogApi.archiveDog, dogId);
+        log(`Dog archived!`, res?.data);
+        yield call(fetchDogDetails, { payload: { dogId, setAlerts } });
+        setAlerts([
+            {
+                color: 'success',
+                message: 'Your changes are saved!',
+            },
+        ]);
+    } catch (err) {
+        log(`An error ocurred while archiving dog id: ${dogId}.`, err);
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'Failed to save changes.',
+            },
+        ]);
+    }
+}
+
+function* unarchiveDog({ payload }) {
+    const { dogId, setAlerts } = payload;
+
+    log(`Unarchiving dog id: ${dogId}`);
+    try {
+        var res = yield call(dogApi.unarchiveDog, dogId);
+        log(`Dog unarchived!`, res?.data);
+        yield call(fetchDogDetails, { payload: { dogId, setAlerts } });
+        setAlerts([
+            {
+                color: 'success',
+                message: 'Your changes are saved!',
+            },
+        ]);
+    } catch (err) {
+        log(`An error ocurred while unarchiving dog id: ${dogId}.`, err);
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'Failed to save changes.',
+            },
+        ]);
     }
 }
 
@@ -62,6 +171,10 @@ const sagas = [
     takeEvery(actions.fetchDogList, fetchDogList),
     takeEvery(actions.fetchDogDetails, fetchDogDetails),
     takeEvery(actions.initializeDogAddition, initializeDogAddition),
+    takeEvery(actions.saveNewDog, createDog),
+    takeEvery(actions.updateDog, updateDog),
+    takeLatest(actions.archiveDog, archiveDog),
+    takeLatest(actions.unarchiveDog, unarchiveDog),
 ];
 
 export default sagas;

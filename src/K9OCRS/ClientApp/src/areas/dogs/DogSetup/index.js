@@ -1,25 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PageHeader from '../../../shared/components/PageHeader';
 import * as actions from '../modules/actions';
 import PageBody from '../../../shared/components/PageBody';
-import DogEditor from '../DogSetup/DogEditor';
+import DogEditor from './DogEditor';
 //import DeleteModal from './DeleteModal';
+
+import './styles.scss';
 
 const cn = 'dogSetup';
 
 const DogSetup = (props) => {
-    const { dogDetails, fetchDogDetails, init, saveNewDog, updateDog, deleteDog } = props;
+    const { loading, submitting, dogDetails, fetchDogDetails, init, saveNewDog, updateDog } = props;
 
-    const historyInstance = useHistory();
+    const navigate = useNavigate();
     const { dogId } = useParams();
     const addingNewDog = !dogId;
 
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const [data, setData] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -29,11 +29,26 @@ const DogSetup = (props) => {
 
     useEffect(() => {
         if (addingNewDog) {
-            init({ setLoading });
+            init();
         } else {
-            fetchDogDetails({ dogId, setLoading, setAlerts });
+            fetchDogDetails({ dogId, setAlerts });
         }
     }, [dogId]); // eslint-disable-line
+
+    const handleSubmit = () => {
+        if (addingNewDog) {
+            saveNewDog({
+                data,
+                setAlerts,
+                redirect: (dogId) => navigate(`/Account/MyDogs/${dogId}`),
+            });
+        } else {
+            updateDog({
+                data,
+                setAlerts,
+            });
+        }
+    };
 
     const requestFormSubmit = () => {
         if (formRef.current.reportValidity()) {
@@ -41,35 +56,15 @@ const DogSetup = (props) => {
         }
     };
 
-    const handleSubmit = () => {
-        setSubmitting(true);
-        if (addingNewDog) {
-            saveNewDog({
-                ...data,
-                setSubmitting,
-                setLoading,
-                setAlerts,
-                redirect: (created) => historyInstance.push(`/Account/MyDogs/${created.id}`),
-            });
-        } else {
-            updateDog({
-                ...data,
-                setSubmitting,
-                setLoading,
-                setAlerts,
-            });
-        }
-    };
-
-    const handleDelete = (targetId) => {
-        deleteDog({
-            id: dogId,
-            targetId,
-            setAlerts,
-            setSubmitting,
-            redirect: () => historyInstance.push('/Account/MyDogs'),
-        });
-    };
+    // const handleDelete = (targetId) => {
+    //     deleteDog({
+    //         id: dogId,
+    //         targetId,
+    //         setAlerts,
+    //         setSubmitting,
+    //         redirect: () => navigate('/Account/MyDogs'),
+    //     });
+    // };
 
     return (
         <div className={cn}>
@@ -128,11 +123,12 @@ const DogSetup = (props) => {
                 ) : (
                     <>
                         <DogEditor
+                            loading={loading}
+                            submitting={submitting}
                             dogDetails={dogDetails}
                             setData={setData}
                             addingNewDog={addingNewDog}
                             formRef={formRef}
-                            handleSubmit={handleSubmit}
                         />
                         {/* <DeleteModal
                             dogId={dogId}
@@ -151,7 +147,9 @@ const DogSetup = (props) => {
 
 export default connect(
     (state) => ({
-        dogDetails: state.dogs?.dogManagement?.dogDetails,
+        loading: state.dogs?.loading,
+        submitting: state.dogs?.submitting,
+        dogDetails: state.dogs?.dogDetails,
     }),
     {
         fetchDogDetails: actions.fetchDogDetails,
