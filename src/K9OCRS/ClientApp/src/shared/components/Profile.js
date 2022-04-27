@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Input } from 'reactstrap';
+import { Row, Col, Input, Label } from 'reactstrap';
 import { connect } from 'react-redux';
 import selectors from '../../shared/modules/selectors';
 import * as accountsApi from '../../util/apiClients/userAccounts';
@@ -32,7 +32,16 @@ function ValidatePassword(e) {
     }
 }
 
-async function getUserData(id, setFirst, setLast, setEmail, setRole, setPicture) {
+async function getUserData(
+    id,
+    setFirst,
+    setLast,
+    setEmail,
+    setRole,
+    setPicture,
+    setMember,
+    setDiscount
+) {
     //API call to get user data
     const inspectedUser = await accountsApi.getUser(id);
     //Set user data
@@ -42,6 +51,8 @@ async function getUserData(id, setFirst, setLast, setEmail, setRole, setPicture)
     setEmail(inspectedUser.email);
     setRole(inspectedUser.userRoleID);
     setPicture(inspectedUser.profilePictureUrl);
+    setMember(inspectedUser.isMember);
+    setDiscount(inspectedUser.hasDiscounts);
 }
 
 async function getDefaultProfile(setPicture) {
@@ -76,7 +87,9 @@ function handleSubmit(
     password,
     role,
     picture,
-    imageUpdate
+    imageUpdate,
+    member,
+    discount
 ) {
     var formData = new FormData();
 
@@ -87,6 +100,8 @@ function handleSubmit(
     formData.append('firstName', first);
     formData.append('lastName', last);
     formData.append('email', email);
+    formData.append('isMember', member);
+    formData.append('hasDiscounts', discount);
 
     if (imageUpdate) {
         formData.append('imageUpdate', imageUpdate, imageUpdate.name);
@@ -137,11 +152,17 @@ const Profile = (props) => {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
     const [picture, setPicture] = useState('');
+    const [member, setMember] = useState('');
+    const [discount, setDiscount] = useState('');
     const [newPicture, setNewPicture] = useState('');
     const [modal, setModal] = useState('');
     const [imageToUpdate, setImageToUpdate] = useState(null);
 
     const [passwordResetLink, setPasswordResetLink] = useState('');
+
+    const styleObj = {
+        marginRight: '6px',
+    };
 
     var defaultMode = false;
     var createMode = false;
@@ -164,11 +185,24 @@ const Profile = (props) => {
             setEmail(currentUser.email);
             setPicture(currentUser.profilePictureUrl);
             getPasswordLink(setPasswordResetLink, currentUser.email);
+            setMember(currentUser.isMember);
+            setDiscount(currentUser.hasDiscounts);
         } else if (inspectMode) {
             setUserID(paramsId);
-            getUserData(paramsId, setFirst, setLast, setEmail, setRole, setPicture);
+            getUserData(
+                paramsId,
+                setFirst,
+                setLast,
+                setEmail,
+                setRole,
+                setPicture,
+                setMember,
+                setDiscount
+            );
         } else if (createMode) {
             getDefaultProfile(setPicture);
+            setMember(false);
+            setDiscount(false);
         }
     }, []); // eslint-disable-line
 
@@ -213,7 +247,9 @@ const Profile = (props) => {
                     password,
                     role,
                     picture,
-                    imageToUpdate
+                    imageToUpdate,
+                    member,
+                    discount
                 );
             }}
         >
@@ -331,6 +367,82 @@ const Profile = (props) => {
                 {(inspectMode === true || createMode === true) && (
                     <div className=" mx-auto text-center mt-3">
                         <div className="btn-group">{userRoleRadios}</div>
+                    </div>
+                )}
+
+                {defaultMode === false && (
+                    <div>
+                        <div className=" mx-auto text-center mt-3">
+                            <Label className="form-check-label">
+                                <Input
+                                    className="form-check-input"
+                                    style={styleObj}
+                                    type="checkbox"
+                                    name="isMember"
+                                    checked={member}
+                                    onClick={() => {
+                                        if (member) {
+                                            setMember(false);
+                                        } else {
+                                            setMember(true);
+                                        }
+                                    }}
+                                />
+                                Member
+                            </Label>
+                        </div>
+
+                        <div className=" mx-auto text-center mt-3">
+                            <Label>
+                                <Input
+                                    className="form-check-input"
+                                    style={styleObj}
+                                    type="checkbox"
+                                    name="discount"
+                                    checked={discount}
+                                    onClick={() => {
+                                        if (discount) {
+                                            setDiscount(false);
+                                        } else {
+                                            setDiscount(true);
+                                        }
+                                    }}
+                                />
+                                Qualifies for Discount
+                            </Label>
+                        </div>
+                    </div>
+                )}
+
+                {defaultMode === true && (
+                    <div>
+                        <div className=" mx-auto text-center mt-3">
+                            <Label className="form-check-label">
+                                <Input
+                                    className="form-check-input"
+                                    style={styleObj}
+                                    type="checkbox"
+                                    name="isMember"
+                                    checked={member}
+                                    disabled={true}
+                                />
+                                Member
+                            </Label>
+                        </div>
+
+                        <div className=" mx-auto text-center mt-3">
+                            <Label>
+                                <Input
+                                    className="form-check-input"
+                                    style={styleObj}
+                                    type="checkbox"
+                                    name="discount"
+                                    checked={discount}
+                                    disabled={true}
+                                />
+                                Qualifies for Discount
+                            </Label>
+                        </div>
                     </div>
                 )}
             </Col>
