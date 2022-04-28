@@ -32,14 +32,7 @@ function ValidatePassword(e) {
     }
 }
 
-async function getUserData(
-    id,
-    setFirst,
-    setLast,
-    setEmail,
-    setRole,
-    setPicture
-) {
+async function getUserData(id, setFirst, setLast, setEmail, setRole, setPicture) {
     //API call to get user data
     const inspectedUser = await accountsApi.getUser(id);
     //Set user data
@@ -49,6 +42,16 @@ async function getUserData(
     setEmail(inspectedUser.email);
     setRole(inspectedUser.userRoleID);
     setPicture(inspectedUser.profilePictureUrl);
+}
+
+async function getDefaultProfile(setPicture) {
+    setPicture(await accountsApi.placeholderImage());
+}
+
+async function getPasswordLink(setPasswordResetLink, email) {
+    setPasswordResetLink(
+        await accountsApi.forgotPassword(email, false).then((response) => response.data)
+    );
 }
 
 function sendPasswordEmail(email, setAlerts) {
@@ -137,6 +140,8 @@ const Profile = (props) => {
     const [modal, setModal] = useState('');
     const [imageToUpdate, setImageToUpdate] = useState(null);
 
+    const [passwordResetLink, setPasswordResetLink] = useState('');
+
     var defaultMode = false;
     var createMode = false;
     var inspectMode = false;
@@ -157,23 +162,18 @@ const Profile = (props) => {
             setLast(currentUser.lastName);
             setEmail(currentUser.email);
             setPicture(currentUser.profilePictureUrl);
-        }
-        if (inspectMode) {
+            getPasswordLink(setPasswordResetLink, currentUser.email);
+        } else if (inspectMode) {
             setUserID(paramsId);
-            getUserData(
-                paramsId,
-                setFirst,
-                setLast,
-                setEmail,
-                setRole,
-                setPicture
-            );
+            getUserData(paramsId, setFirst, setLast, setEmail, setRole, setPicture);
+        } else if (createMode) {
+            getDefaultProfile(setPicture);
         }
     }, []); // eslint-disable-line
 
     const userRoleRadios = [];
 
-    for(const [key, value] of Object.entries(USER_ROLES)) {
+    for (const [key, value] of Object.entries(USER_ROLES)) {
         userRoleRadios.push(
             <>
                 <input
@@ -320,15 +320,15 @@ const Profile = (props) => {
 
                 {defaultMode === true && (
                     <Row className="text-center">
-                        <a href="/Account/PasswordReset">Change Password</a>
+                        <a target="_blank" href={passwordResetLink} rel="noopener noreferrer">
+                            Change Password
+                        </a>
                     </Row>
                 )}
 
                 {(inspectMode === true || createMode === true) && (
                     <div className=" mx-auto text-center mt-3">
-                        <div className="btn-group">
-                            {userRoleRadios}
-                        </div>
+                        <div className="btn-group">{userRoleRadios}</div>
                     </div>
                 )}
             </Col>
