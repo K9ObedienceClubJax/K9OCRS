@@ -10,8 +10,6 @@ import * as actions from '../modules/actions';
 import SectionDetailsCard from './SectionDetailsCard';
 import SectionScheduleCard from './SectionScheduleCard';
 
-import './styles.scss';
-
 const ClassTypeSetup = (props) => {
     const {
         loading,

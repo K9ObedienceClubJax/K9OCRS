@@ -20,7 +20,7 @@ body {
 }
 
 @mixin cardsurface {
-    background-color: bootstrapOverrides.$gray-100;
+    background-color: darken(bootstrapOverrides.$gray-100, 1);
     border: 1px solid rgba(bootstrapOverrides.$gray-900, 0.2);
     border-radius: 0.25rem;
     box-shadow: bootstrapOverrides.$box-shadow-sm;
@@ -31,6 +31,30 @@ body {
     }
 }
 
+@mixin cardsurface-1 {
+    @include cardsurface;
+    background-color: lighten(bootstrapOverrides.$gray-100, 1);
+}
+
+@mixin cardsurface-2 {
+    @include cardsurface;
+    background-color: lighten(bootstrapOverrides.$gray-100, 3);
+}
+
+@mixin cardsurface-3 {
+    @include cardsurface;
+    background-color: lighten(bootstrapOverrides.$gray-100, 4);
+}
+
 .cardsurface {
     @include cardsurface;
+}
+.cardsurface-1 {
+    @include cardsurface-1;
+}
+.cardsurface-2 {
+    @include cardsurface-2;
+}
+.cardsurface-3 {
+    @include cardsurface-3;
 }

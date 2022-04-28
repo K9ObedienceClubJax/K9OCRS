@@ -1,0 +1,94 @@
+@use '../../../app.scss';
+
+$dividing-border: 1px solid rgba(app.$gray-900, 0.15);
+$section-padding: 0.5rem;
+$content-spacing: 0.25rem;
+$datetime-gutter: 2rem;
+
+$section-padding-xs: 0.25rem;
+$content-spacing-xs: 0.05rem;
+$datetime-gutter-xs: 1rem;
+
+.meetings-list {
+    list-style-type: none;
+    max-height: 50vh;
+    overflow-y: auto;
+    border-top: $dividing-border;
+    border-bottom: $dividing-border;
+    padding: 0.5rem 0;
+
+    p {
+        margin: 0;
+    }
+
+    &__list-item {
+        @include app.cardsurface-1;
+        padding: 0;
+        margin-bottom: 0.5rem;
+
+        @include app.media-breakpoint-up(sm) {
+            padding: 0;
+        }
+
+        display: inline-flex;
+        justify-content: center;
+
+        &__index {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            background-color: rgba(app.$secondary, 0.1);
+            border-right: $dividing-border;
+            padding: $section-padding ($section-padding * 2);
+
+            @include app.media-breakpoint-down(sm) {
+                padding: $section-padding-xs ($section-padding-xs * 2);
+            }
+        }
+
+        &__content {
+            padding: $section-padding;
+            padding-right: $section-padding * 3;
+
+            @include app.media-breakpoint-down(sm) {
+                padding: $section-padding-xs;
+                padding-right: $section-padding-xs * 3;
+            }
+
+            p {
+                margin-bottom: $content-spacing;
+
+                @include app.media-breakpoint-down(sm) {
+                    margin-bottom: $content-spacing-xs;
+                }
+            }
+
+            &-day {
+                color: app.$text-muted;
+            }
+
+            &__datetime {
+                display: flex;
+                align-items: center;
+
+                &-date {
+                    font-weight: bold;
+                    padding-right: $datetime-gutter !important;
+                    white-space: nowrap;
+
+                    @include app.media-breakpoint-down(sm) {
+                        padding-right: 0;
+                    }
+                }
+            }
+        }
+
+        &__buttons {
+            padding: $section-padding;
+
+            @include app.media-breakpoint-down(sm) {
+                padding: $section-padding-xs;
+            }
+        }
+    }
+}

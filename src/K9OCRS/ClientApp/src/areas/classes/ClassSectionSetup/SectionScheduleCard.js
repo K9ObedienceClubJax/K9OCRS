@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment-timezone';
-import { Badge, Button, Col, FormGroup, Input, Label, Row } from 'reactstrap';
-import { BsXLg } from 'react-icons/bs';
+import { Button, Col, FormGroup, Input, Label, Row } from 'reactstrap';
 import { formatToServerDateTime } from 'src/util/dates';
+import MeetingsList from 'src/shared/components/MeetingsList';
 
 const SectionScheduleCard = (props) => {
     const {
@@ -60,8 +59,6 @@ const SectionScheduleCard = (props) => {
         setMeetings((curr) => curr.filter((m) => m.id !== id));
     };
 
-    const orderedMeetings = meetings.sort((a, b) => moment(a.startDate).diff(b.startDate));
-
     return (
         <div className={`${cn} cardsurface`}>
             <Row className="align-items-end">
@@ -109,40 +106,7 @@ const SectionScheduleCard = (props) => {
                     </FormGroup>
                 </Col>
             </Row>
-            <ol>
-                {orderedMeetings?.map((meeting) => {
-                    // Use the momentjs package to format dates
-                    var startDate = moment(meeting.startDate);
-                    var endDate = moment(meeting.endDate);
-
-                    // Create the format string
-                    var endTimeFormat = endDate.minutes() > 0 ? 'h:mma' : 'ha';
-                    var startTimeFormat = startDate.minutes() > 0 ? 'h:mm' : 'h';
-                    // Display start time's am or pm only if it is different from end time's
-                    var startDateAmPm = startDate.format('A') !== endDate.format('A') ? 'a' : '';
-                    var formatString = `dddd, MMMM Do, YYYY [from] ${startTimeFormat}${startDateAmPm}-`;
-
-                    // Format the dates using the format strings
-                    var formattedStartDateAndTime = startDate.format(formatString);
-                    var formattedEndTime = endDate.format(endTimeFormat);
-
-                    return (
-                        <li key={meeting.id}>
-                            <span className="me-2">{`${formattedStartDateAndTime}${formattedEndTime}`}</span>
-                            {meeting.isNew && (
-                                <Badge color="info" className="me-2">
-                                    New
-                                </Badge>
-                            )}
-                            <BsXLg
-                                className={`${cn}__meeting-remover`}
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => handleDelete(meeting.id)}
-                            />
-                        </li>
-                    );
-                })}
-            </ol>
+            <MeetingsList meetings={meetings} deleteHandler={handleDelete} />
         </div>
     );
 };
