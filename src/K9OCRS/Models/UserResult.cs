@@ -1,9 +1,5 @@
 ﻿using DataAccess.Constants;
 using DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace K9OCRS.Models
 {
@@ -18,6 +14,7 @@ namespace K9OCRS.Models
             LastName = entity.LastName;
             Email = entity.Email;
             ProfilePictureFilename = entity.ProfilePictureFilename;
+            HasDiscounts = entity.HasDiscounts;
             isMember = entity.isMember;
             isArchived = entity.isArchived;
             isSystemOwned = entity.isSystemOwned;
@@ -34,6 +31,7 @@ namespace K9OCRS.Models
         public string Email { get; set; }
         public string ProfilePictureFilename { get; set; }
         public string ProfilePictureUrl { get; set; }
+        public bool HasDiscounts { get; set; }
         public bool isMember { get; set; }
         public bool isArchived { get; set; }
         public bool isSystemOwned { get; set; }

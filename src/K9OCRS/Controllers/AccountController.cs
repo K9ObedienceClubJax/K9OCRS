@@ -278,6 +278,7 @@ namespace K9OCRS.Controllers
 
         [HttpPut("changeinfoadmin")]
         [ProducesResponseType(typeof(int), 200)]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public async Task<IActionResult> ChangeInfoAdmin([FromForm] ChangeUserInfoRequest request)
         {
             User user = await connectionOwner.Use(conn => {
@@ -287,6 +288,9 @@ namespace K9OCRS.Controllers
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.UserRoleID = request.UserRoleID;
+            // TODO: Uncomment the ones below once you're sending them from the front-end or the default values will override the actual values.
+            //user.HasDiscounts = request.HasDiscounts;
+            //user.isMember = request.isMember;
             var tasks = new List<Task>();
             tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                 await dbOwner.Users.Update(conn, tr, user);
@@ -390,10 +394,11 @@ namespace K9OCRS.Controllers
 
             var claims = new[]
             {
-            new Claim(ClaimTypes.NameIdentifier, loginResult.ID.ToString()),
-            new Claim(ClaimTypes.Email, loginResult.Email),
-            new Claim(ClaimTypes.Name, $"{loginResult.FirstName} {loginResult.LastName}"),
-            new Claim(ClaimTypes.Role, userRole)
+                new Claim(ClaimTypes.NameIdentifier, loginResult.ID.ToString()),
+                new Claim(ClaimTypes.Email, loginResult.Email),
+                new Claim(ClaimTypes.Name, $"{loginResult.FirstName} {loginResult.LastName}"),
+                new Claim(ClaimTypes.Role, userRole),
+                new Claim("k9ocrs.hasDiscounts", loginResult.HasDiscounts.ToString()),
             };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
