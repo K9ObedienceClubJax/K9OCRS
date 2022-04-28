@@ -35,11 +35,11 @@ const SectionData = (props) => {
         <>
         <h4>Class Details</h4>
         <div className='ps-3'>
-            <p>Section:&nbsp;&nbsp;{sectionData?.id} </p>
-            <p>Instructor:&nbsp;&nbsp;{sectionData?.instructor?.firstName} {sectionData?.instructor?.lastName}</p>
-            <p>Type: &nbsp;&nbsp;{sectionData?.classType?.title}</p>
-            <p>Price:&nbsp;&nbsp;${sectionData?.classType?.price}</p>
-            <p>Requirements:&nbsp;&nbsp;{sectionData?.classType?.requirements}</p>
+            <p className='my-1'><b>Section:</b>&nbsp;&nbsp;{sectionData?.id} </p>
+            <p className='my-1'><b>Instructor:</b>&nbsp;&nbsp;{sectionData?.instructor?.firstName} {sectionData?.instructor?.lastName}</p>
+            <p className='my-1'><b>Type:</b> &nbsp;&nbsp;{sectionData?.classType?.title}</p>
+            <p className='my-1'><b>Price:</b>&nbsp;&nbsp;${sectionData?.classType?.price}</p>
+            <p className='my-1'><b>Requirements:</b>&nbsp;&nbsp;{sectionData?.classType?.requirements}</p>
         </div>
         </>
     )

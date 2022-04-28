@@ -21,14 +21,17 @@ const AppDetails = (props) => {
 
     const [appData, setAppData] = useState([]);
 
-
     const handleSelectPayment = (event) => {
-        setStatus(event.target.value);
+        setPayStatus(event.target.value);
     };
 
     const [isPaid, setIsPaid] = useState();
     const [isRefunded, setIsRefunded] = useState();
-    const [status, setStatus] = useState([]);
+    const [payStatus, setPayStatus] = useState([]);
+
+    const handleCheckPaid = () => {
+        setIsPaid(!isPaid);
+    };
 
 
     useEffect(() => {
@@ -50,6 +53,34 @@ const AppDetails = (props) => {
         getTest();
     }, [id]);
 
+    async function handleSubmit() {
+        const id = appData?.id;
+        if (id) {
+            const appUpdateData = {
+                id: appData?.id,
+                classTypeID: appData?.classTypeID,
+                classSectionID: appData?.classSectionID,
+                dogID: appData?.dogID,
+                status: payStatus,
+                mainAttendee: appData?.mainAttendee,
+                additionalAttendees:appData?.additionalAttendees,
+                paymentMethod: appData?.paymentMethod,
+                isPaid: true,
+                isRefunded: isRefunded
+            };
+            try {
+              const response = await axios.put(`/api/applications/ ${id}`, appUpdateData, {
+                headers: {
+                  "x-access-token": "token-value",
+                },
+              });
+              return response.data;
+            } catch (err) {
+              console.error(err);
+            }
+          }
+        };
+
 
     return (
         <div>
@@ -63,8 +94,8 @@ const AppDetails = (props) => {
                 alerts={alerts}
                 setAlerts={setAlerts}
             >
-                <Button color="secondary" outline>Cancel</Button>
-                <Button color="primary">Save Changes</Button>
+                <Button color="secondary" outline >Cancel</Button>
+                <Button color="primary" onClick={handleSubmit()}>Save Changes</Button>
             </PageHeader>
             <PageBody>
                 <Row className='pb-3'>
@@ -72,9 +103,9 @@ const AppDetails = (props) => {
                             <h4>Application Details</h4>
                             <div className='ps-3'>
                                 <Form>
-                                    <p>Applicant:&nbsp;&nbsp;{appData?.modifiedByName}</p>
+                                    <p className='my-1'><b>Applicant:</b>&nbsp;&nbsp;{appData?.modifiedByName}</p>
                                     <InputGroup >
-                                        <Label for='payMethod'>Application Status:&nbsp;&nbsp;</Label>
+                                        <Label for='payMethod' className='my-1'><b>Application Status:</b>&nbsp;&nbsp;</Label>
                                         <div className='w-75'><Input
                                             bsSize="sm"
                                             className="mb-2 w-auto"
@@ -83,27 +114,30 @@ const AppDetails = (props) => {
                                             type='select'
                                             onChange={handleSelectPayment}
                                         >
-                                            <option value='pending'>Pending</option>
-                                            <option value='active'>Active</option>
-                                            <option value='completed'>Completed</option>
-                                            <option value='cancelled'>Cancelled</option>
+                                            {appData?.status === 'Pending' ? <option value='Pending' selected>Pending</option> : <option value='Pending'>Pending</option>}
+                                            {appData?.status === 'Active' ? <option value='Active' selected>Active</option> : <option value='Active'>Active</option>}
+                                            {appData?.status === 'Completed' ? <option value='Completed' selected>Completed</option> : <option value='Completed'>Completed</option>}
+                                            {appData?.status === 'Cancelled' ? <option value='Cancelled' selected>Cancelled</option> : <option value='Cancelled'>Cancelled</option>}
                                         </Input></div>
                                     </InputGroup> 
                                     <InputGroup check inline>
-                                    <p>Payment Status&nbsp;&nbsp;
+                                    <p className='my-1'><b>Payment Status</b>&nbsp;&nbsp;
                                     <Input type='checkbox'
-                                        // checked={isPaid}
-                                        onChange={(e) => setIsPaid(e.target.checked)}
+                                        id='isPaid'
+                                        name='isPaid'
+                                        value='paid'
+                                        checked={isPaid}
+                                        onChange={handleCheckPaid}
                                         disabled={loading} />
                                     <Label check>&nbsp;&nbsp;Paid&nbsp;&nbsp;&nbsp;&nbsp;</Label>
                                     <Input type='checkbox'
-                                        // checked={isRefunded}
+
                                         onChange={(e) => setIsRefunded(e.target.checked)}
                                         disabled={loading} />
                                     <Label check>&nbsp;&nbsp;Refunded</Label>
-                                    </p></InputGroup>
-                                    <p>Main Attendee:&nbsp;&nbsp;{appData?.mainAttendee}</p>
-                                    <p>Additional Attendees:&nbsp;&nbsp;{appData?.additionalAttendees}</p>
+                                    </p ></InputGroup>
+                                    <p className='my-1'><b>Main Attendee:</b>&nbsp;&nbsp;{appData?.mainAttendee}</p>
+                                    <p className='my-1'><b>Additional Attendees:</b>&nbsp;&nbsp;{appData?.additionalAttendees}</p>
 
                                 </Form>
 
