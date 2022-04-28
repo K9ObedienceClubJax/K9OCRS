@@ -26,7 +26,7 @@ const Layout = (props) => {
         <>
             <NavBar />
             <SiteBanner />
-            <Container className="siteContent px-4 px-md-5" fluid>
+            <Container className="siteContent p-0 m-0" fluid>
                 {!refreshingUser ? props.children : <Spinner />}
             </Container>
         </>
