@@ -261,7 +261,6 @@ const Profile = (props) => {
                     currentUser={currentUser}
                     picture={picture}
                     setPicture={setPicture}
-                    setNewPicture={setNewPicture}
                 />
             </Col>
             <Col lg={{ size: 10, offset: 1 }}>
@@ -358,7 +357,7 @@ const Profile = (props) => {
 
                 {defaultMode === true && (
                     <Row className="text-center">
-                        <a target="_blank" href={passwordResetLink}>
+                        <a target="_blank" href={passwordResetLink} rel="noopener noreferrer">
                             Change Password
                         </a>
                     </Row>
