@@ -137,7 +137,6 @@ const Profile = (props) => {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
     const [picture, setPicture] = useState('');
-    const [newPicture, setNewPicture] = useState('');
     const [modal, setModal] = useState('');
     const [imageToUpdate, setImageToUpdate] = useState(null);
 
@@ -225,7 +224,6 @@ const Profile = (props) => {
                     currentUser={currentUser}
                     picture={picture}
                     setPicture={setPicture}
-                    setNewPicture={setNewPicture}
                 />
             </Col>
             <Col lg={{ size: 10, offset: 1 }}>
@@ -322,7 +320,7 @@ const Profile = (props) => {
 
                 {defaultMode === true && (
                     <Row className="text-center">
-                        <a target="_blank" href={passwordResetLink}>
+                        <a target="_blank" href={passwordResetLink} rel="noopener noreferrer">
                             Change Password
                         </a>
                     </Row>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import numbro from 'numbro';
 import { useDropzone } from 'react-dropzone';
 import { BsCloudUpload } from 'react-icons/bs';
