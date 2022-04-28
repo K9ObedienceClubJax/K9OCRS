@@ -202,14 +202,15 @@ namespace K9OCRS.Controllers
             {
                 return StatusCode(400, "Email does not exist");
             }
-
+        
             //Write token with account info
             var token = GenerateForgotPasswordToken(email, accountResult);
 
             var callbackUrl = "/Account/ChangePassword?token=" + token.Result;
+            //Create url with token
 
             //Send email
-            if(sendEmail)
+            if (sendEmail)
             {
                 var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
                 var client = new SendGridClient(apiKey);
@@ -217,7 +218,7 @@ namespace K9OCRS.Controllers
                 var subject = "K9 Obedience Club Password Reset";
                 var to = new EmailAddress(email, email);
                 var plainTextContent = "Use the link to reset your password." + callbackUrl;
-                var htmlContent = "Click <a href=" + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
+                var htmlContent = "Click <a href=" + HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
                 await client.SendEmailAsync(msg);
                 return Ok("Email sent");
@@ -298,9 +299,8 @@ namespace K9OCRS.Controllers
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.UserRoleID = request.UserRoleID;
-            // TODO: Uncomment the ones below once you're sending them from the front-end or the default values will override the actual values.
-            //user.HasDiscounts = request.HasDiscounts;
-            //user.isMember = request.isMember;
+            user.HasDiscounts = request.HasDiscounts;
+            user.isMember = request.isMember;
             var tasks = new List<Task>();
             tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                 await dbOwner.Users.Update(conn, tr, user);
@@ -332,6 +332,8 @@ namespace K9OCRS.Controllers
                     user.Email = request.Email;
                     user.Password = GetHashedPassword(request.Password);
                     user.UserRoleID = request.UserRoleID;
+                    user.HasDiscounts = request.HasDiscounts;
+                    user.isMember = request.isMember;
                     return dbOwner.Users.Add(conn, user);
                 });
 
