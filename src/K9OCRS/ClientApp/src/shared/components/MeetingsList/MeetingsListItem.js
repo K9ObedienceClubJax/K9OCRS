@@ -7,8 +7,8 @@ const MeetingsListItem = (props) => {
     const {
         isNew,
         isPastDate,
-        // allowDelete,
-        // allowDeletePastDate,
+        allowDelete,
+        allowDeletePastDate,
         index,
         id,
         dayOfWeek,
@@ -18,6 +18,8 @@ const MeetingsListItem = (props) => {
     } = props;
 
     const cn = 'meetings-list__list-item';
+
+    const showDelete = (allowDelete && !isPastDate) || allowDeletePastDate;
 
     return (
         <li key={id}>
@@ -42,11 +44,13 @@ const MeetingsListItem = (props) => {
                         {isNew && <Badge color="info">New Meeting</Badge>}
                     </div>
                 </div>
-                <div className={`${cn}__buttons`}>
-                    <Button size="sm" color="danger" onClick={() => deleteHandler(id)}>
-                        <BsXLg />
-                    </Button>
-                </div>
+                {showDelete && (
+                    <div className={`${cn}__buttons`}>
+                        <Button size="sm" color="danger" onClick={() => deleteHandler(id)}>
+                            <BsXLg />
+                        </Button>
+                    </div>
+                )}
             </div>
         </li>
     );

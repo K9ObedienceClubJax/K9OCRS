@@ -6,12 +6,7 @@ import MeetingsListItem from './MeetingsListItem';
 import './styles.scss';
 
 const MeetingsList = (props) => {
-    const {
-        // allowDelete,
-        // allowDeletePastDate,
-        deleteHandler,
-        meetings,
-    } = props;
+    const { allowDelete, allowDeletePastDate, deleteHandler, meetings } = props;
 
     const cn = 'meetings-list';
 
@@ -45,8 +40,8 @@ const MeetingsList = (props) => {
                     <MeetingsListItem
                         isNew={meeting.isNew}
                         isPastDate={isPastDate}
-                        // allowDelete={}
-                        // allowDeletePastDate={}
+                        allowDelete={allowDelete}
+                        allowDeletePastDate={allowDeletePastDate}
                         index={idx}
                         id={meeting.id}
                         dayOfWeek={dayOfWeek}

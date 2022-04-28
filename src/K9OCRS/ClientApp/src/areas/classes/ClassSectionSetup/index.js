@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Col, Row, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { isAdmin as verifyIsAdmin } from 'src/util/accessEvaluator';
 import PageHeader from '../../../shared/components/PageHeader';
 import PageBody from '../../../shared/components/PageBody';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
@@ -12,6 +13,7 @@ import SectionScheduleCard from './SectionScheduleCard';
 
 const ClassTypeSetup = (props) => {
     const {
+        isAdmin,
         loading,
         loadingOptions,
         submitting,
@@ -190,6 +192,7 @@ const ClassTypeSetup = (props) => {
                             </Col>
                             <Col xxl="9" xl="8" lg="7">
                                 <SectionScheduleCard
+                                    isAdmin={isAdmin}
                                     loading={loading}
                                     isCreatingNewSection={isCreatingNewSection}
                                     submitting={submitting}
@@ -214,6 +217,7 @@ export default connect(
         const pageState = state.classes;
         const section = pageState?.section;
         return {
+            isAdmin: verifyIsAdmin(state?.shared?.currentUser),
             loading: section?.loading,
             submitting: section?.submitting,
             details: section?.details,

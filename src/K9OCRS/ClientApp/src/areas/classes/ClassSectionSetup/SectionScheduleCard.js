@@ -6,6 +6,7 @@ import MeetingsList from 'src/shared/components/MeetingsList';
 
 const SectionScheduleCard = (props) => {
     const {
+        isAdmin,
         // isCreatingNewSection,
         submitting,
         meetings,
@@ -106,12 +107,18 @@ const SectionScheduleCard = (props) => {
                     </FormGroup>
                 </Col>
             </Row>
-            <MeetingsList meetings={meetings} deleteHandler={handleDelete} />
+            <MeetingsList
+                meetings={meetings}
+                deleteHandler={handleDelete}
+                allowDelete
+                allowDeletePastDate={isAdmin}
+            />
         </div>
     );
 };
 
 SectionScheduleCard.propTypes = {
+    isAdmin: PropTypes.bool.isRequired,
     loading: PropTypes.bool.isRequired,
     isCreatingNewSection: PropTypes.bool.isRequired,
     submitting: PropTypes.bool.isRequired,
