@@ -154,7 +154,6 @@ const Profile = (props) => {
     const [picture, setPicture] = useState('');
     const [member, setMember] = useState('');
     const [discount, setDiscount] = useState('');
-    const [newPicture, setNewPicture] = useState('');
     const [modal, setModal] = useState('');
     const [imageToUpdate, setImageToUpdate] = useState(null);
 
