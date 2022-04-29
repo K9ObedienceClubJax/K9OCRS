@@ -63,7 +63,9 @@ const PageHeader = (props) => {
                     {children}
                 </div>
             )}
-            <div className={`${cn} d-flex flex-column flex-md-row  justify-content-lg-between`}>
+            <div
+                className={`${cn} d-flex flex-column flex-md-row  justify-content-lg-between px-4 px-mb-5`}
+            >
                 <Col className={`${cn}__left mb-4`} md="8">
                     <h1>{title}</h1>
                     {breadCrumbItems?.length > 0 && (
@@ -83,12 +85,10 @@ const PageHeader = (props) => {
                     )}
                 </Col>
                 <Col className={`${cn}__right mb-4`}>
-                    {breakpointHit && (
-                        <div className={`${cn}__action-buttons`}>{children}</div>
-                    )}
+                    {breakpointHit && <div className={`${cn}__action-buttons`}>{children}</div>}
                 </Col>
             </div>
-            <div className={`${cn}__alerts mb-4`}>
+            <div className={`${cn}__alerts mb-4 px-4 px-mb-5`}>
                 {Array.isArray(alerts) &&
                     alerts.map((a, idx) => (
                         <Alert

@@ -60,7 +60,7 @@ export default class App extends Component {
                             </GuestOnlyRoute>
                         }
                     />
-                    <Route path="/Account/PasswordReset" element={<PasswordReset />} />
+                    <Route path="/Account/PasswordReset" element={<PasswordReset />} exact />
                     <Route path="/Account/ChangePassword" element={<ChangePassword />} />
                     <Route path="/Classes/:classTypeId" element={<Classes />} />
                     {/* Routes available to Logged in Users */}
