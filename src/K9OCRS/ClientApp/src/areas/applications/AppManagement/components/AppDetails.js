@@ -25,8 +25,8 @@ const AppDetails = (props) => {
         setPayStatus(event.target.value);
     };
 
-    const [isPaidStatus, setIsPaidStatus] = useState(appData?.isPaid);
-    const [isRefunded, setIsRefunded] = useState(appData?.isRefunded);
+    const [isPaidStatus, setIsPaidStatus] = useState(false);
+    const [isRefunded, setIsRefunded] = useState(false);
     const [payStatus, setPayStatus] = useState([]);
 
     const handleCheckPaid = () => setIsPaidStatus(!isPaidStatus);
@@ -146,11 +146,10 @@ const AppDetails = (props) => {
                                 </p ></InputGroup> */}
 
                                 <InputGroup>
-                                <Label for='payment'><b>Payment Status: </b></Label>
+                                <Label for='payment'><b>Payment Status:  &nbsp;&nbsp;</b></Label>
                                 <div>This applicant has paid: &nbsp;&nbsp;
                                     <Label check>
-                                        <Input type='radio' name='radio1' onClick={() => setIsPaidStatus(true)} />{''} Yes&nbsp;&nbsp;
-                                    </Label>
+                                    <Input type='radio' name='radio1' onClick={() => setIsPaidStatus(true)} />{''} Yes &nbsp;&nbsp;                                   </Label>
 
                                     <Label check>
                                         <Input type='radio' name='radio1' onClick={() => setIsPaidStatus(false)} />{''} No
@@ -160,7 +159,7 @@ const AppDetails = (props) => {
                                 <p>Paid status: {isPaidStatus ? 'Yes' : 'No'}</p>
 
                                 <InputGroup>
-                                <Label for='payment'><b>Refund Status: </b></Label>
+                                <Label for='payment'><b>Refund Status: &nbsp;&nbsp; </b></Label>
                                 <div>This applicant has been refunded: &nbsp;&nbsp;
                                     <Label check>
                                         <Input type='radio' name='radio2' onClick={() => setIsRefunded(true)} /> Yes&nbsp;&nbsp;
@@ -171,7 +170,7 @@ const AppDetails = (props) => {
                                     </Label>
                                 </div>
                                 </InputGroup>
-                                <p>Paid status: {isRefunded ? 'Yes' : 'No'}</p>
+                                <p>Refund status: {isRefunded ? 'Yes' : 'No'}</p>
 
                                 <p className='my-1'><b>Main Attendee:</b>&nbsp;&nbsp;{appData?.mainAttendee}</p>
                                 <p className='my-1'><b>Additional Attendees:</b>&nbsp;&nbsp;{appData?.additionalAttendees}</p>
