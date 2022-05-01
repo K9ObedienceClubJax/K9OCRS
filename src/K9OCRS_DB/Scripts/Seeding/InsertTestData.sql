@@ -2,12 +2,13 @@
 -- Users (The password for all is "Test123456")
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE isSystemOwned = 0)
 BEGIN
-	INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password])
+	INSERT INTO Users ([UserRoleID], FirstName, LastName, Email, [Password], [isMember], [HasDiscounts])
 	VALUES
-		(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM='),
-		(2, 'Darude', 'Sandstorm', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM='),
-		(3, 'Jack', 'Sparrow', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM='),
-		(4, 'Tom', 'Riddle', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=');
+		(1, 'John', 'Doe', 'admin@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1, 1),
+		(2, 'Cloud', 'Strife', 'instructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1, 1),
+		(3, 'Jack', 'Sparrow', 'member@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 1, 0),
+		(3, 'Tom', 'Riddle', 'student@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 0, 0),
+		(2, 'Darude', 'Sandstorm', 'guestinstructor@test.test', 'mpMcVawCvyFlUMRksZkqMMUi36v2yzHeraXHFrwTomM=', 0, 0);
 END
 
 -- Dogs
@@ -63,12 +64,12 @@ END
 -- Class Sections
 IF NOT EXISTS (SELECT 1 FROM dbo.ClassSections WHERE isSystemOwned = 0)
 BEGIN
-	INSERT INTO ClassSections ([ClassTypeID], [InstructorID], [RosterCapacity])
+	INSERT INTO ClassSections ([ClassTypeID], [InstructorID], [RosterCapacity], [isDraft])
 	VALUES
-		(2, 2, 0),
-		(2, 2, 8),
-		(3, 3, 6),
-		(4, 3, 10);
+		(2, 2, 9, 0),
+		(2, 3, 8, 0),
+		(3, 6, 12, 0),
+		(4, 3, 8, 1);
 END
 
 -- Class Meetings
@@ -83,15 +84,20 @@ VALUES
 	(4, '2022-07-13 16:00:00.000', '2022-07-13 18:00:00.000'),
 	(4, '2022-07-17 16:00:00.000', '2022-07-17 18:00:00.000'),
 	(4, '2022-07-20 14:00:00.000', '2022-07-20 16:00:00.000'),
-	(4, '2022-07-24 14:00:00.000', '2022-07-24 16:00:00.000');
+	(4, '2022-07-24 14:00:00.000', '2022-07-24 16:00:00.000'),
+	(5, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
+	(5, '2022-02-17 14:00:00.000', '2022-02-17 16:00:00.000'),
+	(5, '2022-04-20 15:00:00.000', '2022-04-20 17:00:00.000');
 
 -- Section Applications
 IF NOT EXISTS (SELECT 1 FROM dbo.[ClassApplications])
 BEGIN
-	INSERT INTO [ClassApplications] (ClassTypeID, ClassSectionID, DogID, [Status], [PaymentMethod], [isPaid], [isRefunded])
+	INSERT INTO [ClassApplications] (ClassTypeID, ClassSectionID, DogID, [Status], [MainAttendee], [AdditionalAttendees], [PaymentMethod], [isPaid], [isRefunded])
 	VALUES
-		(2, 2, 3, 'Active', 'PayPal', 1, 0),
-		(2, 3, 4, 'Cancelled', 'Check', 0, 0),
-		(2, 3, 5, 'Pending', 'Zelle', 0, 0),
-		(2, 2, 7, 'Cancelled', 'PayPal', 1, 1);
+		(2, 2, 3, 'Active', 'Alpha', NULL, 'PayPal', 1, 0),
+		(2, 3, 4, 'Cancelled', 'Zulu', NULL, 'Check', 0, 0),
+		(2, 3, 5, 'Pending', 'Charlie', NULL, 'Zelle', 0, 0),
+		(2, 2, 7, 'Cancelled', 'Foxtrot', 'Alpha, Bravo', 'PayPal', 1, 1),
+		(3, 4, 6, 'Pending', 'Bravo', 'Echo, Alpha', 'PayPal', 1, 0),
+		(3, 4, 4, 'Active', 'Echo', 'Zulu, Hotel, Foxtrot', 'Check', 1, 0);
 END

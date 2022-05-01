@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from 'reactstrap';
+import PageBody from '../../../shared/components/PageBody';
 import PageHeader from '../../../shared/components/PageHeader/index';
 import Profile from '../../../shared/components/Profile';
 
@@ -23,7 +24,9 @@ function Users() {
                     Save Changes
                 </Button>
             </PageHeader>
-            <Profile mode="inspect" setAlerts={setAlerts} paramsId={userId} />
+            <PageBody>
+                <Profile mode="inspect" setAlerts={setAlerts} paramsId={userId} />
+            </PageBody>
         </div>
     );
 }

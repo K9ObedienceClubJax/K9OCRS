@@ -1,23 +1,81 @@
-@import '../../../util/colors.scss';
+@use '../../../app.scss';
 
 .pageHeader {
-  &__breadcrumbs {
-    display: inline-block;
-    background-color: $gray-100;
-    padding: .6rem 1.2rem;
-    border-radius: .25rem;
-    margin-top: .5rem;
+    &__breadcrumbs {
+        display: inline-block;
+        background-color: app.$gray-100;
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.25rem;
+        margin-top: 0.5rem;
 
-    .breadcrumb {
-      margin-bottom: 0;
+        .breadcrumb {
+            margin-bottom: 0;
 
-      a.breadcrumb-item {
-        &.active, &:disabled {
-          pointer-events: none;
-          touch-action: none;
-          text-decoration: none;
+            a.breadcrumb-item {
+                &.active,
+                &:disabled {
+                    pointer-events: none;
+                    touch-action: none;
+                    text-decoration: none;
+                }
+            }
         }
-      }
     }
-  }
+
+    &__action-buttons {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 52;
+        padding: 1rem 1.5rem;
+        border: 1px solid app.$gray-500;
+        background-color: app.$gray-100;
+        width: 100vw;
+        max-width: 100vw;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        overflow-x: auto;
+
+        .btn {
+            white-space: nowrap;
+            margin-right: 0.5rem;
+        }
+
+        .btn:last-child {
+            margin: 0;
+        }
+    }
+}
+
+@include app.media-breakpoint-up(sm) {
+    .pageHeader {
+        &__action-buttons {
+            justify-content: center;
+
+            &--many {
+                justify-content: space-between;
+            }
+        }
+    }
+}
+
+@include app.media-breakpoint-up(lg) {
+    .pageHeader {
+        &__action-buttons {
+            position: static;
+            display: flex;
+            justify-content: flex-end;
+            width: auto;
+            padding: 1rem 0;
+            background-color: unset;
+            border: none;
+            justify-content: flex-end;
+            overflow-x: auto;
+
+            &--many {
+                justify-content: flex-end;
+            }
+        }
+    }
 }

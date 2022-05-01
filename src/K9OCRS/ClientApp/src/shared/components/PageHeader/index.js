@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { Col, Breadcrumb, BreadcrumbItem, Alert } from 'reactstrap';
+// import BottomActions from './BottomActions';
 
 import './styles.scss';
+
+function debounce(fn, ms) {
+    let timer;
+    return (_) => {
+        clearTimeout(timer);
+        timer = setTimeout((_) => {
+            timer = null;
+            fn.apply(this, arguments);
+        }, ms);
+    };
+}
 
 const PageHeader = (props) => {
     const { title, breadCrumbItems, alerts, setAlerts, children } = props;
@@ -23,10 +35,36 @@ const PageHeader = (props) => {
         setAlerts(alertsCopy);
     };
 
+    const collapseWidth = '(min-width: 992px)';
+
+    const [breakpointHit, setBreakpointHit] = useState(window.matchMedia(collapseWidth).matches);
+
+    useEffect(() => {
+        const debouncedHandleResize = debounce(function updateBreakpointHit() {
+            setBreakpointHit(window.matchMedia(collapseWidth).matches);
+        }, 1000);
+
+        window.addEventListener('resize', debouncedHandleResize);
+
+        return (_) => window.removeEventListener('resize', debouncedHandleResize);
+    });
+
+    const childCount = React.Children.count(children);
+    const showBottomBar = !breakpointHit && childCount > 0;
+
     return (
         <>
+            {showBottomBar && (
+                <div
+                    className={`${cn}__action-buttons ${
+                        childCount > 3 ? `${cn}__action-buttons--many` : ''
+                    } gap-2`}
+                >
+                    {children}
+                </div>
+            )}
             <div
-                className={`${cn} d-flex flex-column flex-md-row  justify-content-lg-between`}
+                className={`${cn} d-flex flex-column flex-md-row  justify-content-lg-between px-4 px-mb-5`}
             >
                 <Col className={`${cn}__left mb-4`} md="8">
                     <h1>{title}</h1>
@@ -47,12 +85,10 @@ const PageHeader = (props) => {
                     )}
                 </Col>
                 <Col className={`${cn}__right mb-4`}>
-                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                        {children}
-                    </div>
+                    {breakpointHit && <div className={`${cn}__action-buttons`}>{children}</div>}
                 </Col>
             </div>
-            <div className={`${cn}__alerts mb-4`}>
+            <div className={`${cn}__alerts mb-4 px-4 px-mb-5`}>
                 {Array.isArray(alerts) &&
                     alerts.map((a, idx) => (
                         <Alert

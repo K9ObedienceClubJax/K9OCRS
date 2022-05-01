@@ -3,7 +3,7 @@ using System;
 
 namespace DataAccess.Entities
 {
-    public class ClassMeeting : IComparable
+    public class ClassMeeting : BaseEntity, IComparable
     {
         public ClassMeeting() { }
         public ClassMeeting(ClassMeeting entity)
@@ -11,6 +11,9 @@ namespace DataAccess.Entities
             ID = entity.ID;
             StartDate = entity.StartDate;
             EndDate = entity.EndDate;
+            ModifiedByID = entity.ModifiedByID;
+            ModifiedByName = entity.ModifiedByName;
+            ModifiedDate = entity.ModifiedDate;
         }
 
         /// <example>1</example>

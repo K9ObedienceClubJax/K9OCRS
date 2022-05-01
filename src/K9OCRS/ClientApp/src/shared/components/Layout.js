@@ -7,34 +7,36 @@ import SiteBanner from './SiteBanner';
 import selectors from '../modules/selectors';
 
 const Layout = (props) => {
-  const {
-    currentUser,
-    refreshingUser,
-    refreshLogin
-  } = props;
-  //static displayName = Layout.name;
+    const { currentUser, refreshingUser, refreshLogin } = props;
+    //static displayName = Layout.name;
 
-  useEffect(() => {
-    if (!currentUser) {
-      refreshLogin();
-    }
-  }, [currentUser]); // eslint-disable-line
+    useEffect(() => {
+        if (!currentUser) {
+            refreshLogin();
+        }
+    }, [currentUser]); // eslint-disable-line
 
-  return (
-    <div>
-      <NavBar />
-      <SiteBanner />
-      <Container className='px-4 px-md-5' fluid>
-        { !refreshingUser ? props.children : <Spinner /> }
-      </Container>
-    </div>
-  );
+    const navbarElement = document.querySelector('.k9-navbar');
+    const navbarHeight = navbarElement ? window.getComputedStyle(navbarElement).height : '56px';
+
+    // set custom css variable on root
+    document.documentElement.style.setProperty('--navbar-height', navbarHeight);
+
+    return (
+        <>
+            <NavBar />
+            <SiteBanner />
+            <Container className="siteContent p-0 m-0" fluid>
+                {!refreshingUser ? props.children : <Spinner />}
+            </Container>
+        </>
+    );
 };
 
 export default connect(
-  (state) => ({
-    refreshingUser: selectors.selectRefreshingUser(state),
-    currentUser: selectors.selectCurrentUser(state),
-  }),
-  { refreshLogin: actions.refreshLogin }
+    (state) => ({
+        refreshingUser: selectors.selectRefreshingUser(state),
+        currentUser: selectors.selectCurrentUser(state),
+    }),
+    { refreshLogin: actions.refreshLogin }
 )(Layout);

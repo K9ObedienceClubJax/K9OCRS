@@ -1,31 +1,30 @@
 ﻿using DataAccess;
 using DataAccess.Clients.Contracts;
+using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
 using K9OCRS.Models;
+using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Helpers;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using K9OCRS.Utils.Constants;
-using K9OCRS.Utils.Extensions;
-using System.IO;
-using DataAccess.Constants;
 
 namespace K9OCRS.Controllers
 {
@@ -39,7 +38,7 @@ namespace K9OCRS.Controllers
         private readonly DbOwner dbOwner;
         private readonly ServiceConstants serviceConstants;
         private IConfiguration _config;
-       
+
 
 
         public AccountController(
@@ -89,14 +88,16 @@ namespace K9OCRS.Controllers
                 }
 
 
-                var result = await connectionOwner.Use(conn =>
-                {
-                    User user = new();
-                    user.UserRoleID = 4;
-                    user.FirstName = account.First;
-                    user.LastName = account.Last;
-                    user.Email = account.Email;
-                    user.Password = GetHashedPassword(account.Password);
+                var result = await connectionOwner.Use(conn => {
+                    User user = new User
+                    {
+                        UserRoleID = (int)UserRoles.Student,
+                        FirstName = account.First,
+                        LastName = account.Last,
+                        Email = account.Email,
+                        Password = GetHashedPassword(account.Password),
+                    };
+
                     return dbOwner.Users.Add(conn, user);
                 });
 
@@ -104,7 +105,7 @@ namespace K9OCRS.Controllers
             }
             return StatusCode(400, "Failed to create account.");
 
-               
+
         }
 
         [HttpPost("login")]
@@ -113,13 +114,12 @@ namespace K9OCRS.Controllers
         public async Task<IActionResult> Login([FromBody] Login login)
         {
 
-            var loginResult = await connectionOwner.Use(conn =>
-            {
+            var loginResult = await connectionOwner.Use(conn => {
                 return dbOwner.Users.GetIdByLogin(conn, login.Email, GetHashedPassword(login.Password));
             });
 
-            
-             
+
+
             if (login != null && loginResult != null)
             {
                 var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
@@ -144,21 +144,33 @@ namespace K9OCRS.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginStatus()
         {
-            var cookie = Request.Cookies[_config["Jwt:CookieName"]]; 
-             if (cookie != null)
+            var cookie = Request.Cookies[_config["Jwt:CookieName"]];
+            if (!String.IsNullOrEmpty(cookie))
             {
-                JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(cookie);
-                Console.WriteLine(token.Claims);
-                int id = Int32.Parse(token.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-
-                var loginResult = await connectionOwner.Use(conn =>
+                try
                 {
-                    return dbOwner.Users.GetByID(conn, id);
-                });
+                    JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(cookie);
+                    int id = Int32.Parse(token.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
-                var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
+                    var loginResult = await connectionOwner.Use(conn => {
+                        return dbOwner.Users.GetByID(conn, id);
+                    });
 
-                return Ok(userResult);
+                    var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
+
+                    return Ok(userResult);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is KeyNotFoundException)
+                    {
+                        return Logout();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
             return Ok();
         }
@@ -176,35 +188,43 @@ namespace K9OCRS.Controllers
 
         [HttpPost("forgotpassword")]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        public async Task<IActionResult> ForgotPassword([FromBody] PasswordResetRequest request)
         {
+            var email = request.Email;
+            var sendEmail = request.Send;
+
             //Check if email is in database
-            var accountResult = await connectionOwner.Use(conn =>
-            {
+            var accountResult = await connectionOwner.Use(conn => {
                 return dbOwner.Users.GetByEmail(conn, email);
+
             });
-            if(accountResult == null)
+            if (accountResult == null)
             {
                 return StatusCode(400, "Email does not exist");
             }
-
+        
             //Write token with account info
-            var token = GenerateForgotPasswordToken(email, accountResult); 
+            var token = GenerateForgotPasswordToken(email, accountResult);
 
+            var callbackUrl = "/Account/ChangePassword?token=" + token.Result;
             //Create url with token
-            var callbackUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "/Account/ChangePassword?token=" + token.Result;
 
             //Send email
-            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
-            var subject = "K9 Obedience Club Password Reset";
-            var to = new EmailAddress(email, email);
-            var plainTextContent = "Use the link to reset your password." + callbackUrl;
-            var htmlContent = "Click <a href=" + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            await client.SendEmailAsync(msg);
-            return Ok("Email sent");
+            if (sendEmail)
+            {
+                var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
+                var subject = "K9 Obedience Club Password Reset";
+                var to = new EmailAddress(email, email);
+                var plainTextContent = "Use the link to reset your password." + callbackUrl;
+                var htmlContent = "Click <a href=" + HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                await client.SendEmailAsync(msg);
+                return Ok("Email sent");
+            }
+
+            return Ok(callbackUrl);
         }
 
         [HttpPost("changepassword")]
@@ -217,21 +237,18 @@ namespace K9OCRS.Controllers
             // TODO: This is a security issue, find another way to do the password change
             string password = token.Claims.First(claim => claim.Type.Contains("Password")).Value;
 
-            var accountResult = await connectionOwner.Use(conn =>
-            {
+            var accountResult = await connectionOwner.Use(conn => {
                 return dbOwner.Users.GetIdByLogin(conn, email, password);
             });
 
-            User user = await connectionOwner.Use(conn =>
-            {
+            User user = await connectionOwner.Use(conn => {
                 return dbOwner.Users.GetByID(conn, accountResult.ID);
             });
 
             if (accountResult.Email != null)
             {
                 var tasks = new List<Task>();
-                tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
-                {
+                tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                     user.Password = GetHashedPassword(passwordReset.Password);
                     await dbOwner.Users.Update(conn, tr, user);
                     tr.Commit();
@@ -246,16 +263,14 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> ChangeInfo([FromForm] ChangeUserInfoRequest request)
         {
-            User user = await connectionOwner.Use(conn =>
-            {
+            User user = await connectionOwner.Use(conn => {
                 return dbOwner.Users.GetByID(conn, request.ID);
             });
             user.Email = request.Email;
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             var tasks = new List<Task>();
-            tasks.Add(connectionOwner.UseTransaction(async (conn, tr) =>
-            {
+            tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                 await dbOwner.Users.Update(conn, tr, user);
                 tr.Commit();
             }));
@@ -274,6 +289,7 @@ namespace K9OCRS.Controllers
 
         [HttpPut("changeinfoadmin")]
         [ProducesResponseType(typeof(int), 200)]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public async Task<IActionResult> ChangeInfoAdmin([FromForm] ChangeUserInfoRequest request)
         {
             User user = await connectionOwner.Use(conn => {
@@ -283,6 +299,8 @@ namespace K9OCRS.Controllers
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.UserRoleID = request.UserRoleID;
+            user.HasDiscounts = request.HasDiscounts;
+            user.isMember = request.isMember;
             var tasks = new List<Task>();
             tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                 await dbOwner.Users.Update(conn, tr, user);
@@ -305,16 +323,17 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> CreateUser([FromForm] ChangeUserInfoRequest request)
         {
-            if(await ValidateEmailPassword(request.Email, request.Password))
+            if (await ValidateEmailPassword(request.Email, request.Password))
             {
-                var result = await connectionOwner.Use(conn =>
-                {
+                var result = await connectionOwner.Use(conn => {
                     User user = new();
                     user.FirstName = request.FirstName;
                     user.LastName = request.LastName;
                     user.Email = request.Email;
                     user.Password = GetHashedPassword(request.Password);
                     user.UserRoleID = request.UserRoleID;
+                    user.HasDiscounts = request.HasDiscounts;
+                    user.isMember = request.isMember;
                     return dbOwner.Users.Add(conn, user);
                 });
 
@@ -334,8 +353,7 @@ namespace K9OCRS.Controllers
         [HttpPost("getuser")]
         public async Task<IActionResult> GetUser([FromBody] int id)
         {
-            User user = await connectionOwner.Use(conn =>
-            {
+            User user = await connectionOwner.Use(conn => {
                 return dbOwner.Users.GetByID(conn, id);
             });
             UserResult userResult = new UserResult(user, serviceConstants.storageBasePath);
@@ -348,25 +366,42 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public async Task<IActionResult> QueryUsers([FromBody] int role)
         {
-            IEnumerable<User> users;  
-            if(role == 0)
+            IEnumerable<User> users;
+            if (role == 0)
             {
-                users = await connectionOwner.Use(conn =>
-                {
+                users = await connectionOwner.Use(conn => {
                     return dbOwner.Users.GetAll(conn);
                 });
             }
             else
             {
-                users = await connectionOwner.Use(conn =>
-                {
+                users = await connectionOwner.Use(conn => {
                     return dbOwner.Users.QueryUsersByRole(conn, role);
                 });
             }
-            
+
             var userResults = users.Select(u => new UserResult(u, serviceConstants.storageBasePath));
-            
+
             return Ok(userResults);
+        }
+
+        [HttpGet("options")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        public async Task<IActionResult> GetInstructorOptions()
+        {
+            var users = await connectionOwner.Use(conn => dbOwner.Users.GetInstructorOptions(conn));
+            var userResults = users.Select(u => new UserResult(u, serviceConstants.storageBasePath));
+            return Ok(userResults);
+        }
+
+        [HttpGet("placeholderImageUrl")]
+        [ProducesResponseType(typeof(string), 200)]
+        public IActionResult GetPlaceholderImageUrl()
+        {
+            return Ok((new User { ProfilePictureFilename = "UserPlaceholder.png" })
+                .ToClassTypeResult(serviceConstants.storageBasePath)
+                .ProfilePictureUrl);
         }
 
 
@@ -380,10 +415,11 @@ namespace K9OCRS.Controllers
 
             var claims = new[]
             {
-            new Claim(ClaimTypes.NameIdentifier, loginResult.ID.ToString()),
-            new Claim(ClaimTypes.Email, loginResult.Email),
-            new Claim(ClaimTypes.Name, $"{loginResult.FirstName} {loginResult.LastName}"),
-            new Claim(ClaimTypes.Role, userRole)
+                new Claim(ClaimTypes.NameIdentifier, loginResult.ID.ToString()),
+                new Claim(ClaimTypes.Email, loginResult.Email),
+                new Claim(ClaimTypes.Name, $"{loginResult.FirstName} {loginResult.LastName}"),
+                new Claim(ClaimTypes.Role, userRole),
+                new Claim("k9ocrs.hasDiscounts", loginResult.HasDiscounts.ToString()),
             };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
@@ -436,8 +472,7 @@ namespace K9OCRS.Controllers
             }
             try
             {
-                var emailResult = await connectionOwner.Use(conn =>
-                {
+                var emailResult = await connectionOwner.Use(conn => {
                     return dbOwner.Users.GetByEmail(conn, email);
                 });
                 if (emailResult != null)
@@ -453,7 +488,7 @@ namespace K9OCRS.Controllers
 
             //Validate password
             pattern = @"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$";
-   
+
             //Password requires 8 characters, should contain at least one upper case, lower case, and digit.
             if (Regex.Match(password, pattern).Success)
             {

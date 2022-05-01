@@ -1,4 +1,4 @@
-@import './colors.scss';
+@import './_colors.scss';
 
 // Variables
 $font-weight-bold: 600;
@@ -47,3 +47,5 @@ $btn-font-weight: $font-weight-bold;
 
 // Keep this at the end of the file!
 @import 'bootstrap/scss/bootstrap.scss';
+@import 'react-bootstrap-typeahead/css/Typeahead.css';
+@import 'react-bootstrap-typeahead/css/Typeahead.bs5.css';

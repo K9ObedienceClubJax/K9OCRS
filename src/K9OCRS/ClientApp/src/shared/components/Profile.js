@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Input } from 'reactstrap';
+import { Row, Col, Input, Label } from 'reactstrap';
 import { connect } from 'react-redux';
 import selectors from '../../shared/modules/selectors';
 import * as accountsApi from '../../util/apiClients/userAccounts';
 import ProfileContainer from './ProfileContainer';
+import { USER_ROLES } from '../../util/accessEvaluator';
 
 function ValidateEmail(e) {
     //Validate email
@@ -37,7 +38,9 @@ async function getUserData(
     setLast,
     setEmail,
     setRole,
-    setPicture
+    setPicture,
+    setMember,
+    setDiscount
 ) {
     //API call to get user data
     const inspectedUser = await accountsApi.getUser(id);
@@ -48,9 +51,18 @@ async function getUserData(
     setEmail(inspectedUser.email);
     setRole(inspectedUser.userRoleID);
     setPicture(inspectedUser.profilePictureUrl);
-    //Use to role id to select the radio button
-    const radio = document.getElementById('option' + inspectedUser.userRoleID);
-    radio.checked = true;
+    setMember(inspectedUser.isMember);
+    setDiscount(inspectedUser.hasDiscounts);
+}
+
+async function getDefaultProfile(setPicture) {
+    setPicture(await accountsApi.placeholderImage());
+}
+
+async function getPasswordLink(setPasswordResetLink, email) {
+    setPasswordResetLink(
+        await accountsApi.forgotPassword(email, false).then((response) => response.data)
+    );
 }
 
 function sendPasswordEmail(email, setAlerts) {
@@ -75,7 +87,9 @@ function handleSubmit(
     password,
     role,
     picture,
-    imageUpdate
+    imageUpdate,
+    member,
+    discount
 ) {
     var formData = new FormData();
 
@@ -86,6 +100,8 @@ function handleSubmit(
     formData.append('firstName', first);
     formData.append('lastName', last);
     formData.append('email', email);
+    formData.append('isMember', member);
+    formData.append('hasDiscounts', discount);
 
     if (imageUpdate) {
         formData.append('imageUpdate', imageUpdate, imageUpdate.name);
@@ -136,8 +152,16 @@ const Profile = (props) => {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
     const [picture, setPicture] = useState('');
+    const [member, setMember] = useState('');
+    const [discount, setDiscount] = useState('');
     const [modal, setModal] = useState('');
     const [imageToUpdate, setImageToUpdate] = useState(null);
+
+    const [passwordResetLink, setPasswordResetLink] = useState('');
+
+    const styleObj = {
+        marginRight: '6px',
+    };
 
     var defaultMode = false;
     var createMode = false;
@@ -159,8 +183,10 @@ const Profile = (props) => {
             setLast(currentUser.lastName);
             setEmail(currentUser.email);
             setPicture(currentUser.profilePictureUrl);
-        }
-        if (inspectMode) {
+            getPasswordLink(setPasswordResetLink, currentUser.email);
+            setMember(currentUser.isMember);
+            setDiscount(currentUser.hasDiscounts);
+        } else if (inspectMode) {
             setUserID(paramsId);
             getUserData(
                 paramsId,
@@ -168,10 +194,40 @@ const Profile = (props) => {
                 setLast,
                 setEmail,
                 setRole,
-                setPicture
+                setPicture,
+                setMember,
+                setDiscount
             );
+        } else if (createMode) {
+            getDefaultProfile(setPicture);
+            setMember(false);
+            setDiscount(false);
         }
     }, []); // eslint-disable-line
+
+    const userRoleRadios = [];
+
+    for (const [key, value] of Object.entries(USER_ROLES)) {
+        userRoleRadios.push(
+            <>
+                <input
+                    key={`${key}_input`}
+                    type="radio"
+                    className="btn-check"
+                    name="role"
+                    value={value}
+                    id={key}
+                    onChange={(e) => setRole(parseInt(e.currentTarget.value))}
+                    checked={role === value}
+                />
+                <label key={`${key}_label`} className="btn btn-outline-secondary" htmlFor={key}>
+                    {key}
+                </label>
+            </>
+        );
+    }
+
+    userRoleRadios.reverse();
 
     return (
         <form
@@ -190,7 +246,9 @@ const Profile = (props) => {
                     password,
                     role,
                     picture,
-                    imageToUpdate
+                    imageToUpdate,
+                    member,
+                    discount
                 );
             }}
         >
@@ -298,72 +356,90 @@ const Profile = (props) => {
 
                 {defaultMode === true && (
                     <Row className="text-center">
-                        <a href="/Account/PasswordReset">Change Password</a>
+                        <a target="_blank" href={passwordResetLink} rel="noopener noreferrer">
+                            Change Password
+                        </a>
                     </Row>
                 )}
 
                 {(inspectMode === true || createMode === true) && (
                     <div className=" mx-auto text-center mt-3">
-                        <div className="btn-group">
-                            <input
-                                type="radio"
-                                className="btn-check"
-                                name="role"
-                                value={4}
-                                id="option4"
-                                onChange={(e) => setRole(e.currentTarget.value)}
-                            />
-                            <label
-                                className="btn btn-outline-secondary"
-                                htmlFor="option4"
-                            >
-                                Non-Member
-                            </label>
+                        <div className="btn-group">{userRoleRadios}</div>
+                    </div>
+                )}
 
-                            <input
-                                type="radio"
-                                className="btn-check"
-                                name="role"
-                                value={3}
-                                id="option3"
-                                onChange={(e) => setRole(e.currentTarget.value)}
-                            />
-                            <label
-                                className="btn btn-outline-secondary"
-                                htmlFor="option3"
-                            >
+                {defaultMode === false && (
+                    <div>
+                        <div className=" mx-auto text-center mt-3">
+                            <Label className="form-check-label">
+                                <Input
+                                    className="form-check-input"
+                                    style={styleObj}
+                                    type="checkbox"
+                                    name="isMember"
+                                    checked={member}
+                                    onClick={() => {
+                                        if (member) {
+                                            setMember(false);
+                                        } else {
+                                            setMember(true);
+                                        }
+                                    }}
+                                />
                                 Member
-                            </label>
+                            </Label>
+                        </div>
 
-                            <input
-                                type="radio"
-                                className="btn-check"
-                                name="role"
-                                value={2}
-                                id="option2"
-                                onChange={(e) => setRole(e.currentTarget.value)}
-                            />
-                            <label
-                                className="btn btn-outline-secondary"
-                                htmlFor="option2"
-                            >
-                                Instructor
-                            </label>
+                        <div className=" mx-auto text-center mt-3">
+                            <Label>
+                                <Input
+                                    className="form-check-input"
+                                    style={styleObj}
+                                    type="checkbox"
+                                    name="discount"
+                                    checked={discount}
+                                    onClick={() => {
+                                        if (discount) {
+                                            setDiscount(false);
+                                        } else {
+                                            setDiscount(true);
+                                        }
+                                    }}
+                                />
+                                Qualifies for Discount
+                            </Label>
+                        </div>
+                    </div>
+                )}
 
-                            <input
-                                type="radio"
-                                className="btn-check"
-                                name="role"
-                                value={1}
-                                id="option1"
-                                onChange={(e) => setRole(e.currentTarget.value)}
-                            />
-                            <label
-                                className="btn btn-outline-secondary"
-                                htmlFor="option1"
-                            >
-                                Admin
-                            </label>
+                {defaultMode === true && (
+                    <div>
+                        <div className=" mx-auto text-center mt-3">
+                            <Label className="form-check-label">
+                                <Input
+                                    className="form-check-input"
+                                    style={styleObj}
+                                    type="checkbox"
+                                    name="isMember"
+                                    checked={member}
+                                    disabled={true}
+                                />
+                                Member
+                            </Label>
+                        </div>
+
+                        <div className=" mx-auto text-center mt-3">
+                            <Label>
+                                <Input
+                                    className="form-check-input"
+                                    style={styleObj}
+                                    type="checkbox"
+                                    name="discount"
+                                    checked={discount}
+                                    disabled={true}
+                                />
+                                Qualifies for Discount
+                            </Label>
                         </div>
                     </div>
                 )}

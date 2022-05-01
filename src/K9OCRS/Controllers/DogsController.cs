@@ -5,13 +5,16 @@ using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
 using DataAccess.Clients.Contracts;
 using System;
+using DataAccess.Constants;
+using System.Collections.Generic;
+using System.IO;
+using K9OCRS.Utils.Extensions;
 using Serilog;
 using System.Linq;
-using System.Collections.Generic;
 using K9OCRS.Models.DogManagement;
 using K9OCRS.Utils.Constants;
-using K9OCRS.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using K9OCRS.Models;
 
 namespace K9OCRS.Controllers
 {
@@ -90,7 +93,7 @@ namespace K9OCRS.Controllers
         }
 
         //get a dog by Id
-        [HttpGet("{id}")]
+        [HttpGet("{Id}")]
         [ProducesResponseType(typeof(IEnumerable<DogResult>), 200)]
         public async Task<IActionResult> GetDog(int Id)
         {
@@ -149,6 +152,74 @@ namespace K9OCRS.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+        #endregion
+
+        #region Dog_Photos
+        [HttpPut("{dogId}/image")]
+        public async Task<IActionResult> UpdateImage(int dogId, [FromForm] FileUpload upload)
+        {
+            if(upload.Files != null && upload.Files.Count > 0)
+            {
+                var data = await upload.Files[0].ToBinaryData();
+
+                var filePath = String.Concat(dogId.ToString(), "/", dogId, Path.GetExtension(upload.Files[0].FileName));
+                var filename = Path.GetFileName(filePath);
+
+                await storageClient.UploadFile(UploadType.DogProfilePicture, filePath, upload.Files[0].ContentType, data);
+
+                await connectionOwner.Use(conn =>
+                {
+                    return dbOwner.Dogs.UpdateImage(conn, dogId, filename);
+                });
+
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpDelete("{dogId}/image")]
+        public async Task<int> DeleteImage(int dogId, string fileName)
+        {
+            if (!String.IsNullOrEmpty(fileName) && !String.IsNullOrWhiteSpace(fileName))
+            {
+                var filename = String.Concat(dogId.ToString(), "/", fileName);
+
+                await storageClient.DeleteFile(UploadType.DogProfilePicture, filename);
+
+                return await connectionOwner.Use(conn => {
+                    return dbOwner.Dogs.UpdateImage(conn, dogId, "DogPlaceholder.png");
+                });
+            }
+
+            throw new ArgumentException();
+        }
+
+        #endregion
+
+        #region Vaccines
+        [HttpPut("{dogId}/vaccine")]
+        public async Task<IActionResult> UploadRecord(int dogId, [FromForm] FileUpload upload)
+        {
+            if (upload.Files != null && upload.Files.Count > 0)
+            {
+                var data = await upload.Files[0].ToBinaryData();
+
+                var filePath = String.Concat(dogId.ToString(), "/", dogId, Path.GetExtension(upload.Files[0].FileName));
+                var filename = Path.GetFileName(filePath);
+
+                await storageClient.UploadFile(UploadType.VaccinationRecord, filePath, upload.Files[0].ContentType, data);
+
+                await connectionOwner.Use(conn => {
+                    return dbOwner.VaccinationRecords.VaccineUpload(conn, dogId, filename);
+                });
+
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
         #endregion
     }
 }

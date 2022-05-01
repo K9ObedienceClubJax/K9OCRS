@@ -3,7 +3,7 @@ using DataAccess.Entities;
 
 namespace K9OCRS.Models.Reporting
 {
-    public class ClassTypeExport
+    public class ClassTypeExport : BaseEntity
     {
         public ClassTypeExport(ClassType t)
         {
@@ -15,6 +15,10 @@ namespace K9OCRS.Models.Reporting
             Duration = t.Duration;
             Price = t.Price;
             isArchived = t.isArchived;
+
+            ModifiedByID = t.ModifiedByID;
+            ModifiedByName = t.ModifiedByName;
+            ModifiedDate = t.ModifiedDate;
         }
 
         /// <example>1</example>

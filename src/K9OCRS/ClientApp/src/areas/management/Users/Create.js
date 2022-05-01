@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from 'reactstrap';
+import PageBody from '../../../shared/components/PageBody';
 import PageHeader from '../../../shared/components/PageHeader/index';
 import Profile from '../../../shared/components/Profile';
 
@@ -20,7 +21,9 @@ function Create() {
                 <Button outline>Cancel</Button>
                 <Button form="profileForm">Create User</Button>
             </PageHeader>
-            <Profile mode="create" setAlerts={setAlerts} />
+            <PageBody>
+                <Profile mode="create" setAlerts={setAlerts} />
+            </PageBody>
         </div>
     );
 }

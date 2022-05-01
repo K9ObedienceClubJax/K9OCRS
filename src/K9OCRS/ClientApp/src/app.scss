@@ -1,6 +1,60 @@
-@import 'util/bootstrapOverrides.scss';
+@use 'util/_bootstrapOverrides.scss';
+@forward 'util/_bootstrapOverrides.scss';
 
 body {
-    padding-top: 56px; // This is to account for the navbar being position: fixed
     padding-bottom: 8rem;
+
+    @include bootstrapOverrides.media-breakpoint-up(sm) {
+        padding-top: var(
+            --navbar-height
+        ); // This is to account for the navbar being position: fixed
+    }
+}
+
+.pagebody {
+    overflow: hidden visible;
+    // Adding some space for things that might need to overflow to look right,
+    // such as the shadows of elements that are right up against the border
+    // margin: 0;
+    // padding: 2rem;
+}
+
+@mixin cardsurface {
+    background-color: darken(bootstrapOverrides.$gray-100, 1);
+    border: 1px solid rgba(bootstrapOverrides.$gray-900, 0.2);
+    border-radius: 0.25rem;
+    box-shadow: bootstrapOverrides.$box-shadow-sm;
+    padding: 1rem;
+
+    @include bootstrapOverrides.media-breakpoint-up(sm) {
+        padding: 2rem;
+    }
+}
+
+@mixin cardsurface-1 {
+    @include cardsurface;
+    background-color: lighten(bootstrapOverrides.$gray-100, 1);
+}
+
+@mixin cardsurface-2 {
+    @include cardsurface;
+    background-color: lighten(bootstrapOverrides.$gray-100, 3);
+}
+
+@mixin cardsurface-3 {
+    @include cardsurface;
+    background-color: lighten(bootstrapOverrides.$gray-100, 4);
+}
+
+.cardsurface {
+    @include cardsurface;
+}
+.cardsurface-1 {
+    @include cardsurface-1;
+}
+.cardsurface-2 {
+    @include cardsurface-2;
+}
+.cardsurface-3 {
+    @include cardsurface-3;
 }
