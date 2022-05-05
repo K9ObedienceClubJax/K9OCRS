@@ -112,25 +112,30 @@ $top-row-bg-color: rgba(app.$primary, 0.16) !default;
 
             tr {
                 display: block;
-                margin-top: .2rem;
+                margin-top: 0.2rem;
                 border-style: outset;
                 border-color: rgba(0, 0, 0, 0.125);
                 border-width: $outer-border-width;
                 border-radius: 0.5rem;
 
                 &.k9-table__top-row {
-                    margin-top: .8rem;
+                    margin-top: 0.8rem;
                 }
 
                 td {
                     display: block;
                     position: relative;
-                    padding-left: 130px;
                     text-align: left;
                     border: none;
                     border-bottom: outset rgba(0, 0, 0, 0.125);
                     border-bottom-width: calc($inner-border-width / 2);
                     min-height: 2rem;
+                    padding: 0;
+
+                    .breakword {
+                        overflow-wrap: anywhere;
+                        word-break: break-all;
+                    }
 
                     &:last-child {
                         border-bottom: none;
@@ -145,20 +150,31 @@ $top-row-bg-color: rgba(app.$primary, 0.16) !default;
                         justify-content: flex-start !important;
                     }
 
-                    &::before {
-                        content: attr(data-heading);
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 120px;
-                        height: 100%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: app.$gray-100;
-                        background-color: app.$secondary;
-                        padding: 0 5px;
+                    .k9-table__cell {
+                        padding: 0.25rem 1.25rem;
                     }
+
+                    .k9-table__floating-label {
+                        display: inline-block;
+                        color: app.$text-muted;
+                        padding: 0.125rem 0.5rem;
+                        font-weight: 600;
+                    }
+
+                    &:first-child {
+                        .k9-table__floating-label {
+                            border-radius: 0.25rem 0 0.25rem 0;
+                        }
+                    }
+                }
+            }
+
+            tbody tr:last-of-type {
+                td {
+                    border-bottom-width: calc($inner-border-width / 2);
+                }
+                td:first-of-type {
+                    border-radius: 0;
                 }
             }
         }

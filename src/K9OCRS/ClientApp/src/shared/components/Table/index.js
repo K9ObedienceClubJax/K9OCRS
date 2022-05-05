@@ -131,6 +131,15 @@ const Table = (props) => {
         }
     }, [searchParamsString]); // eslint-disable-line
 
+    const shouldHideCell = (value, canExpand) => {
+        // gotta do this because we still want 0 or false values which would get caught
+        // in the crossfire if we did something like const valuePresent = !!value;
+        const valuePresent = value !== null && value !== undefined && value !== '';
+        // exclude the expander column when we can't expand
+        const valueNotExcluded = value !== 'expander' || canExpand;
+        return !(valuePresent && valueNotExcluded);
+    };
+
     return (
         <div className={cn}>
             <table className={`${cn}__table`} {...getTableProps()}>
@@ -176,10 +185,10 @@ const Table = (props) => {
                                     {
                                         // Loop over the rows cells
                                         row.cells.map((cell) => {
-                                            const hideCell =
-                                                cell.value !== 0 &&
-                                                (!cell.value ||
-                                                    (cell.value === 'expander' && !row.canExpand));
+                                            const hideCell = shouldHideCell(
+                                                cell.value,
+                                                row.canExpand
+                                            );
 
                                             if (!breakpointHit && hideCell) {
                                                 return null;
@@ -196,10 +205,24 @@ const Table = (props) => {
                                                     {...cell.getCellProps()}
                                                     data-heading={headingData}
                                                 >
-                                                    {
+                                                    {!breakpointHit && (
+                                                        <>
+                                                            {headingData && (
+                                                                <div className="k9-table__floating-label">
+                                                                    {headingData}
+                                                                </div>
+                                                            )}
+                                                            <div className="k9-table__cell">
+                                                                {
+                                                                    // Render the cell contents
+                                                                    cell.render('Cell')
+                                                                }
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                    {breakpointHit &&
                                                         // Render the cell contents
-                                                        cell.render('Cell')
-                                                    }
+                                                        cell.render('Cell')}
                                                 </td>
                                             );
                                         })
