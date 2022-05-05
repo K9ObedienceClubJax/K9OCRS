@@ -65,7 +65,7 @@ function* fetchOptions() {
 function* fetchClassDetails({ payload }) {
     log(`Fetching class details for id: ${payload.classTypeId}`);
     try {
-        const res = yield call(classTypesClient.getClassTypeByID, payload.classTypeId);
+        const res = yield call(classTypesClient.getClassTypeByID, payload.classTypeId, true);
         yield put(actions.fetchedClassDetails(res?.data));
         payload.setLoading(false);
     } catch (err) {
