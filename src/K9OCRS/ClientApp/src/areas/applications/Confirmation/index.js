@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import moment from 'moment-timezone';
+import { Alert, Button, Spinner, Input, Form, FormGroup, Label, Col } from 'reactstrap';
+import { formatCurrency } from 'src/util/numberFormatting';
 import selectors from '../../../shared/modules/selectors';
 import PageHeader from '../../../shared/components/PageHeader';
-import { Alert, Button, Spinner, Input, Form, FormGroup, Label, Col } from 'reactstrap';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
 import PageBody from '../../../shared/components/PageBody';
 import MeetingsList from 'src/shared/components/MeetingsList';
@@ -210,6 +211,9 @@ const Confirm = (props) => {
                                 <legend>
                                     <h4>Payment Method</h4>
                                 </legend>
+                                <p>
+                                    <b>Price:</b> {formatCurrency(sectionDetail?.classType?.price)}
+                                </p>
                                 <Label for="payment">
                                     Select the method you want to use to submit your payment, your
                                     payment must be submitted before your application can be
