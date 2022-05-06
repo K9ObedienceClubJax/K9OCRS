@@ -22,12 +22,16 @@ namespace DataAccess.Entities
         #region Data optionally Hydrated
 
         [TransactionIgnore]
+        [ExportIgnore]
         public string ClassTypeTitle { get; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public string DogName { get ; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public string DogProfilePictureFilename { get; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public string DogProfilePictureUrl { get; set; }
 
         #endregion
