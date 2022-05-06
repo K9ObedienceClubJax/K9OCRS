@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import moment from 'moment-timezone';
 import { Alert, Button, Spinner, Input, Form, FormGroup, Label, Col } from 'reactstrap';
+import { PayPalButtons } from '@paypal/react-paypal-js';
 import { formatCurrency } from 'src/util/numberFormatting';
 import selectors from '../../../shared/modules/selectors';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -16,7 +17,6 @@ const Confirm = (props) => {
     const [sectionDetail, setSectionDetail] = useState([]);
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
-    const classTypeConverted = parseInt(sectionDetail?.classType?.id);
     const { currentUser } = props;
 
     const [dogs, setDogs] = useState([]);
@@ -25,9 +25,10 @@ const Confirm = (props) => {
     const [handlerInput, setHandlerInput] = useState('');
     const [attendeeInput, setAttendeeInput] = useState('');
     const [payment, setPayment] = useState('');
+    const [paymentSent, setPaymentSent] = useState(false);
 
-    let filledOut = dogSelected && payment;
-    let defaultAttendee = currentUser.firstName + ' ' + currentUser.lastName;
+    const filledOut = dogSelected && payment && handlerInput;
+    const defaultAttendee = currentUser.firstName + ' ' + currentUser.lastName;
 
     const handleSelectDog = (event) => {
         let setIndex = event.target.value;
@@ -75,20 +76,66 @@ const Confirm = (props) => {
         getTest();
     }, []);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const Payload = {
-            classTypeID: classTypeConverted,
-            classSectionID: sectionId,
-            dogID: dogSelected?.id,
-            mainAttendee: handlerInput ? handlerInput : defaultAttendee,
-            additionalAttendees: attendeeInput,
-            paymentMethod: payment,
-        };
-        axios.post('/api/Applications', Payload).then((response) => {
-            console.log(response.status);
-            console.log(response.data.token);
+    const payload = {
+        classTypeID: parseInt(sectionDetail?.classType?.id),
+        classSectionID: parseInt(sectionId),
+        dogID: dogSelected?.id,
+        mainAttendee: handlerInput ? handlerInput : defaultAttendee,
+        additionalAttendees: attendeeInput,
+        paymentMethod: payment,
+    };
+
+    const handleSubmit = (isPaid = false) => {
+        payload.isPaid = isPaid;
+
+        axios.post('/api/Applications', payload).then((response) => {
+            if (response.status === 200) {
+                // redirect to a thank you page
+                console.log(response.status);
+                console.log(response.data.token);
+            }
         });
+    };
+
+    useEffect(() => {
+        if (paymentSent) {
+            handleSubmit(paymentSent);
+            setPaymentSent(false);
+        }
+    }, [paymentSent]); // eslint-disable-line
+
+    const sectionName = `${sectionDetail?.classType?.title}: Section #${sectionDetail?.id}`;
+    const sectionPrice = sectionDetail?.classType?.price;
+    const instructorName = `${sectionDetail?.instructor?.firstName} ${sectionDetail?.instructor?.lastName}`;
+
+    const order = {
+        amount: {
+            currency_code: 'USD',
+            value: sectionPrice,
+            breakdown: {
+                item_total: {
+                    currency_code: 'USD',
+                    value: sectionPrice,
+                },
+                // Whenever we do implement the discounts, do this.
+                // Also the amount.value must be equal to the total value after discounts
+                // discount: {
+                //     currency_code: 'USD',
+                //     value: 20,
+                // },
+            },
+        },
+        items: [
+            {
+                name: sectionName,
+                unit_amount: {
+                    currency_code: 'USD',
+                    value: sectionPrice,
+                },
+                quantity: 1,
+                description: `${sectionName} with instructor ${instructorName}`,
+            },
+        ],
     };
 
     return (
@@ -110,7 +157,9 @@ const Confirm = (props) => {
                 <Button color="secondary" outline>
                     Cancel
                 </Button>
-                <Button color="primary">Submit Application</Button>
+                <Button color="primary" disabled={!filledOut} onClick={() => handleSubmit()}>
+                    Submit Application
+                </Button>
             </PageHeader>
             <PageBody>
                 <Alert color="info">
@@ -137,7 +186,7 @@ const Confirm = (props) => {
                         <h4>Class Requirements</h4>
                         <p className="pb-3">{sectionDetail?.classType?.requirements}</p>
 
-                        <Form className="form" onSubmit={handleSubmit}>
+                        <Form className="form">
                             <h4>Dog Selection</h4>
                             <p>Select a Dog*</p>
                             <div className="pb-3">
@@ -250,12 +299,28 @@ const Confirm = (props) => {
                                     </Label>
                                 </FormGroup>
                             </FormGroup>
-                            {filledOut ? (
-                                <Button color="primary" size="lg">
-                                    Submit Application
-                                </Button>
-                            ) : (
-                                <Button color="secondary" size="lg" disabled>
+                            {payment === 'Paypal' && (
+                                <PayPalButtons
+                                    disabled={!filledOut}
+                                    createOrder={(data, actions) => {
+                                        return actions.order.create({
+                                            purchase_units: [order],
+                                        });
+                                    }}
+                                    onApprove={(data, actions) => {
+                                        return actions.order.capture().then((details) => {
+                                            setPaymentSent(true);
+                                        });
+                                    }}
+                                />
+                            )}
+                            {payment !== 'Paypal' && (
+                                <Button
+                                    color="primary"
+                                    size="lg"
+                                    disabled={!filledOut}
+                                    onClick={() => handleSubmit()}
+                                >
                                     Submit Application
                                 </Button>
                             )}
