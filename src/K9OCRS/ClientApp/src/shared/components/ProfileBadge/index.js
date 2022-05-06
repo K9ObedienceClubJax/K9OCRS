@@ -28,7 +28,9 @@ const ProfileBadge = (props) => {
     return (
         <div className={topCn} onClick={link ? () => navigate(linkPath) : undefined}>
             <Avatar imageUrl={imageUrl} />
-            <span className={`${cn}__name`}>{fullName ? fullName : `${firstName} ${lastName}`}</span>
+            <span className={`${cn}__name`}>
+                {fullName ? fullName : `${firstName} ${lastName}`}
+            </span>
         </div>
     );
 };
@@ -38,15 +40,18 @@ ProfileBadge.defaultProps = {
     id: null,
     link: false,
     isDog: false,
+    fullName: '',
+    firstName: '',
+    lastName: '',
 };
 
 ProfileBadge.propTypes = {
     className: PropTypes.string,
     id: PropTypes.number,
     imageUrl: PropTypes.string.isRequired,
-    fullName: PropTypes.string.isRequired,
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
+    fullName: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
     link: PropTypes.bool,
     isDog: PropTypes.bool,
 };

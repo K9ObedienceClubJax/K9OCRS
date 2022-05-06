@@ -38,6 +38,7 @@ const MeetingsList = (props) => {
 
                 return (
                     <MeetingsListItem
+                        key={meeting.id}
                         isNew={meeting.isNew}
                         isPastDate={isPastDate}
                         allowDelete={allowDelete}
@@ -58,12 +59,13 @@ const MeetingsList = (props) => {
 MeetingsList.defaultProps = {
     allowDelete: false,
     allowDeletePastDate: false,
+    deleteHandler: () => {},
 };
 
 MeetingsList.propTypes = {
     allowDelete: PropTypes.bool,
     allowDeletePastDate: PropTypes.bool,
-    deleteHandler: PropTypes.func.isRequired,
+    deleteHandler: PropTypes.func,
     meetings: PropTypes.array.isRequired,
 };
 
