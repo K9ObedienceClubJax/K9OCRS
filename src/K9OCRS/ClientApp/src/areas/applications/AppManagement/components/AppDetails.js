@@ -70,7 +70,7 @@ const AppDetails = (props) => {
         const id = appData?.id;
         if (id) {
             try {
-              const response = await axios.put(`/api/applications/ ${id}`, appUpdateData, {
+              const response = await axios.put(`/api/applications/`, appUpdateData, {
                 headers: {
                   "x-access-token": "token-value",
                 },
