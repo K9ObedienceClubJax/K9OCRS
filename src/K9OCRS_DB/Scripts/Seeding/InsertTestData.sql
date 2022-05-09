@@ -73,31 +73,43 @@ BEGIN
 END
 
 -- Class Meetings
-INSERT INTO ClassMeetings ([ClassSectionID], [StartDate], [EndDate])
-VALUES
-	(2, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
-	(2, '2022-01-20 14:00:00.000', '2022-01-20 16:00:00.000'),
-	(2, '2022-01-27 14:00:00.000', '2022-01-27 16:00:00.000'),
-	(3, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
-	(3, '2022-02-17 14:00:00.000', '2022-02-17 16:00:00.000'),
-	(3, '2022-04-20 15:00:00.000', '2022-04-20 17:00:00.000'),
-	(4, '2022-07-13 16:00:00.000', '2022-07-13 18:00:00.000'),
-	(4, '2022-07-17 16:00:00.000', '2022-07-17 18:00:00.000'),
-	(4, '2022-07-20 14:00:00.000', '2022-07-20 16:00:00.000'),
-	(4, '2022-07-24 14:00:00.000', '2022-07-24 16:00:00.000'),
-	(5, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
-	(5, '2022-02-17 14:00:00.000', '2022-02-17 16:00:00.000'),
-	(5, '2022-04-20 15:00:00.000', '2022-04-20 17:00:00.000');
+IF NOT EXISTS (SELECT 1 FROM dbo.[ClassMeetings])
+BEGIN
+	INSERT INTO ClassMeetings ([ClassSectionID], [StartDate], [EndDate])
+	VALUES
+		(2, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
+		(2, '2022-01-20 14:00:00.000', '2022-01-20 16:00:00.000'),
+		(2, '2022-01-27 14:00:00.000', '2022-01-27 16:00:00.000'),
+		(3, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
+		(3, '2022-02-17 14:00:00.000', '2022-02-17 16:00:00.000'),
+		(3, '2022-04-20 15:00:00.000', '2022-04-20 17:00:00.000'),
+		(4, '2022-07-13 16:00:00.000', '2022-07-13 18:00:00.000'),
+		(4, '2022-07-17 16:00:00.000', '2022-07-17 18:00:00.000'),
+		(4, '2022-07-20 14:00:00.000', '2022-07-20 16:00:00.000'),
+		(4, '2022-07-24 14:00:00.000', '2022-07-24 16:00:00.000'),
+		(5, '2022-01-13 13:00:00.000', '2022-01-13 15:00:00.000'),
+		(5, '2022-02-17 14:00:00.000', '2022-02-17 16:00:00.000'),
+		(5, '2022-04-20 15:00:00.000', '2022-04-20 17:00:00.000');
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.[PaymentMethods])
+BEGIN
+	INSERT INTO [PaymentMethods] ([Name], [Description], [Instructions], [isIntegration], [isArchived])
+	VALUES
+		('PayPal', 'Easily make payments online on the site', NULL, 1, 0),
+		('Zelle', 'Use the zelle app to send the money', 'To send money with Zelle, use the following email: "k9obedienceclubjax@gmail.com". First, enter the amount, then add a note with the class name and the application number. Lastly, make sure that the RECIPIENT name is "k9obedienceclubjax@gmail.com" and after the payment is completed, please forward the payment notification you receive from Zelle to dgilmank9@gmail.com', 0, 0),
+		('Check/Money Order', NULL, 'Make a check or money order payable to "K9 Obedience Club". Then, email the application number and a CLEAR picture of the check/money order to dgilmank9@gmail.com. Also send it on the MAIL to Christine Peterson, 212 Belmont Drive, St. Johns, FL 32259', 0, 1);
+END
 
 -- Section Applications
 IF NOT EXISTS (SELECT 1 FROM dbo.[ClassApplications])
 BEGIN
-	INSERT INTO [ClassApplications] (ClassTypeID, ClassSectionID, DogID, [Status], [MainAttendee], [AdditionalAttendees], [PaymentMethod], [isPaid], [isRefunded])
+	INSERT INTO [ClassApplications] (ClassTypeID, ClassSectionID, DogID, [Status], [MainAttendee], [AdditionalAttendees], [PaymentMethodID], [isPaid], [isRefunded])
 	VALUES
-		(2, 2, 3, 'Active', 'Alpha', NULL, 'PayPal', 1, 0),
-		(2, 3, 4, 'Cancelled', 'Zulu', NULL, 'Check', 0, 0),
-		(2, 3, 5, 'Pending', 'Charlie', NULL, 'Zelle', 0, 0),
-		(2, 2, 7, 'Cancelled', 'Foxtrot', 'Alpha, Bravo', 'PayPal', 1, 1),
-		(3, 4, 6, 'Pending', 'Bravo', 'Echo, Alpha', 'PayPal', 1, 0),
-		(3, 4, 4, 'Active', 'Echo', 'Zulu, Hotel, Foxtrot', 'Check', 1, 0);
+		(2, 2, 3, 'Active', 'Alpha', NULL, 1, 1, 0),
+		(2, 3, 4, 'Cancelled', 'Zulu', NULL, 3, 0, 0),
+		(2, 3, 5, 'Pending', 'Charlie', NULL, 2, 0, 0),
+		(2, 2, 7, 'Cancelled', 'Foxtrot', 'Alpha, Bravo', 1, 1, 1),
+		(3, 4, 6, 'Pending', 'Bravo', 'Echo, Alpha', 1, 1, 0),
+		(3, 4, 4, 'Active', 'Echo', 'Zulu, Hotel, Foxtrot', 3, 1, 0);
 END
