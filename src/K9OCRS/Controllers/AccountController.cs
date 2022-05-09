@@ -404,6 +404,36 @@ namespace K9OCRS.Controllers
                 .ProfilePictureUrl);
         }
 
+        [HttpPost("archive/{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> ArchiveUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Archive(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
+        }
+
+        [HttpPost("unarchive/{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> UnarchiveUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Unarchive(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Delete(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
+        }
+
 
         //Non-API functions
         private async Task<string> GenerateToken(Login login, User loginResult)
