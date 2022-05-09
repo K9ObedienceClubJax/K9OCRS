@@ -54,8 +54,13 @@ const columns = [
         Cell: emailTemplate,
     },
     {
-        Header: 'Membership',
+        Header: 'Is Member',
         accessor: 'isMember',
+        Cell: membershipTemplate,
+    },
+    {
+        Header: 'Is Archived',
+        accessor: 'isArchived',
         Cell: membershipTemplate,
     },
     {
