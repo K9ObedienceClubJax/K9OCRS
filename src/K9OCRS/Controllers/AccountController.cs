@@ -1,4 +1,4 @@
-﻿using DataAccess;
+using DataAccess;
 using DataAccess.Clients.Contracts;
 using DataAccess.Constants;
 using DataAccess.Entities;
@@ -118,7 +118,7 @@ namespace K9OCRS.Controllers
                 return dbOwner.Users.GetIdByLogin(conn, login.Email, GetHashedPassword(login.Password));
             });
 
-
+            if (loginResult.isArchived) return StatusCode(403, "This account has been denied access");
 
             if (login != null && loginResult != null)
             {
@@ -156,13 +156,15 @@ namespace K9OCRS.Controllers
                         return dbOwner.Users.GetByID(conn, id);
                     });
 
+                    if (loginResult.isArchived) throw new SecurityTokenExpiredException();
+
                     var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
 
                     return Ok(userResult);
                 }
                 catch (Exception ex)
                 {
-                    if (ex is KeyNotFoundException)
+                    if (ex is KeyNotFoundException || ex is SecurityTokenExpiredException)
                     {
                         return Logout();
                     }
