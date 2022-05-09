@@ -1,4 +1,4 @@
-using DataAccess;
+﻿using DataAccess;
 using DataAccess.Clients.Contracts;
 using DataAccess.Constants;
 using DataAccess.Entities;
@@ -366,19 +366,19 @@ namespace K9OCRS.Controllers
         [HttpPost("queryusers")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
-        public async Task<IActionResult> QueryUsers([FromBody] int role)
+        public async Task<IActionResult> QueryUsers([FromBody] int role, [FromQuery] bool includeArchived = false)
         {
             IEnumerable<User> users;
             if (role == 0)
             {
                 users = await connectionOwner.Use(conn => {
-                    return dbOwner.Users.GetAll(conn);
+                    return dbOwner.Users.GetAll(conn, includeArchived);
                 });
             }
             else
             {
                 users = await connectionOwner.Use(conn => {
-                    return dbOwner.Users.QueryUsersByRole(conn, role);
+                    return dbOwner.Users.QueryUsersByRole(conn, role, includeArchived);
                 });
             }
 
