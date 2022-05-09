@@ -34,7 +34,7 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<User>> GetInstructorOptions(IDbConnection conn)
         {
-            var query = $"SELECT * FROM {_tableName} WHERE UserRoleID IN (1,2) AND isSystemOwned = 0";
+            var query = $"SELECT * FROM {_tableName} WHERE UserRoleID IN (1,2) AND isSystemOwned = 0 AND isArchived = 0";
             return await conn.QueryAsync<User>(query);
         }
 
