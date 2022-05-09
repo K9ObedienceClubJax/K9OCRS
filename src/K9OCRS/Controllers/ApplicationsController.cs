@@ -4,14 +4,11 @@ using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
 using K9OCRS.Models;
 using K9OCRS.Models.ApplicationsManagement;
-using K9OCRS.Models.DogManagement;
 using K9OCRS.Utils.Constants;
 using K9OCRS.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,7 +53,7 @@ namespace K9OCRS.Controllers
                     conn,
                     request.ClassTypeIDs,
                     request.DogIDs,
-                    request.PaymentMethod,
+                    request.PaymentMethodIDs,
                     request.includePaid,
                     request.includeRefunded,
                     request.includePending,
@@ -72,7 +69,7 @@ namespace K9OCRS.Controllers
                     ProfilePictureFilename = ca.DogProfilePictureFilename,
                 };
                 var dogResult = dogEntity.ToDogResult(serviceConstants.storageBasePath);
-                
+
                 var updatedEntity = new ClassApplication(ca);
                 updatedEntity.DogProfilePictureUrl = dogResult.ProfilePictureUrl;
                 return updatedEntity;
@@ -86,9 +83,18 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(ClassApplication), 200)]
         public async Task<IActionResult> GetApplication(int id)
         {
-            var result = await connectionOwner.Use(conn =>dbOwner.ClassApplications.GetByID(conn, id));
+            var result = await connectionOwner.Use(conn => dbOwner.ClassApplications.GetByID(conn, id));
 
-            return Ok(result);
+            var dogEntity = new Dog
+            {
+                ProfilePictureFilename = result.DogProfilePictureFilename,
+            };
+            var dogResult = dogEntity.ToDogResult(serviceConstants.storageBasePath);
+
+            var updatedResult = new ClassApplication(result);
+            updatedResult.DogProfilePictureUrl = dogResult.ProfilePictureUrl;
+
+            return Ok(updatedResult);
         }
 
         // Create
@@ -104,7 +110,7 @@ namespace K9OCRS.Controllers
                 Status = request.Status,
                 MainAttendee = request.MainAttendee,
                 AdditionalAttendees = request.AdditionalAttendees,
-                PaymentMethod = request.PaymentMethod,
+                PaymentMethodID = request.PaymentMethodID,
                 isPaid = request.isPaid,
             };
 

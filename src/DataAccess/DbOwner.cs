@@ -22,6 +22,7 @@ namespace DataAccess
         public readonly IClassTypesRepository ClassTypes;
         public readonly IClassSectionsRepository ClassSections;
         public readonly IRepository<ClassMeeting> ClassMeetings;
+        public readonly IRepository<PaymentMethod> PaymentMethods;
         public readonly IClassApplicationsRepository ClassApplications;
 
         public DbOwner(IHttpContextAccessor httpContextAccessor)
@@ -37,6 +38,7 @@ namespace DataAccess
             ClassTypes = new ClassTypesRepository(_httpContextAccessor);
             ClassSections = new ClassSectionsRepository(_httpContextAccessor);
             ClassMeetings = new ClassMeetingsRepository(_httpContextAccessor);
+            PaymentMethods = new PaymentMethodsRepository(_httpContextAccessor);
             ClassApplications = new ClassApplicationsRepository(_httpContextAccessor);
         }
     }
