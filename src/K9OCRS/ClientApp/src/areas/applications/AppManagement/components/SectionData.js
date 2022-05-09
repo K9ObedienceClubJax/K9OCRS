@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Spinner } from 'reactstrap';
 import axios from 'axios';
 
 
@@ -7,7 +8,7 @@ const SectionData = (props) => {
 
     const [sectionData, setSectionData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [alerts, setAlerts] = useState([]);
+    const [alerts, setAlerts] = useState([]); // eslint-disable-line
 
 
     useEffect(() => {
@@ -33,6 +34,7 @@ const SectionData = (props) => {
 
     return (
         <>
+        {loading && <Spinner />}
         <h4>Class Details</h4>
         <div className='ps-3'>
             <p className='my-1'><b>Section:</b>&nbsp;&nbsp;{sectionData?.id} </p>

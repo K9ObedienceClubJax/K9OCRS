@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Button, Row, Col, Form, Label, Input, InputGroup } from 'reactstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Button, Row, Col, Label, Input, InputGroup, Spinner } from 'reactstrap';
+import { useNavigate } from 'react-router-dom';
 import PageHeader from 'src/shared/components/PageHeader';
 import selectors from '../../../../shared/modules/selectors';
 import PageBody from 'src/shared/components/PageBody';
@@ -19,31 +19,24 @@ const AppDetails = (props) => {
     const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState([]);
 
-    const [appData, setAppData] = useState([]);
+    const [appData, setAppData] = useState({});
+
+    const [isPaidStatus, setIsPaidStatus] = useState(false);
+    const [isRefunded, setIsRefunded] = useState(false);
+    const [payStatus, setPayStatus] = useState('');
 
     const handleSelectPayment = (event) => {
         setPayStatus(event.target.value);
     };
 
-    const [isPaidStatus, setIsPaidStatus] = useState(false);
-    const [isRefunded, setIsRefunded] = useState(false);
-    const [payStatus, setPayStatus] = useState([]);
+    const handleCheckPaid = () => {
+        setIsPaidStatus(!isPaidStatus);
+    }
 
-    const handleCheckPaid = () => setIsPaidStatus(!isPaidStatus);
-
-    const appUpdateData = {
-        id: appData?.id,
-        classTypeID: appData?.classTypeID,
-        classSectionID: appData?.classSectionID,
-        dogID: appData?.dogID,
-        status: payStatus,
-        mainAttendee: appData?.mainAttendee,
-        additionalAttendees:appData?.additionalAttendees,
-        paymentMethod: appData?.paymentMethod,
-        isPaid: isPaidStatus,
-        isRefunded: isRefunded
-    };
-
+    const handleIsRefunded = () => {
+        setIsRefunded(!isRefunded);
+    }
+   
 
     useEffect(() => {
         async function getTest() {
@@ -64,17 +57,25 @@ const AppDetails = (props) => {
         getTest();
     }, [id]);
 
+    const appDataString = JSON.stringify(appData);
+    useEffect(() => {
+        setIsPaidStatus(appData?.isPaid);
+        setIsRefunded(appData?.isRefunded);
+        setPayStatus(appData?.status);
+    }, [appDataString]); // eslint-disable-line
+
     async function saveData(event) {
-       // event.preventDefault();
+        const appUpdateData = {
+            ...appData,
+            isPaid: isPaidStatus,
+            isRefunded: isRefunded,
+            status: payStatus,
+        };
 
         const id = appData?.id;
         if (id) {
             try {
-              const response = await axios.put(`/api/applications/`, appUpdateData, {
-                headers: {
-                  "x-access-token": "token-value",
-                },
-              });
+              const response = await axios.put(`/api/applications/${appData?.id}`, appUpdateData);
               navigate('/Manage/Applications');
               return response.data;
               
@@ -85,13 +86,14 @@ const AppDetails = (props) => {
         };
 
         const onSubmit = async (event) => {
-            event.preventDefault();
             try {
                 await saveData();
                 alert('Your changes were saved');
             }
             catch (e) {alert('Something went wrong! Changes were not saved')};
         }
+
+    const cancelHandler = async (event) => navigate(-1);
 
 
     return (
@@ -106,10 +108,11 @@ const AppDetails = (props) => {
                 alerts={alerts}
                 setAlerts={setAlerts}
             >
-                <Button color="secondary" outline >Cancel</Button>
+                <Button color="secondary" outline onClick={cancelHandler} >Cancel</Button>
                 <Button color="primary" onClick={onSubmit}>Save Changes</Button>
             </PageHeader>
             <PageBody>
+            {loading && <Spinner />}
                 <Row className='pb-3'>
                     <Col className='cardsurface mx-3'>
                             <h4>Application Details</h4>
@@ -131,47 +134,18 @@ const AppDetails = (props) => {
                                         {appData?.status === 'Cancelled' ? <option value='Cancelled' selected>Cancelled</option> : <option value='Cancelled'>Cancelled</option>}
                                     </Input></div>
                                 </InputGroup> 
-{/*                                 <InputGroup check inline>
-                                <p className='my-1'><b>Payment Status</b>&nbsp;&nbsp;
+                                <p className='my-1'><b>Payment Status: </b>&nbsp;&nbsp;
                                 <Input type='checkbox'
                                     checked={isPaidStatus}
                                     onChange={handleCheckPaid}
                                     disabled={loading} />
-                                <Label check>&nbsp;&nbsp;Paid&nbsp;&nbsp;&nbsp;&nbsp;</Label>
+                                <label check>&nbsp;&nbsp;Paid&nbsp;&nbsp;&nbsp;&nbsp;</label>
                                 <Input type='checkbox'
                                     checked={isRefunded}
-                                    onChange={(e) => setIsRefunded(e.target.checked)}
+                                    onChange={handleIsRefunded}
                                     disabled={loading} />
-                                <Label check>&nbsp;&nbsp;Refunded</Label>
-                                </p ></InputGroup> */}
-
-                                <InputGroup>
-                                <Label for='payment'><b>Payment Status:  &nbsp;&nbsp;</b></Label>
-                                <div>This applicant has paid: &nbsp;&nbsp;
-                                    <Label check>
-                                    <Input type='radio' name='radio1' onClick={() => setIsPaidStatus(true)} />{''} Yes &nbsp;&nbsp;                                   </Label>
-
-                                    <Label check>
-                                        <Input type='radio' name='radio1' onClick={() => setIsPaidStatus(false)} />{''} No
-                                    </Label>
-                                </div>
-                                </InputGroup>
-                                <p>Paid status: {isPaidStatus ? 'Yes' : 'No'}</p>
-
-                                <InputGroup>
-                                <Label for='payment'><b>Refund Status: &nbsp;&nbsp; </b></Label>
-                                <div>This applicant has been refunded: &nbsp;&nbsp;
-                                    <Label check>
-                                        <Input type='radio' name='radio2' onClick={() => setIsRefunded(true)} /> Yes&nbsp;&nbsp;
-                                    </Label>
-
-                                    <Label check>
-                                        <Input type='radio' name='radio2' onClick={() => setIsRefunded(false)} /> No
-                                    </Label>
-                                </div>
-                                </InputGroup>
-                                <p>Refund status: {isRefunded ? 'Yes' : 'No'}</p>
-
+                                <label check>&nbsp;&nbsp;Refunded</label>
+                                </p >
                                 <p className='my-1'><b>Main Attendee:</b>&nbsp;&nbsp;{appData?.mainAttendee}</p>
                                 <p className='my-1'><b>Additional Attendees:</b>&nbsp;&nbsp;{appData?.additionalAttendees}</p>
                             </div>
