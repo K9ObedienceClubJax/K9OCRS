@@ -1,37 +1,129 @@
-﻿DELETE FROM ClassMeetings
+﻿-- Class Meetings
+IF NOT EXISTS (SELECT 1 FROM ClassMeetings)
+BEGIN
+	SET NOEXEC ON;
+END
+
+DELETE FROM ClassMeetings
 DBCC CHECKIDENT ('[ClassMeetings]', RESEED, 0)
 GO
 
+SET NOEXEC OFF;
+
+-- Vaccination Records
+IF NOT EXISTS (SELECT 1 FROM VaccinationRecords)
+BEGIN
+	SET NOEXEC ON;
+END
+
 DELETE FROM VaccinationRecords
 GO
+
+SET NOEXEC OFF;
+
+-- Class Applications
+IF NOT EXISTS (SELECT 1 FROM [ClassApplications])
+BEGIN
+	SET NOEXEC ON;
+END
 
 DELETE FROM [ClassApplications]
 DBCC CHECKIDENT ('[ClassApplications]', RESEED, 0)
 GO
 
+SET NOEXEC OFF;
+
+-- Payment Methods
+IF NOT EXISTS (SELECT 1 FROM [PaymentMethods])
+BEGIN
+	SET NOEXEC ON;
+END
+
+DELETE FROM [PaymentMethods]
+DBCC CHECKIDENT ('[PaymentMethods]', RESEED, 0)
+GO
+
+SET NOEXEC OFF;
+
+-- User Dogs
+IF NOT EXISTS (SELECT 1 FROM UserDogs)
+BEGIN
+	SET NOEXEC ON;
+END
+
 DELETE FROM UserDogs
 GO
+
+SET NOEXEC OFF;
+
+-- ClassPhotos
+IF NOT EXISTS (SELECT 1 FROM ClassPhotos)
+BEGIN
+	SET NOEXEC ON;
+END
 
 DELETE FROM ClassPhotos
 DBCC CHECKIDENT ('[ClassPhotos]', RESEED, 0)
 GO
 
+SET NOEXEC OFF;
+
+-- ClassSections
+IF NOT EXISTS (SELECT 1 FROM ClassSections)
+BEGIN
+	SET NOEXEC ON;
+END
+
 DELETE FROM ClassSections WHERE isSystemOwned = 0
 DBCC CHECKIDENT ('[ClassSections]', RESEED, 1)
 GO
+
+SET NOEXEC OFF;
+
+-- ClassTypes
+IF NOT EXISTS (SELECT 1 FROM ClassTypes)
+BEGIN
+	SET NOEXEC ON;
+END
 
 DELETE FROM ClassTypes WHERE isSystemOwned = 0
 DBCC CHECKIDENT ('[ClassTypes]', RESEED, 1)
 GO
 
+SET NOEXEC OFF;
+
+-- Users
+IF NOT EXISTS (SELECT 1 FROM Users)
+BEGIN
+	SET NOEXEC ON;
+END
+
 DELETE FROM Users WHERE isSystemOwned = 0
 DBCC CHECKIDENT ('[Users]', RESEED, 1)
 GO
+
+SET NOEXEC OFF;
+
+-- UserRoles
+IF NOT EXISTS (SELECT 1 FROM UserRoles)
+BEGIN
+	SET NOEXEC ON;
+END
 
 DELETE FROM UserRoles WHERE ID > 3
 DBCC CHECKIDENT ('[UserRoles]', RESEED, 3)
 GO
 
+SET NOEXEC OFF;
+
+-- Dogs
+IF NOT EXISTS (SELECT 1 FROM Dogs)
+BEGIN
+	SET NOEXEC ON;
+END
+
 DELETE FROM Dogs
 DBCC CHECKIDENT ('[Dogs]', RESEED, 0)
 GO
+
+SET NOEXEC OFF;

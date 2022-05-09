@@ -11,7 +11,7 @@ namespace DataAccess.Repositories.Contracts
             IDbConnection conn,
             IEnumerable<int> ClassTypeIDs,
             IEnumerable<int> DogIDs,
-            string PaymentMethod,
+            IEnumerable<int> PaymentMethodIds,
             bool includePaid,
             bool includeRefunded,
             bool includePending,
