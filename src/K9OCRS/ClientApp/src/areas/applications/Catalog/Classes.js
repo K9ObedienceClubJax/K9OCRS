@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import * as classTypesClient from '../../../util/apiClients/classTypes';
 import { Container, Spinner, Row, Col, Button } from 'reactstrap';
 import { isAdmin as verifyIsAdmin } from '../../../util/accessEvaluator';
+import { formatCurrency } from 'src/util/numberFormatting';
 import Table from '../../../shared/components/Table';
 import sectionColumns from './components/sectionColumns';
 import PageHeader from '../../../shared/components/PageHeader';
@@ -52,7 +53,7 @@ const Classes = (props) => {
                 ]}
                 setAlerts={setAlerts}
             >
-                { !isAdmin ? null : (
+                {!isAdmin ? null : (
                     <Button
                         tag="a"
                         href={`/Manage/Classes/Types/${classTypeId}`}
@@ -74,6 +75,9 @@ const Classes = (props) => {
                         />
                         <h5>Description</h5>
                         <p>{classDetail.description}</p>
+                        <p>
+                            <b>Price:</b> {formatCurrency(classDetail.price)}
+                        </p>
                         <h5>Requirements</h5>
                         {classDetail.requirements ? (
                             <p>{classDetail.requirements}</p>
@@ -130,6 +134,9 @@ const Classes = (props) => {
     );
 };
 
-export default connect((state) => ({
-    isAdmin: verifyIsAdmin(state?.shared?.currentUser),
-}), {})(Classes);
+export default connect(
+    (state) => ({
+        isAdmin: verifyIsAdmin(state?.shared?.currentUser),
+    }),
+    {}
+)(Classes);

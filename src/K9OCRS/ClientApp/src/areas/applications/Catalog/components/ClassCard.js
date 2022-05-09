@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, CardHeader } from 'reactstrap';
+import { formatCurrency } from 'src/util/numberFormatting';
 
 import './style.scss';
 
@@ -31,7 +32,7 @@ const ClassCard = (props) => {
                         </Col>
                         <Col xs="4" md="6" className="d-flex justify-content-end">
                             <p>
-                                <strong>Price:</strong> ${price}
+                                <strong>Price:</strong> {formatCurrency(price)}
                             </p>
                         </Col>
                     </Row>

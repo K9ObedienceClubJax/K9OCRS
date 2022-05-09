@@ -40,7 +40,8 @@ async function getUserData(
     setRole,
     setPicture,
     setMember,
-    setDiscount
+    setDiscount,
+    archivedStatusSetter
 ) {
     //API call to get user data
     const inspectedUser = await accountsApi.getUser(id);
@@ -53,6 +54,7 @@ async function getUserData(
     setPicture(inspectedUser.profilePictureUrl);
     setMember(inspectedUser.isMember);
     setDiscount(inspectedUser.hasDiscounts);
+    archivedStatusSetter(inspectedUser.isArchived);
 }
 
 async function getDefaultProfile(setPicture) {
@@ -143,7 +145,7 @@ function handleSubmit(
 }
 
 const Profile = (props) => {
-    const { currentUser = null, mode = null, paramsId = null } = props;
+    const { currentUser = null, mode = null, paramsId = null, archivedStatusSetter } = props;
     const setAlerts = props.setAlerts;
     const [userID, setUserID] = useState('');
     const [first, setFirst] = useState('');
@@ -196,7 +198,8 @@ const Profile = (props) => {
                 setRole,
                 setPicture,
                 setMember,
-                setDiscount
+                setDiscount,
+                archivedStatusSetter
             );
         } else if (createMode) {
             getDefaultProfile(setPicture);
