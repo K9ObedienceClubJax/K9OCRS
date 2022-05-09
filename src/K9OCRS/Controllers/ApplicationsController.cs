@@ -120,7 +120,7 @@ namespace K9OCRS.Controllers
         }
 
         // Update
-        [HttpPut]
+        [HttpPut("{id}")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> UpdateApplication([FromBody] ClassApplication entity)

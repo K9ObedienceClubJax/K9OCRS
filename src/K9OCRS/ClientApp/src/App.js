@@ -32,6 +32,7 @@ import ClassSectionSetup from './areas/classes/ClassSectionSetup';
 import AppManagement from './areas/applications/AppManagement';
 import TestUpload from './areas/classes/TestUpload';
 import AppDetails from './areas/applications/AppManagement/components/AppDetails';
+import MySections from './areas/sections/index';
 
 import './app.scss';
 
@@ -105,6 +106,14 @@ export default class App extends Component {
                         }
                     />
                     {/* Routes available to Instructors */}
+                    <Route
+                        path="Account/MySections"
+                        element={
+                            <ProtectedRoute>
+                                <MySections />
+                            </ProtectedRoute>
+                        }
+                    />
                     {/* Routes available only to Administrators */}
                     <Route
                         path="/Manage"

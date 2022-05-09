@@ -36,15 +36,7 @@ const SideNav = (props) => {
       >
         My Classes
       </a>
-      <a
-        className={`nav-link ${location === '/MyMembership' ? 'active' : ''}`}
-        data-toggle='pill'
-        href='/Account/MyMembership'
-        role='tab'
-      >
-        Membership
-      </a>
-      {userRole < accessEvaluator.USER_ROLES.Member && (
+      {userRole <= accessEvaluator.USER_ROLES.Instructor && (
         <a
           className={`nav-link ${location === '/MySections' ? 'active' : ''}`}
           data-toggle='pill'
