@@ -9,12 +9,13 @@ const statusColors = {
     Pending: 'dark',
     Active: 'info',
     Completed: 'primary',
-    Cancelled: 'warning'
+    Cancelled: 'warning',
 };
 
 const statusTemplate = ({ value }) => <Badge color={statusColors[value]}>{value}</Badge>;
 
-const checkMarkTemplate = ({ value }) => value ? <BsCheckLg className="text-success" /> : <BsXLg className='text-danger' />;
+const checkMarkTemplate = ({ value }) =>
+    value ? <BsCheckLg className="text-success" /> : <BsXLg className="text-danger" />;
 
 const dogTemplate = ({ value }) => {
     return (
@@ -29,7 +30,6 @@ const dogTemplate = ({ value }) => {
         </div>
     );
 };
-
 
 const applicationIdTemplate = ({ value }) => {
     if (!value) return '';
@@ -69,7 +69,11 @@ const columns = [
     },
     {
         Header: "Dog's Name",
-        accessor: (row) => ({ id: row.dogID, name: row.dogName, profilePictureUrl: row.dogProfilePictureUrl }),
+        accessor: (row) => ({
+            id: row.dogID,
+            name: row.dogName,
+            profilePictureUrl: row.dogProfilePictureUrl,
+        }),
         Cell: alignmentWrapper('left', dogTemplate),
     },
     {
@@ -79,7 +83,7 @@ const columns = [
     },
     {
         Header: 'Payment Method',
-        accessor: 'paymentMethod',
+        accessor: 'paymentMethodName',
         Cell: alignmentWrapper('center'),
     },
     {
