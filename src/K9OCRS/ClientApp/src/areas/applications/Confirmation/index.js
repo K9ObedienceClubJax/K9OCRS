@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment-timezone';
-import { Alert, Button, Spinner, Input, Form, FormGroup, Label, Col } from 'reactstrap';
+import { Alert, Button, Spinner, Input, Form, FormGroup, Label, Col, FormText } from 'reactstrap';
 import { PayPalButtons } from '@paypal/react-paypal-js';
 import { formatCurrency } from 'src/util/numberFormatting';
+import { getPaymentMethods } from 'src/util/apiClients/paymentMethods';
 import selectors from '../../../shared/modules/selectors';
 import PageHeader from '../../../shared/components/PageHeader';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
@@ -20,20 +21,27 @@ const Confirm = (props) => {
     const { currentUser } = props;
 
     const [dogs, setDogs] = useState([]);
+    const [pmOptions, setPmOptions] = useState([]);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
     const [dogSelected, setDogSelected] = useState(null);
-    const [handlerInput, setHandlerInput] = useState('');
+    const [handlerInput, setHandlerInput] = useState(
+        currentUser ? currentUser.firstName + ' ' + currentUser.lastName : ''
+    );
     const [attendeeInput, setAttendeeInput] = useState('');
-    const [payment, setPayment] = useState('');
     const [paymentSent, setPaymentSent] = useState(false);
 
-    const filledOut = dogSelected && payment && handlerInput;
-    const defaultAttendee = currentUser.firstName + ' ' + currentUser.lastName;
+    const filledOut = dogSelected && selectedPaymentMethod && handlerInput;
 
     const handleSelectDog = (event) => {
         let setIndex = event.target.value;
         setIndex && setDogSelected(dogs[setIndex]);
         !setIndex && setDogSelected(null);
+    };
+
+    const handleSelectPaymentMethod = (event) => {
+        const idx = event.target.value;
+        setSelectedPaymentMethod(pmOptions[idx]);
     };
 
     useEffect(() => {
@@ -62,6 +70,8 @@ const Confirm = (props) => {
             try {
                 const res = await axios.get(`/api/Dogs`);
                 setDogs(res?.data);
+                const pmOptions = await getPaymentMethods();
+                setPmOptions(pmOptions?.data);
                 setLoading(false);
             } catch (err) {
                 setLoading(false);
@@ -80,9 +90,9 @@ const Confirm = (props) => {
         classTypeID: parseInt(sectionDetail?.classType?.id),
         classSectionID: parseInt(sectionId),
         dogID: dogSelected?.id,
-        mainAttendee: handlerInput ? handlerInput : defaultAttendee,
+        mainAttendee: handlerInput,
         additionalAttendees: attendeeInput,
-        paymentMethod: payment,
+        paymentMethodID: parseInt(selectedPaymentMethod?.id),
     };
 
     const navigate = useNavigate();
@@ -192,8 +202,12 @@ const Confirm = (props) => {
                             <h4>Dog Selection</h4>
                             <p>Select a Dog*</p>
                             <div className="pb-3">
-                                <select onChange={handleSelectDog}>
-                                    <option value="">Please select a dog:</option>
+                                <Input
+                                    type="select"
+                                    onChange={handleSelectDog}
+                                    style={{ maxWidth: '300px' }}
+                                >
+                                    <option value="">Please select a dog</option>
                                     {dogs?.map((canine, index) => {
                                         return (
                                             <option key={canine.id} value={index}>
@@ -201,7 +215,7 @@ const Confirm = (props) => {
                                             </option>
                                         );
                                     })}
-                                </select>
+                                </Input>
                             </div>
 
                             <p>
@@ -229,7 +243,6 @@ const Confirm = (props) => {
                             </p>
 
                             <h4>Attendees</h4>
-                            <p>{defaultAttendee}</p>
                             <FormGroup>
                                 <Label for="handler">Person working the dog*</Label>
                                 <Col sm={5}>
@@ -242,6 +255,12 @@ const Confirm = (props) => {
                                         id="handler"
                                         value={handlerInput}
                                     />
+                                    {handlerInput && (
+                                        <FormText>
+                                            List the full name of the person that will handle the
+                                            dog
+                                        </FormText>
+                                    )}
                                 </Col>
                             </FormGroup>
                             <FormGroup>
@@ -256,6 +275,12 @@ const Confirm = (props) => {
                                         id="attendee"
                                         value={attendeeInput}
                                     />
+                                    {attendeeInput && (
+                                        <FormText>
+                                            List the names of every additonal person that will
+                                            attend the class with this dog
+                                        </FormText>
+                                    )}
                                 </Col>
                             </FormGroup>
                             <FormGroup tag="fieldset">
@@ -270,38 +295,23 @@ const Confirm = (props) => {
                                     payment must be submitted before your application can be
                                     approved
                                 </Label>
-                                <FormGroup check>
-                                    <Label check>
-                                        <Input
-                                            type="radio"
-                                            name="radio1"
-                                            onClick={() => setPayment('Paypal')}
-                                        />
-                                        {''} Paypal
-                                    </Label>
-                                </FormGroup>
-                                <FormGroup check>
-                                    <Label check>
-                                        <Input
-                                            type="radio"
-                                            name="radio1"
-                                            onClick={() => setPayment('Zelle')}
-                                        />
-                                        {''} Zelle
-                                    </Label>
-                                </FormGroup>
-                                <FormGroup check>
-                                    <Label check>
-                                        <Input
-                                            type="radio"
-                                            name="radio1"
-                                            onClick={() => setPayment('Check')}
-                                        />
-                                        {''} Check
-                                    </Label>
-                                </FormGroup>
+                                <Input
+                                    type="select"
+                                    onChange={handleSelectPaymentMethod}
+                                    style={{ maxWidth: '300px' }}
+                                >
+                                    <option value="">Please select a payment method</option>
+                                    {pmOptions?.map((pm, index) => {
+                                        return (
+                                            <option key={pm.id} value={index}>
+                                                {pm.name}
+                                            </option>
+                                        );
+                                    })}
+                                </Input>
                             </FormGroup>
-                            {payment === 'Paypal' && (
+                            {/* PayPal's id is 1 */}
+                            {selectedPaymentMethod?.id === 1 && (
                                 <PayPalButtons
                                     disabled={!filledOut}
                                     createOrder={(data, actions) => {
@@ -316,7 +326,19 @@ const Confirm = (props) => {
                                     }}
                                 />
                             )}
-                            {payment !== 'Paypal' && (
+                            {selectedPaymentMethod && !selectedPaymentMethod?.isIntegration && (
+                                <p>
+                                    {selectedPaymentMethod?.instructions}
+                                    <br />
+                                    <br />
+                                    <b>
+                                        You will see the required Application Number after you have
+                                        submitted the application. We need this to identify which
+                                        application the payment corresponds to.
+                                    </b>
+                                </p>
+                            )}
+                            {selectedPaymentMethod?.id !== 1 && (
                                 <Button
                                     color="primary"
                                     size="lg"
