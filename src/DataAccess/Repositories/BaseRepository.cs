@@ -5,6 +5,8 @@ using DataAccess.Extensions;
 using DataAccess.Modules;
 using DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
+using SqlKata;
+using SqlKata.Compilers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -87,8 +89,14 @@ namespace DataAccess.Repositories
 
         public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn, bool includeArchived = false)
         {
-            var archivedFilter = !includeArchived ? "AND isArchived = 0" : "";
-            var query = $"SELECT * FROM {_tableName} WHERE isSystemOwned = 0 {archivedFilter}";
+            var sqlCompiler = new SqlServerCompiler();
+            var queryBuilder = new Query($"{_tableNameRaw}").Select("*");
+
+            if (ValidateHasPlaceholders()) queryBuilder.WhereRaw("isSystemOwned = 0");
+            if (!includeArchived) queryBuilder.WhereRaw("isArchived = 0");
+
+            // Only use this when using Dapper's parameters
+            var query = sqlCompiler.Compile(queryBuilder).ToString();
 
             var result = await conn.QueryAsync<T>(query);
             return result.ToList();
@@ -239,6 +247,12 @@ namespace DataAccess.Repositories
         #endregion
 
         #region Internal Utility Methods
+        internal bool ValidateHasPlaceholders()
+        {
+            var props = GenerateListOfPropertyNames(GetProperties);
+            return props.Contains("isSystemOwned");
+        }
+
         internal bool ValidateIsArchivableEntity()
         {
             var props = GenerateListOfPropertyNames(GetProperties);
