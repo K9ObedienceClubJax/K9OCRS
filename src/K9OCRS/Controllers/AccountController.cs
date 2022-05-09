@@ -118,7 +118,7 @@ namespace K9OCRS.Controllers
                 return dbOwner.Users.GetIdByLogin(conn, login.Email, GetHashedPassword(login.Password));
             });
 
-
+            if (loginResult.isArchived) return StatusCode(403, "This account has been denied access");
 
             if (login != null && loginResult != null)
             {
@@ -156,13 +156,15 @@ namespace K9OCRS.Controllers
                         return dbOwner.Users.GetByID(conn, id);
                     });
 
+                    if (loginResult.isArchived) throw new SecurityTokenExpiredException();
+
                     var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
 
                     return Ok(userResult);
                 }
                 catch (Exception ex)
                 {
-                    if (ex is KeyNotFoundException)
+                    if (ex is KeyNotFoundException || ex is SecurityTokenExpiredException)
                     {
                         return Logout();
                     }
@@ -364,19 +366,19 @@ namespace K9OCRS.Controllers
         [HttpPost("queryusers")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
-        public async Task<IActionResult> QueryUsers([FromBody] int role)
+        public async Task<IActionResult> QueryUsers([FromBody] int role, [FromQuery] bool includeArchived = false)
         {
             IEnumerable<User> users;
             if (role == 0)
             {
                 users = await connectionOwner.Use(conn => {
-                    return dbOwner.Users.GetAll(conn);
+                    return dbOwner.Users.GetAll(conn, includeArchived);
                 });
             }
             else
             {
                 users = await connectionOwner.Use(conn => {
-                    return dbOwner.Users.QueryUsersByRole(conn, role);
+                    return dbOwner.Users.QueryUsersByRole(conn, role, includeArchived);
                 });
             }
 
@@ -402,6 +404,36 @@ namespace K9OCRS.Controllers
             return Ok((new User { ProfilePictureFilename = "UserPlaceholder.png" })
                 .ToClassTypeResult(serviceConstants.storageBasePath)
                 .ProfilePictureUrl);
+        }
+
+        [HttpPost("archive/{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> ArchiveUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Archive(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
+        }
+
+        [HttpPost("unarchive/{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> UnarchiveUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Unarchive(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Delete(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
         }
 
 

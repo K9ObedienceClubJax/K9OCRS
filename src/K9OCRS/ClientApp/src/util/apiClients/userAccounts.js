@@ -41,17 +41,22 @@ export const changeInfo = async (changeUserInfoRequest) =>
 export const changeInfoAdmin = async (changeUserInfoRequest) =>
     await axios.put(`${base}/changeinfoadmin`, changeUserInfoRequest);
 
-export const queryUsers = async (role) =>
+export const queryUsers = async (role, includeArchived = false) =>
     axios
         .post(`${base}/queryusers`, role, {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
+            params: { includeArchived },
         })
         .then((response) => response.data);
 
+export const archiveUser = async (userId) => axios.post(`${base}/archive/${userId}`);
+export const unarchiveUser = async (userId) => axios.post(`${base}/unarchive/${userId}`);
+
 //Delete
+export const deleteUser = async (userId) => axios.delete(`${base}/${userId}`);
 export const logout = async () => axios.get(`${base}/logout`);
 
 export default createAccount;
