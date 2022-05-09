@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build --build-arg client_id=${{ secrets.PAYPAL_CLIENT_ID }} -t pk9ocrs.azurecr.io/k9ocrs:${{ github.sha }} .
+          docker build --build-arg REACT_APP_PAYPAL_CLIENT_ID=${{ secrets.PAYPAL_CLIENT_ID }} -t pk9ocrs.azurecr.io/k9ocrs:${{ github.sha }} .
           docker push pk9ocrs.azurecr.io/k9ocrs:${{ github.sha }}
   deploy:
     runs-on: ubuntu-latest

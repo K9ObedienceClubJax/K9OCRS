@@ -1,4 +1,4 @@
-ARG client_id
+ARG REACT_APP_PAYPAL_CLIENT_ID
 
 # NETCORE BUILD
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
@@ -10,8 +10,6 @@ RUN apt-get install -y nodejs
 
 COPY ./*.sln ./
 COPY ./src ./src/
-
-ENV REACT_APP_PAYPAL_CLIENT_ID=$client_id
 
 RUN dotnet restore
 RUN dotnet publish -o /app/build
