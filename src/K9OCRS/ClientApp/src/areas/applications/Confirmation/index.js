@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment-timezone';
 import { Alert, Button, Spinner, Input, Form, FormGroup, Label, Col } from 'reactstrap';
 import { PayPalButtons } from '@paypal/react-paypal-js';
@@ -85,14 +85,16 @@ const Confirm = (props) => {
         paymentMethod: payment,
     };
 
+    const navigate = useNavigate();
+
     const handleSubmit = (isPaid = false) => {
         payload.isPaid = isPaid;
 
         axios.post('/api/Applications', payload).then((response) => {
             if (response.status === 200) {
-                // redirect to a thank you page
-                console.log(response.status);
-                console.log(response.data.token);
+                const sectionId = response.data?.classSectionID;
+                // redirect to a myclasses/{id} page
+                navigate(`/Account/Classes/${sectionId}`);
             }
         });
     };
