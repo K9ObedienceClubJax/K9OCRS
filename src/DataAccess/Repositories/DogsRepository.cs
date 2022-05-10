@@ -1,8 +1,12 @@
 ﻿using Dapper;
+using DataAccess.Constants;
 using DataAccess.Entities;
+using DataAccess.Modules;
 using DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
@@ -18,6 +22,20 @@ namespace DataAccess.Repositories
         {
             var query = $"UPDATE {_tableName} SET ProfilePictureFilename=@Filename WHERE ID=@ID";
             return await conn.ExecuteAsync(query, new { ID = dogId, Filename = filename });
+        }
+
+        public async Task<IReadOnlyList<Dog>> GetOwnedDogs(IDbConnection conn)
+        {
+            var identity = new ModifierIdentity(_httpContextAccessor);
+            var query = $@"
+                SELECT d.*
+                FROM {_tableName} d
+                JOIN {DbTables.Get(nameof(UserDog))} ud ON d.ID = ud.DogID
+                WHERE ud.UserID = {identity.ID}
+            ";
+
+            var result = await conn.QueryAsync<Dog>(query);
+            return result.ToList();
         }
     }
 }

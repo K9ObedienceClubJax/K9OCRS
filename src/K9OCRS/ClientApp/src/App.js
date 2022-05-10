@@ -18,9 +18,8 @@ import PasswordReset from './areas/accounts/PasswordReset';
 import ChangePassword from './areas/accounts/ChangePassword';
 import MyAccount from './areas/accounts/index';
 
-import MyDogs from './pages/MyDogs';
-import DogDetails from './pages/DogDetails';
-import DogSetup from './pages/DogSetup';
+import MyDogs from './areas/dogs/MyDogs';
+import DogSetup from './areas/dogs/DogSetup';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
 import Users from './areas/management/Users/index';
@@ -101,7 +100,7 @@ export default class App extends Component {
                         path="/Account/MyDogs/:dogId"
                         element={
                             <ProtectedRoute>
-                                <DogDetails />
+                                <DogSetup />
                             </ProtectedRoute>
                         }
                     />
