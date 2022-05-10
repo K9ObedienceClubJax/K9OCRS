@@ -7,6 +7,7 @@ import PageHeader from '../../../shared/components/PageHeader';
 import * as actions from '../modules/actions';
 import PageBody from '../../../shared/components/PageBody';
 import DogEditor from './DogEditor';
+import ClassTable from './ClassTable';
 //import DeleteModal from './DeleteModal';
 
 import './styles.scss';
@@ -138,6 +139,7 @@ const DogSetup = (props) => {
                             loading={loading}
                             submitting={submitting}
                         /> */}
+                        <ClassTable/>
                     </>
                 )}
             </PageBody>
