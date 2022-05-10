@@ -25,6 +25,12 @@
 
     background: #f5f5f5;
 
+    &:hover {
+        cursor: pointer;
+        background-color: #f0f0f0;
+        box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.07);
+    }
+
     border: 1px solid #e1e1e1;
     box-sizing: border-box;
 
