@@ -19,7 +19,7 @@ const Users = (props) => {
     };
 
     async function getUsers(setUsers, setLoading, role) {
-        const response = await accountsApi.queryUsers(role);
+        const response = await accountsApi.queryUsers(role, true);
         setUsers(response);
         setLoading(false);
     }
@@ -32,7 +32,7 @@ const Users = (props) => {
 
     const userRoleRadios = [];
 
-    for(const [key, value] of Object.entries(USER_ROLES)) {
+    for (const [key, value] of Object.entries(USER_ROLES)) {
         userRoleRadios.push(
             <>
                 <input

@@ -28,9 +28,10 @@ import User from './areas/management/Users/User';
 import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
 import ClassSectionSetup from './areas/classes/ClassSectionSetup';
+import PaymentMethodManagement from './areas/billing/PaymentMethodManagement';
 import AppManagement from './areas/applications/AppManagement';
-import TestUpload from './areas/classes/TestUpload';
 import AppDetails from './areas/applications/AppManagement/components/AppDetails';
+import MySections from './areas/sections/index';
 
 import './app.scss';
 
@@ -59,7 +60,7 @@ export default class App extends Component {
                             </GuestOnlyRoute>
                         }
                     />
-                    <Route path="/Account/PasswordReset" element={<PasswordReset />} />
+                    <Route path="/Account/PasswordReset" element={<PasswordReset />} exact />
                     <Route path="/Account/ChangePassword" element={<ChangePassword />} />
                     <Route path="/Classes/:classTypeId" element={<Classes />} />
                     {/* Routes available to Logged in Users */}
@@ -104,6 +105,14 @@ export default class App extends Component {
                         }
                     />
                     {/* Routes available to Instructors */}
+                    <Route
+                        path="Account/MySections"
+                        element={
+                            <ProtectedRoute>
+                                <MySections />
+                            </ProtectedRoute>
+                        }
+                    />
                     {/* Routes available only to Administrators */}
                     <Route
                         path="/Manage"
@@ -161,12 +170,11 @@ export default class App extends Component {
                             </ProtectedRoute>
                         }
                     />
-                    {/* This route is just for a quick test, it will be removed */}
                     <Route
-                        path="/Manage/Classes/testImageUpload"
+                        path="/Manage/PaymentMethods"
                         element={
                             <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
-                                <TestUpload />
+                                <PaymentMethodManagement />
                             </ProtectedRoute>
                         }
                     />

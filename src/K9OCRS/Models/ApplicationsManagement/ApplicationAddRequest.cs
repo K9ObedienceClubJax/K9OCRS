@@ -15,7 +15,7 @@ namespace K9OCRS.Models.ApplicationsManagement
         public string MainAttendee { get; set; }
         public string AdditionalAttendees { get; set; }
         [Required]
-        public string PaymentMethod { get; set; }
+        public int PaymentMethodID { get; set; }
         public bool isPaid { get; set; } = false;
     }
 }

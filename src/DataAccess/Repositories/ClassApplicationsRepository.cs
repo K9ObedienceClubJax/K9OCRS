@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +22,7 @@ namespace DataAccess.Repositories
             IDbConnection conn,
             IEnumerable<int> ClassTypeIDs,
             IEnumerable<int> DogIDs,
-            string PaymentMethod,
+            IEnumerable<int> PaymentMethodIds,
             bool includePaid,
             bool includeRefunded,
             bool includePending,
@@ -32,13 +33,15 @@ namespace DataAccess.Repositories
         {
             var sqlCompiler = new SqlServerCompiler();
             var queryBuilder = new Query($"{_tableNameRaw} as ca")
-                .LeftJoin("Dogs as d", "d.ID", "ca.DogID")
-                .LeftJoin("ClassTypes as ct", "ct.ID", "ca.ClassTypeID")
+                .LeftJoin($"{DbTables.GetRaw(nameof(Dog))} as d", "d.ID", "ca.DogID")
+                .LeftJoin($"{DbTables.GetRaw(nameof(ClassType))} as ct", "ct.ID", "ca.ClassTypeID")
+                .LeftJoin($"{DbTables.GetRaw(nameof(PaymentMethod))} as pm", "pm.ID", "ca.PaymentMethodID")
                 .Select(
                     "ca.*",
                     "d.Name as DogName",
-                    "d.ProfilePictureFilename",
-                    "ct.Title"
+                    "d.ProfilePictureFilename as DogProfilePictureFilename",
+                    "ct.Title as ClassTypeTitle",
+                    "pm.Name as PaymentMethodName"
                 );
 
             // Add DogIDs Filter
@@ -48,7 +51,7 @@ namespace DataAccess.Repositories
             if (DogIDs.Count() > 0) queryBuilder.WhereRaw("ca.DogID IN @DogIDs");
 
             // Add PaymentMethod Filter
-            if (!string.IsNullOrEmpty(PaymentMethod)) queryBuilder.WhereRaw("ca.PaymentMethod = @PaymentMethod");
+            if (PaymentMethodIds.Count() > 0) queryBuilder.WhereRaw("ca.PaymentMethodID IN @PaymentMethodIds");
 
             var excludedStatusesList = new List<string>();
 
@@ -67,15 +70,8 @@ namespace DataAccess.Repositories
             // Only use this when using Dapper's parameters
             var query = sqlCompiler.Compile(queryBuilder).ToString();
 
-            var result = await conn.QueryAsync<ClassApplication, string, string, string, ClassApplication>(query,
-            (application, dogName, profilePictureFilename, typeTitle) => {
-                application.DogName = dogName;
-                application.DogProfilePictureFilename = profilePictureFilename;
-                application.ClassTypeTitle = typeTitle;
-                return application;
-            },
-            new { PaymentMethod, DogIDs, ClassTypeIDs },
-            splitOn: "DogName,ProfilePictureFilename,Title");
+            var result = await conn.QueryAsync<ClassApplication>(query,
+            new { PaymentMethodIds, DogIDs, ClassTypeIDs });
 
             return result.ToList();
         }
@@ -91,7 +87,7 @@ namespace DataAccess.Repositories
                     ca.Status,
                     ca.MainAttendee,
                     ca.AdditionalAttendees,
-                    ca.PaymentMethod,
+                    ca.PaymentMethodID,
                     ca.isPaid,
                     ca.isRefunded,
                     ca.ReviewedBy,
@@ -101,22 +97,19 @@ namespace DataAccess.Repositories
                     ca.ModifiedDate,
                     -- Dog Info
                     d.[Name] as DogName,
+                    d.ProfilePictureFilename as DogProfilePictureFilename,
                     -- Class Type
-                    ct.Title
+                    ct.Title as ClassTypeTitle,
+                    -- Payment Method
+                    pm.[Name] as PaymentMethodName
                 FROM ClassApplications ca
-                LEFT JOIN Dogs d ON d.ID = ca.DogID
-                LEFT JOIN ClassTypes ct ON ct.ID = ca.ClassTypeID
+                LEFT JOIN {DbTables.Get(nameof(Dog))} as d ON d.ID = ca.DogID
+                LEFT JOIN {DbTables.Get(nameof(ClassType))} as ct ON ct.ID = ca.ClassTypeID
+                LEFT JOIN {DbTables.Get(nameof(PaymentMethod))} as pm ON pm.ID = ca.PaymentMethodID
                 WHERE ca.ID = @Id
             ";
 
-            var result = await conn.QueryAsync<ClassApplication, string, string, ClassApplication>(query,
-            (application, dogName, typeTitle) => {
-                application.DogName = dogName;
-                application.ClassTypeTitle = typeTitle;
-                return application;
-            },
-            new { Id = id },
-            splitOn: "DogName,Title");
+            var result = await conn.QueryAsync<ClassApplication>(query, new { Id = id });
             return result.FirstOrDefault();
         }
 
@@ -131,7 +124,7 @@ namespace DataAccess.Repositories
                     ca.Status,
                     ca.MainAttendee,
                     ca.AdditionalAttendees,
-                    ca.PaymentMethod,
+                    ca.PaymentMethodID,
                     ca.isPaid,
                     ca.isRefunded,
                     ca.ReviewedBy,
@@ -141,22 +134,19 @@ namespace DataAccess.Repositories
                     ca.ModifiedDate,
                     -- Dog Info
                     d.[Name] as DogName,
+                    d.ProfilePictureFilename as DogProfilePictureFilename,
                     -- Class Type
-                    ct.Title
+                    ct.Title as ClassTypeTitle,
+                    -- Payment Method
+                    pm.[Name] as PaymentMethodName
                 FROM ClassApplications ca
-                LEFT JOIN Dogs d ON d.ID = ca.DogID
-                LEFT JOIN ClassTypes ct ON ct.ID = ca.ClassTypeID
+                LEFT JOIN {DbTables.Get(nameof(Dog))} as d ON d.ID = ca.DogID
+                LEFT JOIN {DbTables.Get(nameof(ClassType))} as ct ON ct.ID = ca.ClassTypeID
+                LEFT JOIN {DbTables.Get(nameof(PaymentMethod))} as pm ON pm.ID = ca.PaymentMethodID
                 WHERE ca.{idColumn} = @Id
             ";
 
-            var result = await conn.QueryAsync<ClassApplication, string, string, ClassApplication>(query,
-            (application, dogName, typeTitle) => {
-                application.DogName = dogName;
-                application.ClassTypeTitle = typeTitle;
-                return application;
-            },
-            new { Id = id },
-            splitOn: "DogName,Title");
+            var result = await conn.QueryAsync<ClassApplication>(query, new { Id = id });
             return result.ToList();
         }
 

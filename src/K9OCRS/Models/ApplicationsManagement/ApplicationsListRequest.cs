@@ -6,7 +6,7 @@ namespace K9OCRS.Models
     {
         public IEnumerable<int> ClassTypeIDs { get;   set; }
         public IEnumerable<int> DogIDs { get; set; }
-        public string PaymentMethod { get; set; }
+        public IEnumerable<int> PaymentMethodIDs { get; set; }
 
         // Filter by Payment Status
         public bool includePaid { get; set; } = true;

@@ -1,21 +1,22 @@
-﻿using DataAccess;
+﻿using CsvHelper;
+using DataAccess;
 using DataAccess.Clients.Contracts;
+using DataAccess.Extensions;
 using DataAccess.Modules.Contracts;
-using Microsoft.AspNetCore.Http;
+using K9OCRS.Utils.Constants;
+using K9OCRS.Utils.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CsvHelper;
-using System.IO;
+using System.Dynamic;
 using System.Globalization;
-using System.Net.Http.Headers;
+using System.IO;
 using System.IO.Compression;
-using K9OCRS.Utils.Extensions;
-using K9OCRS.Utils.Constants;
-using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace K9OCRS.Controllers
 {
@@ -62,8 +63,7 @@ namespace K9OCRS.Controllers
                 classSections,
                 classMeetings,
                 classApplications
-            ) = await connectionOwner.Use(async conn =>
-            {
+            ) = await connectionOwner.Use(async conn => {
                 var userRoles = await dbOwner.UserRoles.GetTableExport(conn);
                 var users = await dbOwner.Users.GetTableExport(conn);
                 var dogs = await dbOwner.Dogs.GetTableExport(conn);
@@ -135,19 +135,44 @@ namespace K9OCRS.Controllers
 
             // Name the zip file
             fileStreamResult.FileDownloadName = $"k9ocrs_export-{DateTime.Now.ToString("MM-dd-yyyy-HHmm")}.zip";
-            
+
             return fileStreamResult;
         }
 
-        private void WriteCsvFile(ZipArchiveEntry entry, IEnumerable<object> records)
+        private void WriteCsvFile<T>(ZipArchiveEntry entry, IEnumerable<T> records)
         {
             var entryStream = entry.Open();
             var streamWriter = new StreamWriter(entryStream);
             var csv = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
 
-            csv.WriteRecords(records);
+            // Get list of filtered properties
+            var listOfProperties = GenerateListOfProperties(typeof(T).GetProperties());
+
+
+            // Filter export ignored properties so they don't show on the csv file
+            var transformedRecords = records.Select(r => {
+                dynamic exo = new ExpandoObject();
+
+                // Build the dynamic object with the filtered properties
+                foreach (PropertyInfo prop in listOfProperties)
+                {
+                    ((IDictionary<String, Object>)exo).Add(prop.Name, prop.GetValue(r));
+                }
+
+                return exo;
+            });
+
+            csv.WriteRecords(transformedRecords);
             streamWriter.Flush();
             entryStream.Dispose();
+        }
+
+        private static List<PropertyInfo> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties)
+        {
+            return (from prop in listOfProperties
+                    let attributes = prop.GetCustomAttributes(typeof(ExportIgnoreAttribute), false)
+                    where attributes.Length <= 0
+                    select prop).ToList();
         }
     }
 }

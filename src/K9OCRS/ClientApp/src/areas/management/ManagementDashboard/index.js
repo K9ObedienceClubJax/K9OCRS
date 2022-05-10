@@ -41,6 +41,9 @@ export default function ManagementDashboard() {
                         <NavLink tag={Link} to="/Manage/Applications">
                             Applications Management
                         </NavLink>
+                        <NavLink tag={Link} to="/Manage/PaymentMethods">
+                            Payment Methods Management
+                        </NavLink>
                     </NavItem>
                 </Nav>
             </PageBody>

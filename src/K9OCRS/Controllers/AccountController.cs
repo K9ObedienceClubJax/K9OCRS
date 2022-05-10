@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
@@ -18,6 +19,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -116,7 +118,7 @@ namespace K9OCRS.Controllers
                 return dbOwner.Users.GetIdByLogin(conn, login.Email, GetHashedPassword(login.Password));
             });
 
-
+            if (loginResult.isArchived) return StatusCode(403, "This account has been denied access");
 
             if (login != null && loginResult != null)
             {
@@ -154,13 +156,15 @@ namespace K9OCRS.Controllers
                         return dbOwner.Users.GetByID(conn, id);
                     });
 
+                    if (loginResult.isArchived) throw new SecurityTokenExpiredException();
+
                     var userResult = new UserResult(loginResult, serviceConstants.storageBasePath);
 
                     return Ok(userResult);
                 }
                 catch (Exception ex)
                 {
-                    if (ex is KeyNotFoundException)
+                    if (ex is KeyNotFoundException || ex is SecurityTokenExpiredException)
                     {
                         return Logout();
                     }
@@ -186,34 +190,43 @@ namespace K9OCRS.Controllers
 
         [HttpPost("forgotpassword")]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        public async Task<IActionResult> ForgotPassword([FromBody] PasswordResetRequest request)
         {
+            var email = request.Email;
+            var sendEmail = request.Send;
+
             //Check if email is in database
             var accountResult = await connectionOwner.Use(conn => {
                 return dbOwner.Users.GetByEmail(conn, email);
+
             });
             if (accountResult == null)
             {
                 return StatusCode(400, "Email does not exist");
             }
-
+        
             //Write token with account info
             var token = GenerateForgotPasswordToken(email, accountResult);
 
+            var callbackUrl = "/Account/ChangePassword?token=" + token.Result;
             //Create url with token
-            var callbackUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "/Account/ChangePassword?token=" + token.Result;
 
             //Send email
-            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
-            var subject = "K9 Obedience Club Password Reset";
-            var to = new EmailAddress(email, email);
-            var plainTextContent = "Use the link to reset your password." + callbackUrl;
-            var htmlContent = "Click <a href=" + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            await client.SendEmailAsync(msg);
-            return Ok("Email sent");
+            if (sendEmail)
+            {
+                var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress("ignitechk9@gmail.com", "K9 Obedience Club");
+                var subject = "K9 Obedience Club Password Reset";
+                var to = new EmailAddress(email, email);
+                var plainTextContent = "Use the link to reset your password." + callbackUrl;
+                var htmlContent = "Click <a href=" + HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + callbackUrl + "> here</a> to reset your password <br/> If you did not request a password change, ignore this email.";
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                await client.SendEmailAsync(msg);
+                return Ok("Email sent");
+            }
+
+            return Ok(callbackUrl);
         }
 
         [HttpPost("changepassword")]
@@ -288,9 +301,8 @@ namespace K9OCRS.Controllers
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.UserRoleID = request.UserRoleID;
-            // TODO: Uncomment the ones below once you're sending them from the front-end or the default values will override the actual values.
-            //user.HasDiscounts = request.HasDiscounts;
-            //user.isMember = request.isMember;
+            user.HasDiscounts = request.HasDiscounts;
+            user.isMember = request.isMember;
             var tasks = new List<Task>();
             tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
                 await dbOwner.Users.Update(conn, tr, user);
@@ -322,6 +334,8 @@ namespace K9OCRS.Controllers
                     user.Email = request.Email;
                     user.Password = GetHashedPassword(request.Password);
                     user.UserRoleID = request.UserRoleID;
+                    user.HasDiscounts = request.HasDiscounts;
+                    user.isMember = request.isMember;
                     return dbOwner.Users.Add(conn, user);
                 });
 
@@ -352,19 +366,19 @@ namespace K9OCRS.Controllers
         [HttpPost("queryusers")]
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
-        public async Task<IActionResult> QueryUsers([FromBody] int role)
+        public async Task<IActionResult> QueryUsers([FromBody] int role, [FromQuery] bool includeArchived = false)
         {
             IEnumerable<User> users;
             if (role == 0)
             {
                 users = await connectionOwner.Use(conn => {
-                    return dbOwner.Users.GetAll(conn);
+                    return dbOwner.Users.GetAll(conn, includeArchived);
                 });
             }
             else
             {
                 users = await connectionOwner.Use(conn => {
-                    return dbOwner.Users.QueryUsersByRole(conn, role);
+                    return dbOwner.Users.QueryUsersByRole(conn, role, includeArchived);
                 });
             }
 
@@ -381,6 +395,45 @@ namespace K9OCRS.Controllers
             var users = await connectionOwner.Use(conn => dbOwner.Users.GetInstructorOptions(conn));
             var userResults = users.Select(u => new UserResult(u, serviceConstants.storageBasePath));
             return Ok(userResults);
+        }
+
+        [HttpGet("placeholderImageUrl")]
+        [ProducesResponseType(typeof(string), 200)]
+        public IActionResult GetPlaceholderImageUrl()
+        {
+            return Ok((new User { ProfilePictureFilename = "UserPlaceholder.png" })
+                .ToClassTypeResult(serviceConstants.storageBasePath)
+                .ProfilePictureUrl);
+        }
+
+        [HttpPost("archive/{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> ArchiveUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Archive(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
+        }
+
+        [HttpPost("unarchive/{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> UnarchiveUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Unarchive(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [ProducesResponseType(typeof(int), 200)]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var rowsUpdated = await connectionOwner.Use(conn => dbOwner.Users.Delete(conn, id));
+            if (rowsUpdated < 1) return NotFound($"Could not find the user with id: {id}");
+            return NoContent();
         }
 
 

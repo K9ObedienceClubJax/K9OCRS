@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from 'reactstrap';
+import { useNavigate } from 'react-router-dom';
 import PageBody from '../../../shared/components/PageBody';
 import PageHeader from '../../../shared/components/PageHeader/index';
 import Profile from '../../../shared/components/Profile';
 
 function Create() {
     const [alerts, setAlerts] = useState([]);
+
+    const navigate = useNavigate();
+
     return (
         <div>
             <PageHeader
@@ -18,7 +22,9 @@ function Create() {
                     { label: 'Create User', active: true },
                 ]}
             >
-                <Button outline>Cancel</Button>
+                <Button onClick={() => navigate(-1)} outline>
+                    Cancel
+                </Button>
                 <Button form="profileForm">Create User</Button>
             </PageHeader>
             <PageBody>
