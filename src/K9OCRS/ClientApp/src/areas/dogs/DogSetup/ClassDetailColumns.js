@@ -1,21 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Badge } from 'reactstrap';
 import { alignmentWrapper } from "src/util/columns";
-
-const statusColors = {
-    Pending: 'dark',
-    Active: 'info',
-    Completed: 'primary',
-    Cancelled: 'warning'
-};
-
-const statusTemplate = ({ value }) => <Badge color={statusColors[value]}>{value}</Badge>;
-
-const applicationIdTemplate = ({ value }) => {
-    if (!value) return '';
-    return <Link to={`/Manage/Applications/Details/${value}`}>{value}</Link>;
-};
 
 const classSectionTemplate = ({ value }) => {
     if (!value) return '';
@@ -24,11 +8,6 @@ const classSectionTemplate = ({ value }) => {
             {`${value}`}
         </div>
     );
-};
-
-const classTypeTemplate = ({ value }) => {
-    if (!value?.title) return '';
-    return <Link to={`/Manage/Classes/Types/${value.id}`}>{value.title}</Link>;
 };
 
 const ClassDetailColumns = [

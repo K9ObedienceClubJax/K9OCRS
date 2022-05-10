@@ -6,7 +6,7 @@ import './styles.scss';
 
 const ClassTable = (props) => {
 
-    const [dogDetails, setDogDetails] = useState([]);
+    const [dogDetails] = useState([]);
 
     return (
         <div className='ClassTableContainer'>

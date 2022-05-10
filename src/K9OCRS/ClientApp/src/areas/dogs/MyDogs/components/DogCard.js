@@ -1,5 +1,4 @@
 import React from 'react'
-import Picture from './Picture'
 import {Link} from 'react-router-dom'
 import { Row, Col } from 'reactstrap';
 import classNames from 'classnames';
