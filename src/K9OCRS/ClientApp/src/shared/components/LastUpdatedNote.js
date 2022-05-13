@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment-timezone';
 
 const LastUpdatedNote = ({ modifiedByName, modifiedByID, modifiedDate }) => {
-    const showModifierInfo = modifiedByID !== 0;
+    const showModifierInfo = !!modifiedByID;
 
     if (!showModifierInfo) return null;
 
