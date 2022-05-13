@@ -1,0 +1,25 @@
+@use '../../../app.scss';
+
+.vaccinationStatusLabel {
+    width: 186px;
+    height: 24px;
+
+    /* Body/Paragraph */
+
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 8px;
+    /* identical to box height, or 150% */
+
+
+    color: #000000;
+
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
