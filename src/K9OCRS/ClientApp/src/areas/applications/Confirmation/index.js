@@ -1,9 +1,22 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
+import { Typeahead } from 'react-bootstrap-typeahead';
 import { connect } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment-timezone';
-import { Alert, Button, Spinner, Input, Form, FormGroup, Label, Col, FormText } from 'reactstrap';
+import {
+    Alert,
+    Button,
+    Spinner,
+    Input,
+    Form,
+    FormGroup,
+    Label,
+    Col,
+    Row,
+    FormText,
+    Badge,
+} from 'reactstrap';
 import { PayPalButtons } from '@paypal/react-paypal-js';
 import { formatCurrency } from 'src/util/numberFormatting';
 import { getPaymentMethods } from 'src/util/apiClients/paymentMethods';
@@ -12,6 +25,7 @@ import PageHeader from '../../../shared/components/PageHeader';
 import ProfileBadge from '../../../shared/components/ProfileBadge';
 import PageBody from '../../../shared/components/PageBody';
 import MeetingsList from 'src/shared/components/MeetingsList';
+import { formatDogAge } from 'src/util/dates';
 
 const Confirm = (props) => {
     const { sectionId } = useParams();
@@ -24,7 +38,8 @@ const Confirm = (props) => {
     const [pmOptions, setPmOptions] = useState([]);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
-    const [dogSelected, setDogSelected] = useState(null);
+    const [dogsSelected, setDogSelected] = useState([]);
+    const dogSelected = dogsSelected.length > 0 ? dogsSelected[0] : null;
     const [handlerInput, setHandlerInput] = useState(
         currentUser ? currentUser.firstName + ' ' + currentUser.lastName : ''
     );
@@ -32,12 +47,6 @@ const Confirm = (props) => {
     const [paymentSent, setPaymentSent] = useState(false);
 
     const filledOut = dogSelected && selectedPaymentMethod && handlerInput;
-
-    const handleSelectDog = (event) => {
-        let setIndex = event.target.value;
-        setIndex && setDogSelected(dogs[setIndex]);
-        !setIndex && setDogSelected(null);
-    };
 
     const handleSelectPaymentMethod = (event) => {
         const idx = event.target.value;
@@ -68,7 +77,7 @@ const Confirm = (props) => {
     useEffect(() => {
         async function getTest() {
             try {
-                const res = await axios.get(`/api/Dogs`);
+                const res = await axios.get(`/api/Dogs/owned`);
                 setDogs(res?.data);
                 const pmOptions = await getPaymentMethods();
                 setPmOptions(pmOptions?.data);
@@ -150,6 +159,32 @@ const Confirm = (props) => {
         ],
     };
 
+    const dogRenderMenuItemChildren = (option, { text }, index) => (
+        <Fragment>
+            <Row key={index}>
+                <Col className="d-flex justify-content-start align-items-center">
+                    <ProfileBadge
+                        id={option.id}
+                        imageUrl={option.profilePictureUrl}
+                        fullName={option.name}
+                        isDog
+                    />
+                </Col>
+                <Col className="d-flex justify-content-start align-items-center">
+                    {option.isArchived && (
+                        <Badge color="dark" className="me-1">
+                            Archived
+                        </Badge>
+                    )}
+                    <span />
+                </Col>
+            </Row>
+        </Fragment>
+    );
+
+    const dogLabelKey = (option) =>
+        loading ? 'Loading...' : `${option.name} ${option.isArchived ? '- [Archived]' : ''}`;
+
     return (
         <>
             <PageHeader
@@ -202,20 +237,20 @@ const Confirm = (props) => {
                             <h4>Dog Selection</h4>
                             <p>Select a Dog*</p>
                             <div className="pb-3">
-                                <Input
-                                    type="select"
-                                    onChange={handleSelectDog}
-                                    style={{ maxWidth: '300px' }}
-                                >
-                                    <option value="">Please select a dog</option>
-                                    {dogs?.map((canine, index) => {
-                                        return (
-                                            <option key={canine.id} value={index}>
-                                                {canine.name}
-                                            </option>
-                                        );
-                                    })}
-                                </Input>
+                                <Typeahead
+                                    id="DogsTypeahead"
+                                    labelKey={dogLabelKey}
+                                    placeholder="Choose dogs..."
+                                    selected={dogsSelected}
+                                    onChange={setDogSelected}
+                                    disabled={loading}
+                                    options={dogs}
+                                    renderMenuItemChildren={dogRenderMenuItemChildren}
+                                    flip
+                                    clearButton
+                                    positionFixed
+                                    style={{ maxWidth: '400px' }}
+                                />
                             </div>
 
                             <p>
@@ -226,21 +261,18 @@ const Confirm = (props) => {
                             </p>
                             <p>
                                 <b>Age:</b>{' '}
-                                {moment().diff(dogSelected?.dateOfBirth, 'months') < 12
-                                    ? moment().diff(dogSelected?.dateOfBirth, 'months') + ' months'
-                                    : moment().diff(dogSelected?.dateOfBirth, 'years') +
-                                      ' year(s), ' +
-                                      (moment().diff(dogSelected?.dateOfBirth, 'months') % 12) +
-                                      ' months'}
+                                {dogSelected?.dateOfBirth
+                                    ? formatDogAge(dogSelected?.dateOfBirth)
+                                    : 'Not Selected'}
                             </p>
                             <p>
                                 <b>Breed:</b>{' '}
                                 {dogSelected?.breed ? dogSelected.breed : 'Not Selected'}
                             </p>
                             {/* todo: I don't see vaccination record status in the dogs api */}
-                            <p className="pb-3">
-                                <b>Vaccination Record:</b> Not in api
-                            </p>
+                            {/* <p className="pb-3">
+                                <b>Vaccination Record:</b>
+                            </p> */}
 
                             <h4>Attendees</h4>
                             <FormGroup>
