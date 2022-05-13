@@ -30,6 +30,7 @@ import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
 import ClassSectionSetup from './areas/classes/ClassSectionSetup';
 import PaymentMethodManagement from './areas/billing/PaymentMethodManagement';
+import PaymentMethodSetup from './areas/billing/PaymentMethodSetup';
 import AppManagement from './areas/applications/AppManagement';
 import AppDetails from './areas/applications/AppManagement/components/AppDetails';
 import MySections from './areas/sections/index';
@@ -184,6 +185,14 @@ export default class App extends Component {
                         element={
                             <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
                                 <PaymentMethodManagement />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Manage/PaymentMethods/:paymentMethodId"
+                        element={
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <PaymentMethodSetup />
                             </ProtectedRoute>
                         }
                     />
