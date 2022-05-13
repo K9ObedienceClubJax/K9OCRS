@@ -20,6 +20,7 @@ import MyAccount from './areas/accounts/index';
 
 import MyDogs from './areas/dogs/MyDogs';
 import DogSetup from './areas/dogs/DogSetup';
+import DogManagement from './areas/dogs/DogManagement';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
 import Users from './areas/management/Users/index';
@@ -143,6 +144,14 @@ export default class App extends Component {
                         element={
                             <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
                                 <User />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Manage/Dogs"
+                        element={
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <DogManagement />
                             </ProtectedRoute>
                         }
                     />
