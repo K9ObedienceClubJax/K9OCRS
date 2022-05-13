@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { Input, FormGroup, Label, FormText } from 'reactstrap';
+import { Input, FormGroup, Label, FormText, Button } from 'reactstrap';
 import { useParams } from 'react-router-dom';
 import * as actions from '../modules/actions';
 import PageHeader from 'src/shared/components/PageHeader';
@@ -8,7 +8,7 @@ import PageBody from 'src/shared/components/PageBody';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
 const PaymentMethodSetup = (props) => {
-    const { getData, loading, details } = props;
+    const { getData, doUpdate, loading, details } = props;
     const { paymentMethodId } = useParams();
     const onCreationMode = !paymentMethodId;
 
@@ -38,13 +38,40 @@ const PaymentMethodSetup = (props) => {
         }
     }, [detailsString]); // eslint-disable-line
 
+    const data = {
+        id: paymentMethodId,
+        name,
+        description,
+        instructions,
+        isArchived,
+    };
+
+    const handleSaveChanges = () => {
+        if (!onCreationMode) {
+            doUpdate({ data, setAlerts });
+        }
+    };
+
+    const pageTitle = onCreationMode
+        ? 'Payment Method Setup'
+        : `Payment Method: ${loading ? 'Loading...' : details.name}`;
+
     return (
         <>
             <PageHeader
-                title={`Payment Method: ${loading ? 'Loading...' : details.name}`}
+                title={pageTitle}
                 alerts={alerts}
                 setAlerts={setAlerts}
-            ></PageHeader>
+                breadCrumbItems={[
+                    { label: 'Management', path: '/Manage' },
+                    { label: 'Payment Methods', path: '/Manage/PaymentMethods' },
+                    { label: pageTitle, active: true },
+                ]}
+            >
+                <Button color="primary" onClick={handleSaveChanges}>
+                    Save Changes
+                </Button>
+            </PageHeader>
             <PageBody>
                 <LastUpdatedNote
                     modifiedByID={details?.modifiedByID}
@@ -111,5 +138,6 @@ export default connect(
     }),
     {
         getData: actions.fetchPaymentMethodDetails,
+        doUpdate: actions.updatePaymentMethod,
     }
 )(PaymentMethodSetup);

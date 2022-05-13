@@ -18,6 +18,7 @@ const INITIAL_STATE = () => {
         includeArchived: preferences?.includeArchived ?? false,
         // Pages
         loading: true,
+        submitting: false,
         paymentMethodsList: [],
         paymentMethodDetails: emptyDetails,
     };
@@ -60,6 +61,14 @@ export default handleActions(
             ...state,
             loading: false,
             paymentMethodDetails: payload || emptyDetails,
+        }),
+        [actions.updatePaymentMethod]: (state) => ({
+            ...state,
+            submitting: true,
+        }),
+        [actions.updatedPaymentMethod]: (state) => ({
+            ...state,
+            submitting: false,
         }),
     },
     INITIAL_STATE()

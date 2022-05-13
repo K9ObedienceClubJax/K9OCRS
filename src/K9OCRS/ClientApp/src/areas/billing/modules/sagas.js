@@ -1,4 +1,4 @@
-import { put, call, select, takeEvery } from 'redux-saga/effects';
+import { put, call, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import debug from 'debug';
 import * as actions from './actions';
 import * as apiClient from 'src/util/apiClients/paymentMethods';
@@ -38,9 +38,33 @@ function* fetchPaymentMethodDetails({ payload: { id, setAlerts } }) {
     }
 }
 
+function* updatePaymentMethod({ payload: { data, setAlerts } }) {
+    try {
+        log(`Updating payment methods details for id: ${data?.id}`);
+        const res = yield call(apiClient.updatePaymentMethod, data);
+        yield put(actions.updatedPaymentMethod());
+        log(`Updated payment method details for id: ${data?.id}`, res?.data);
+        yield put(actions.fetchPaymentMethodDetails({ id: data?.id, setAlerts }));
+        setAlerts([
+            {
+                color: 'success',
+                message: 'Your changes are saved!',
+            },
+        ]);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having issues saving your changes.",
+            },
+        ]);
+    }
+}
+
 const sagas = [
     takeEvery(actions.fetchPaymentMethods, fetchPaymentMethods),
     takeEvery(actions.fetchPaymentMethodDetails, fetchPaymentMethodDetails),
+    takeLatest(actions.updatePaymentMethod, updatePaymentMethod),
 ];
 
 export default sagas;
