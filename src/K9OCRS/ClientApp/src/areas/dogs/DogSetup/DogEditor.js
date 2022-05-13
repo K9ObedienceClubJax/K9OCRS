@@ -6,6 +6,7 @@ import FileDropzone from '../../../shared/components/FileDropzone';
 import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
 import { BsFileEarmarkText, BsXLg } from 'react-icons/bs';
 import { formatToServerDateTime } from 'src/util/dates';
+import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
 const DogEditor = (props) => {
     const { loading, submitting, dogDetails, setData, formRef } = props;
@@ -61,7 +62,11 @@ const DogEditor = (props) => {
 
     return (
         <div>
-            {/* <div className="cardsurface mb-4"></div> */}
+            <LastUpdatedNote
+                modifiedByID={dogDetails?.modifiedByID}
+                modifiedByName={dogDetails?.modifiedByName}
+                modifiedDate={dogDetails?.modifiedDate}
+            />
             <Row className={`${cn} gy-3`} lg="2" xs="1">
                 <Col xxl="4" xl="5" lg="6">
                     <div className="cardsurface">
