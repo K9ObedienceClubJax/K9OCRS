@@ -184,9 +184,9 @@ const Profile = (props) => {
     var createMode = false;
     var inspectMode = false;
 
-    if (mode === 'create' && currentUser.userRoleID === 1) {
+    if (mode === 'create' && userIsAdmin) {
         createMode = true;
-    } else if (mode === 'inspect' && currentUser.userRoleID === 1) {
+    } else if (mode === 'inspect' && userIsAdmin) {
         inspectMode = true;
     } else {
         defaultMode = true;
@@ -255,7 +255,7 @@ const Profile = (props) => {
 
     return (
         <>
-            {userIsAdmin && (inspectMode || defaultMode) && (
+            {(inspectMode || defaultMode) && (
                 <LastUpdatedNote
                     modifiedByID={lastModifiedData?.id}
                     modifiedByName={lastModifiedData?.name}
