@@ -249,7 +249,7 @@ namespace DataAccess.Repositories
         #region Internal Utility Methods
         internal bool ValidateHasPlaceholders()
         {
-            var props = GenerateListOfPropertyNames(GetProperties);
+            var props = GenerateListOfPropertyNames(GetProperties, false, true);
             return props.Contains("isSystemOwned");
         }
 
