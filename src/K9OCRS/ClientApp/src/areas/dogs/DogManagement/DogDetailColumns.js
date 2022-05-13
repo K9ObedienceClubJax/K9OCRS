@@ -1,15 +1,3 @@
-import React from "react";
-import { alignmentWrapper } from "src/util/columns";
-
-const classSectionTemplate = ({ value }) => {
-    if (!value) return '';
-    return (
-        <div style={{ textAlign: 'center' }}>
-            {`${value}`}
-        </div>
-    );
-};
-
 const DogDetailColumns = [
     {
         Header: 'Dog',

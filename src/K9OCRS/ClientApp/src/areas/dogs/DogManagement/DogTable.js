@@ -1,5 +1,4 @@
 import Table from '../../../shared/components/Table'
-import { Row, Col, FormGroup, Label, Input } from 'reactstrap';
 import DogDetailColumns from './DogDetailColumns';
 import {useState} from 'react'
 import './styles.scss';

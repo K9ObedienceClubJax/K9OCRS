@@ -1,14 +1,11 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, {useState } from 'react';
 import PageHeader from '../../../shared/components/PageHeader';
-import Table from '../../../shared/components/Table';
-import { FormGroup, Input, Button, Label, Spinner, Form, Row, Col} from 'reactstrap';
-import { Typeahead } from 'react-bootstrap-typeahead';
+import { FormGroup, Input, Button, Label, Form, Row, Col} from 'reactstrap';
 import PageBody from '../../../shared/components/PageBody';
 import DogTable from './DogTable';
 import './styles.scss';
 
 const DogManagement = (props) => {
-    const [loading, setLoading] = useState(true);
     const [alerts, setAlerts] = useState((c) => c, []);
 
     return (
