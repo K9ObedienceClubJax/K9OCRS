@@ -92,7 +92,7 @@ BEGIN
 		(5, '2022-04-20 15:00:00.000', '2022-04-20 17:00:00.000');
 END
 
-IF NOT EXISTS (SELECT 1 FROM dbo.[PaymentMethods])
+IF NOT EXISTS (SELECT 1 FROM dbo.[PaymentMethods] WHERE isSystemOwned = 0)
 BEGIN
 	INSERT INTO [PaymentMethods] ([Name], [Description], [Instructions], [isIntegration], [isArchived])
 	VALUES
@@ -106,10 +106,10 @@ IF NOT EXISTS (SELECT 1 FROM dbo.[ClassApplications])
 BEGIN
 	INSERT INTO [ClassApplications] (ClassTypeID, ClassSectionID, DogID, [Status], [MainAttendee], [AdditionalAttendees], [PaymentMethodID], [isPaid], [isRefunded])
 	VALUES
-		(2, 2, 3, 'Active', 'Alpha', NULL, 1, 1, 0),
-		(2, 3, 4, 'Cancelled', 'Zulu', NULL, 3, 0, 0),
-		(2, 3, 5, 'Pending', 'Charlie', NULL, 2, 0, 0),
-		(2, 2, 7, 'Cancelled', 'Foxtrot', 'Alpha, Bravo', 1, 1, 1),
-		(3, 4, 6, 'Pending', 'Bravo', 'Echo, Alpha', 1, 1, 0),
-		(3, 4, 4, 'Active', 'Echo', 'Zulu, Hotel, Foxtrot', 3, 1, 0);
+		(2, 2, 3, 'Active', 'Alpha', NULL, 2, 1, 0),
+		(2, 3, 4, 'Cancelled', 'Zulu', NULL, 4, 0, 0),
+		(2, 3, 5, 'Pending', 'Charlie', NULL, 3, 0, 0),
+		(2, 2, 7, 'Cancelled', 'Foxtrot', 'Alpha, Bravo', 2, 1, 1),
+		(3, 4, 6, 'Pending', 'Bravo', 'Echo, Alpha', 2, 1, 0),
+		(3, 4, 4, 'Active', 'Echo', 'Zulu, Hotel, Foxtrot', 4, 1, 0);
 END

@@ -240,7 +240,7 @@ const Confirm = (props) => {
                                 <Typeahead
                                     id="DogsTypeahead"
                                     labelKey={dogLabelKey}
-                                    placeholder="Choose dogs..."
+                                    placeholder="Select a dog from the list"
                                     selected={dogsSelected}
                                     onChange={setDogSelected}
                                     disabled={loading}

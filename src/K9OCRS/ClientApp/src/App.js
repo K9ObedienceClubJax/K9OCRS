@@ -189,6 +189,14 @@ export default class App extends Component {
                         }
                     />
                     <Route
+                        path="/Manage/PaymentMethods/Add"
+                        element={
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <PaymentMethodSetup />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
                         path="/Manage/PaymentMethods/:paymentMethodId"
                         element={
                             <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>

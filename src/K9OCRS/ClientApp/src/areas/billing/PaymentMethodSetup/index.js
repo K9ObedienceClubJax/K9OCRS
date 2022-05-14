@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Input, FormGroup, Label, FormText, Button } from 'reactstrap';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import * as actions from '../modules/actions';
 import PageHeader from 'src/shared/components/PageHeader';
 import PageBody from 'src/shared/components/PageBody';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
 const PaymentMethodSetup = (props) => {
-    const { getData, doUpdate, loading, details } = props;
+    const { getData, doUpdate, initializeAddition, doAdd, doDelete, loading, details } = props;
     const { paymentMethodId } = useParams();
+    const navigate = useNavigate();
     const onCreationMode = !paymentMethodId;
 
     const isMounted = useRef(false);
@@ -23,6 +24,8 @@ const PaymentMethodSetup = (props) => {
     useEffect(() => {
         if (!onCreationMode) {
             getData({ id: paymentMethodId, setAlerts });
+        } else {
+            initializeAddition();
         }
     }, [paymentMethodId]); // eslint-disable-line
 
@@ -47,8 +50,28 @@ const PaymentMethodSetup = (props) => {
     };
 
     const handleSaveChanges = () => {
-        if (!onCreationMode) {
-            doUpdate({ data, setAlerts });
+        const requiredFieldsPresent = !!name && !!instructions;
+
+        if (requiredFieldsPresent) {
+            if (!onCreationMode) {
+                doUpdate({ data, setAlerts });
+            } else {
+                doAdd({ data, setAlerts, navigate });
+            }
+        } else {
+            setAlerts((c) => [
+                ...c,
+                {
+                    color: 'danger',
+                    message: 'Please input a name and instructions before saving your changes.',
+                },
+            ]);
+        }
+    };
+
+    const handleDelete = () => {
+        if (window.confirm('This payment method will be deleted')) {
+            doDelete({ paymentMethodId, setAlerts, navigate });
         }
     };
 
@@ -68,6 +91,20 @@ const PaymentMethodSetup = (props) => {
                     { label: pageTitle, active: true },
                 ]}
             >
+                {onCreationMode && (
+                    <Button
+                        color="secondary"
+                        outline
+                        onClick={() => navigate('/Manage/PaymentMethods')}
+                    >
+                        Cancel
+                    </Button>
+                )}
+                {!onCreationMode && (
+                    <Button color="danger" onClick={handleDelete}>
+                        Delete
+                    </Button>
+                )}
                 <Button color="primary" onClick={handleSaveChanges}>
                     Save Changes
                 </Button>
@@ -79,7 +116,7 @@ const PaymentMethodSetup = (props) => {
                     modifiedDate={details?.modifiedDate}
                 />
                 <FormGroup>
-                    <Label>Payment Method Name</Label>
+                    <Label>Payment Method Name *</Label>
                     <Input
                         style={{ maxWidth: '400px' }}
                         type="text"
@@ -102,7 +139,7 @@ const PaymentMethodSetup = (props) => {
                     <FormText>A brief description of the payment method</FormText>
                 </FormGroup>
                 <FormGroup>
-                    <Label>Instructions</Label>
+                    <Label>Instructions *</Label>
                     <Input
                         style={{ maxWidth: '800px' }}
                         type="textarea"
@@ -139,5 +176,8 @@ export default connect(
     {
         getData: actions.fetchPaymentMethodDetails,
         doUpdate: actions.updatePaymentMethod,
+        initializeAddition: actions.initializePaymentMethod,
+        doAdd: actions.createPaymentMethod,
+        doDelete: actions.deletePaymentMethod,
     }
 )(PaymentMethodSetup);

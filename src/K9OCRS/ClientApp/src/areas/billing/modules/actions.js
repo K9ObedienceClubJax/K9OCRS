@@ -14,3 +14,10 @@ export const fetchedPaymentMethodDetails = makeAction('FETCHED_PAYMENT_METHOD_DE
 
 export const updatePaymentMethod = makeAction('UPDATE_PAYMENT_METHOD');
 export const updatedPaymentMethod = makeAction('UPDATED_PAYMENT_METHOD');
+
+export const initializePaymentMethod = makeAction('INIT_PAYMENT_METHOD');
+export const createPaymentMethod = makeAction('CREATE_PAYMENT_METHOD');
+export const createdPaymentMethod = makeAction('CREATED_PAYMENT_METHOD');
+
+export const deletePaymentMethod = makeAction('DELETE_PAYMENT_METHOD');
+export const deletedPaymentMethod = makeAction('DELETED_PAYMENT_METHOD');

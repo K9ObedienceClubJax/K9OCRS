@@ -6,7 +6,7 @@
     [Status]         VARCHAR (15) NOT NULL,
     [MainAttendee]   VARCHAR (128) NOT NULL,
     [AdditionalAttendees] VARCHAR (512) NULL,
-    [PaymentMethodID]  INT NOT NULL,
+    [PaymentMethodID]  INT NOT NULL DEFAULT (1),
     [isPaid]         BIT          NOT NULL DEFAULT 0,
     [isRefunded]     BIT          NOT NULL DEFAULT 0,
     [ReviewedBy]     INT          NULL,
@@ -19,6 +19,6 @@
     CONSTRAINT [FK_ClassApplications_ClassTypes] FOREIGN KEY ([ClassTypeID]) REFERENCES [dbo].[ClassTypes] ([ID]),
     CONSTRAINT [FK_ClassApplications_ClassSections] FOREIGN KEY ([ClassSectionID]) REFERENCES [dbo].[ClassSections] ([ID]) ON DELETE SET DEFAULT,
     CONSTRAINT [FK_ClassApplications_Dogs] FOREIGN KEY ([DogID]) REFERENCES [dbo].[Dogs] ([ID]) ON DELETE CASCADE,
-    CONSTRAINT [FK_ClassApplications_PaymentMethods] FOREIGN KEY ([PaymentMethodID]) REFERENCES [dbo].[PaymentMethods] ([ID])
+    CONSTRAINT [FK_ClassApplications_PaymentMethods] FOREIGN KEY ([PaymentMethodID]) REFERENCES [dbo].[PaymentMethods] ([ID]) ON DELETE SET DEFAULT
 );
 

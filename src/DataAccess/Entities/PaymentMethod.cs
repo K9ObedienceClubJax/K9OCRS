@@ -1,4 +1,6 @@
-﻿namespace DataAccess.Entities
+﻿using DataAccess.Extensions;
+
+namespace DataAccess.Entities
 {
     public class PaymentMethod : BaseEntity
     {
@@ -8,6 +10,8 @@
         public string Instructions { get; set; }
         public bool isIntegration { get; set; }
         public bool isArchived { get; set; }
+        [TransactionIgnore]
+        public bool isSystemOwned { get; set; }
 
         public PaymentMethod() { }
         public PaymentMethod(PaymentMethod e)
@@ -18,6 +22,7 @@
             Instructions = e.Instructions;
             isIntegration = e.isIntegration;
             isArchived = e.isArchived;
+            isSystemOwned = e.isSystemOwned;
         }
     }
 }
