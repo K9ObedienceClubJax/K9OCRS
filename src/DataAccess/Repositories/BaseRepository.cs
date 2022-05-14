@@ -87,12 +87,12 @@ namespace DataAccess.Repositories
             return result.ToList();
         }
 
-        public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn, bool includeArchived = false)
+        public virtual async Task<IReadOnlyList<T>> GetAll(IDbConnection conn, bool includeArchived = false, bool includeSystemOwned = false)
         {
             var sqlCompiler = new SqlServerCompiler();
             var queryBuilder = new Query($"{_tableNameRaw}").Select("*");
 
-            if (ValidateHasPlaceholders()) queryBuilder.WhereRaw("isSystemOwned = 0");
+            if (ValidateHasPlaceholders() && !includeSystemOwned) queryBuilder.WhereRaw("isSystemOwned = 0");
             if (!includeArchived) queryBuilder.WhereRaw("isArchived = 0");
 
             // Only use this when using Dapper's parameters

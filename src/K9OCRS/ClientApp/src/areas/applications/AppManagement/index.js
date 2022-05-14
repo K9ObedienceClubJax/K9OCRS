@@ -30,7 +30,7 @@ const AppManagement = (props) => {
             setClassTypeOptions(classTypesresponse?.data);
             const dogsResponse = await axios.get('/api/dogs');
             setDogOptions(dogsResponse?.data);
-            const paymentMethodsResponse = await getPaymentMethods(true);
+            const paymentMethodsResponse = await getPaymentMethods(true, true);
             setPaymentMethodOptions(paymentMethodsResponse?.data);
             setLoadingOptions(false);
         }

@@ -7,8 +7,8 @@ export const createPaymentMethod = (paymentMethodAddRequest) =>
     axios.post(base, paymentMethodAddRequest);
 
 // Read
-export const getPaymentMethods = (includeArchived = false) =>
-    axios.get(base, { params: { includeArchived } });
+export const getPaymentMethods = (includeArchived = false, includeSystemOwned = false) =>
+    axios.get(base, { params: { includeArchived, includeSystemOwned } });
 
 export const getPaymentMethodById = (paymentMethodId) => axios.get(`${base}/${paymentMethodId}`);
 

@@ -43,9 +43,9 @@ namespace K9OCRS.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<PaymentMethod>), 200)]
-        public async Task<IActionResult> GetPaymentMethods([FromQuery] bool includeArchived = false)
+        public async Task<IActionResult> GetPaymentMethods([FromQuery] bool includeArchived = false, [FromQuery] bool includeSystemOwned = false)
         {
-            var result = await connectionOwner.Use(conn => dbOwner.PaymentMethods.GetAll(conn, includeArchived));
+            var result = await connectionOwner.Use(conn => dbOwner.PaymentMethods.GetAll(conn, includeArchived, includeSystemOwned));
             return Ok(result);
         }
 
