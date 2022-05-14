@@ -23,6 +23,8 @@ const DogSetup = (props) => {
         saveNewDog,
         updateDog,
         deleteDog,
+        archiveDog,
+        unarchiveDog,
     } = props;
 
     const navigate = useNavigate();
@@ -111,6 +113,32 @@ const DogSetup = (props) => {
                         </Button>
                     </>
                 )}
+                {!addingNewDog &&
+                    (!dogDetails?.isArchived ? (
+                        <Button
+                            color="secondary"
+                            disabled={loading || submitting}
+                            onClick={() => {
+                                if (
+                                    window.confirm(
+                                        "Archived dogs won' be available for class registration until you unarchive them."
+                                    )
+                                ) {
+                                    archiveDog({ dogId, setAlerts });
+                                }
+                            }}
+                        >
+                            Archive
+                        </Button>
+                    ) : (
+                        <Button
+                            color="secondary"
+                            disabled={loading || submitting}
+                            onClick={() => unarchiveDog({ dogId, setAlerts })}
+                        >
+                            Unarchive
+                        </Button>
+                    ))}
                 <Button
                     color="primary"
                     disabled={loading || submitting}
@@ -159,5 +187,7 @@ export default connect(
         saveNewDog: actions.saveNewDog,
         updateDog: actions.updateDog,
         deleteDog: actions.deleteDog,
+        archiveDog: actions.archiveDog,
+        unarchiveDog: actions.unarchiveDog,
     }
 )(DogSetup);

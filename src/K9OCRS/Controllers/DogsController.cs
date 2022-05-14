@@ -263,6 +263,26 @@ namespace K9OCRS.Controllers
             }
         }
 
+        [HttpPost("archive/{id}")]
+        public async Task<IActionResult> ArchiveDog(int id)
+        {
+            var result = await connectionOwner.Use(conn => dbOwner.Dogs.Archive(conn, id));
+
+            if (result < 1) NotFound("Could not find the requested dog");
+
+            return Ok(result);
+        }
+
+        [HttpPost("unarchive/{id}")]
+        public async Task<IActionResult> UnarchiveDog(int id)
+        {
+            var result = await connectionOwner.Use(conn => dbOwner.Dogs.Unarchive(conn, id));
+
+            if (result < 1) NotFound("Could not find the requested dog");
+
+            return Ok(result);
+        }
+
         //delete dog
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDog(int id)

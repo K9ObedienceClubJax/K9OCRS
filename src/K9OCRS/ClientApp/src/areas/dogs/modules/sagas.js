@@ -143,7 +143,7 @@ function* archiveDog({ payload }) {
         setAlerts([
             {
                 color: 'success',
-                message: 'Your changes are saved!',
+                message: 'Dog archived successfully!',
             },
         ]);
     } catch (err) {
@@ -151,7 +151,7 @@ function* archiveDog({ payload }) {
         setAlerts([
             {
                 color: 'danger',
-                message: 'Failed to save changes.',
+                message: 'Failed to archive the dog.',
             },
         ]);
     }
@@ -168,7 +168,7 @@ function* unarchiveDog({ payload }) {
         setAlerts([
             {
                 color: 'success',
-                message: 'Your changes are saved!',
+                message: 'Dog unarchived successfully!',
             },
         ]);
     } catch (err) {
@@ -176,7 +176,7 @@ function* unarchiveDog({ payload }) {
         setAlerts([
             {
                 color: 'danger',
-                message: 'Failed to save changes.',
+                message: 'Failed to unarchive the dog.',
             },
         ]);
     }
