@@ -38,6 +38,7 @@ const applicationIdTemplate = ({ value }) => {
 
 const classSectionTemplate = ({ value }) => {
     if (!value) return '';
+    if (value === 1) return 'Deleted';
     return (
         <div style={{ textAlign: 'center' }}>
             <Link to={`/Manage/Classes/Sections/${value}`}>{value}</Link>

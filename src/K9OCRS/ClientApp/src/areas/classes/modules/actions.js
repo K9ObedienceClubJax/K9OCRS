@@ -45,4 +45,5 @@ export const savedSectionChanges = makeAction('SAVED_SECTION_CHANGES');
 export const fetchSectionDetails = makeAction('FETCH_SECTION_DETAILS');
 export const initializeSectionAddition = makeAction('INIT_SECTION_ADDITION');
 export const saveSectionChanges = makeAction('SAVE_SECTION_CHANGES');
+export const deleteSection = makeAction('DELETE_SECTION');
 //#endregion
