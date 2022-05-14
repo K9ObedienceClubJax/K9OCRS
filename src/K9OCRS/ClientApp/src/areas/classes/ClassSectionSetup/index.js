@@ -24,6 +24,7 @@ const ClassTypeSetup = (props) => {
         getData,
         getOptions,
         saveChanges,
+        deleteSection,
     } = props;
 
     const navigate = useNavigate();
@@ -99,6 +100,16 @@ const ClassTypeSetup = (props) => {
         };
     }, [detailsString, typeOptionsString, instructorOptionsString]); // eslint-disable-line
 
+    const handleDelete = () => {
+        if (
+            window.confirm(
+                "This action is irreversible. Only do this if you know what you're doing."
+            )
+        ) {
+            deleteSection({ classSectionId, setAlerts, navigate });
+        }
+    };
+
     const sectionTitle = loading ? 'Loading...' : `${details?.id} - ${details?.classType?.title}`;
 
     return (
@@ -129,7 +140,7 @@ const ClassTypeSetup = (props) => {
                     <Button
                         color="danger"
                         disabled={loading || submitting}
-                        onClick={() => {}}
+                        onClick={handleDelete}
                         outline
                     >
                         Delete
@@ -231,5 +242,6 @@ export default connect(
         getData: actions.fetchSectionDetails,
         getOptions: actions.fetchOptions,
         saveChanges: actions.saveSectionChanges,
+        deleteSection: actions.deleteSection,
     }
 )(ClassTypeSetup);
