@@ -11,6 +11,14 @@ const INITIAL_STATE = {
 
 export default handleActions(
     {
+        [actions.savingChanges]: (state) => ({
+            ...state,
+            submitting: true,
+        }),
+        [actions.savedChanges]: (state) => ({
+            ...state,
+            submitting: false,
+        }),
         [actions.fetchingMyDogsList]: (state) => ({
             ...state,
             loading: true,

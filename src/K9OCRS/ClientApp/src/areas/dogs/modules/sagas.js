@@ -76,7 +76,7 @@ function* createDog({ payload: { data, setAlerts, redirect } }) {
         const formData = dogAddRequestToFormData(data);
         const created = yield call(dogApi.createDog, formData);
         put(actions.savedChanges());
-        redirect(created?.data);
+        redirect(created?.data?.id);
         setAlerts([
             {
                 color: 'success',

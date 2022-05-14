@@ -8,14 +8,22 @@ import * as actions from '../modules/actions';
 import PageBody from '../../../shared/components/PageBody';
 import DogEditor from './DogEditor';
 import ClassTable from './ClassTable';
-//import DeleteModal from './DeleteModal';
 
 import './styles.scss';
 
 const cn = 'dogSetup';
 
 const DogSetup = (props) => {
-    const { loading, submitting, dogDetails, fetchDogDetails, init, saveNewDog, updateDog } = props;
+    const {
+        loading,
+        submitting,
+        dogDetails,
+        fetchDogDetails,
+        init,
+        saveNewDog,
+        updateDog,
+        deleteDog,
+    } = props;
 
     const navigate = useNavigate();
     const { dogId } = useParams();
@@ -23,9 +31,6 @@ const DogSetup = (props) => {
 
     const [alerts, setAlerts] = useState([]);
     const [data, setData] = useState(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-    const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
     const formRef = useRef(null);
 
     useEffect(() => {
@@ -57,15 +62,19 @@ const DogSetup = (props) => {
         }
     };
 
-    // const handleDelete = (targetId) => {
-    //     deleteDog({
-    //         id: dogId,
-    //         targetId,
-    //         setAlerts,
-    //         setSubmitting,
-    //         redirect: () => navigate('/Account/MyDogs'),
-    //     });
-    // };
+    const handleDelete = () => {
+        if (
+            window.confirm(
+                'This action cannot be reverted. All information related to this dog will be erased.'
+            )
+        ) {
+            deleteDog({
+                id: dogId,
+                setAlerts,
+                redirect: () => navigate('/Account/MyDogs'),
+            });
+        }
+    };
 
     return (
         <div className={cn}>
@@ -96,7 +105,7 @@ const DogSetup = (props) => {
                         <Button
                             color="danger"
                             disabled={loading || submitting}
-                            onClick={() => toggleDeleteModal()}
+                            onClick={handleDelete}
                             outline
                         >
                             Delete
@@ -131,15 +140,7 @@ const DogSetup = (props) => {
                             addingNewDog={addingNewDog}
                             formRef={formRef}
                         />
-                        {/* <DeleteModal
-                            dogId={dogId}
-                            toggle={toggleDeleteModal}
-                            handleDelete={handleDelete}
-                            isOpen={showDeleteModal}
-                            loading={loading}
-                            submitting={submitting}
-                        /> */}
-                        <ClassTable/>
+                        <ClassTable />
                     </>
                 )}
             </PageBody>
