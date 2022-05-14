@@ -70,6 +70,19 @@ export default handleActions(
             ...state,
             submitting: false,
         }),
+        [actions.initializePaymentMethod]: (state) => ({
+            ...state,
+            loading: false,
+            paymentMethodDetails: emptyDetails,
+        }),
+        [actions.createPaymentMethod]: (state) => ({
+            ...state,
+            submitting: true,
+        }),
+        [actions.createdPaymentMethod]: (state) => ({
+            ...state,
+            submitting: false,
+        }),
     },
     INITIAL_STATE()
 );

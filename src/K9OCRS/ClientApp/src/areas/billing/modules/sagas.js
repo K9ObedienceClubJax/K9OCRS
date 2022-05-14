@@ -61,10 +61,34 @@ function* updatePaymentMethod({ payload: { data, setAlerts } }) {
     }
 }
 
+function* createPaymentMethod({ payload: { data, setAlerts, navigate } }) {
+    try {
+        log(`Creating a payment method named: ${data?.name}`);
+        const res = yield call(apiClient.createPaymentMethod, data);
+        yield put(actions.createdPaymentMethod());
+        log('Created a payment method', res?.data);
+        navigate(`/Manage/PaymentMethods/${res?.data?.id}`);
+        setAlerts([
+            {
+                color: 'success',
+                message: 'Your changes are saved!',
+            },
+        ]);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having issues saving your changes.",
+            },
+        ]);
+    }
+}
+
 const sagas = [
     takeEvery(actions.fetchPaymentMethods, fetchPaymentMethods),
     takeEvery(actions.fetchPaymentMethodDetails, fetchPaymentMethodDetails),
     takeLatest(actions.updatePaymentMethod, updatePaymentMethod),
+    takeLatest(actions.createPaymentMethod, createPaymentMethod),
 ];
 
 export default sagas;
