@@ -83,7 +83,6 @@ const DogSetup = (props) => {
                     !addingNewDog ? `Dog Setup: ${dogDetails?.name ?? 'Loading...'}` : 'Dog Setup'
                 }
                 breadCrumbItems={[
-                    { label: 'My Account', path: '/Account' },
                     { label: 'My Dogs', path: '/Account/MyDogs' },
                     {
                         label: !addingNewDog
@@ -140,7 +139,7 @@ const DogSetup = (props) => {
                             addingNewDog={addingNewDog}
                             formRef={formRef}
                         />
-                        <ClassTable />
+                        {!addingNewDog && <ClassTable />}
                     </>
                 )}
             </PageBody>

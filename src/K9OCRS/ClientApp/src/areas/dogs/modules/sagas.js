@@ -116,6 +116,22 @@ function* updateDog({ payload: { data, setAlerts } }) {
     }
 }
 
+function* deleteDog({ payload: { id, setAlerts, redirect } }) {
+    try {
+        put(actions.savingChanges());
+        yield call(dogApi.deleteById, id);
+        put(actions.savedChanges());
+        redirect();
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'An error ocurred while saving your changes.',
+            },
+        ]);
+    }
+}
+
 function* archiveDog({ payload }) {
     const { dogId, setAlerts } = payload;
 
@@ -175,6 +191,7 @@ const sagas = [
     takeEvery(actions.updateDog, updateDog),
     takeLatest(actions.archiveDog, archiveDog),
     takeLatest(actions.unarchiveDog, unarchiveDog),
+    takeLatest(actions.deleteDog, deleteDog),
 ];
 
 export default sagas;
