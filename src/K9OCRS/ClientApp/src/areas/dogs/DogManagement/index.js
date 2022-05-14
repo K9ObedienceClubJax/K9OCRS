@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PageHeader from '../../../shared/components/PageHeader';
 import { FormGroup, Input, Button, Label, Form, Row, Col } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import PageBody from '../../../shared/components/PageBody';
 import DogTable from './DogTable';
 import './styles.scss';
@@ -19,7 +20,9 @@ const DogManagement = (props) => {
                 alerts={alerts}
                 setAlerts={setAlerts}
             >
-                <Button color="primary">Save Changes</Button>
+                <Button tag={Link} color="primary" to="/Manage/Dogs/Add">
+                    Add a Dog
+                </Button>
             </PageHeader>
             <PageBody>
                 <Form className="cardsurface">

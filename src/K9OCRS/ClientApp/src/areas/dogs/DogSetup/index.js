@@ -15,6 +15,7 @@ const cn = 'dogSetup';
 
 const DogSetup = (props) => {
     const {
+        isManagement,
         loading,
         submitting,
         dogDetails,
@@ -78,26 +79,36 @@ const DogSetup = (props) => {
         }
     };
 
+    const breadCrumbItems = [];
+
+    if (isManagement) {
+        breadCrumbItems.push(
+            { label: 'Management', path: '/Manage' },
+            { label: 'Dogs', path: '/Manage/Dogs' }
+        );
+    } else {
+        breadCrumbItems.push({ label: 'My Dogs', path: '/Account/MyDogs' });
+    }
+
+    breadCrumbItems.push({
+        label: !addingNewDog ? `Dog Setup: ${dogDetails?.name ?? 'Loading...'}` : 'Dog Setup',
+        active: true,
+    });
+
+    const cancelUrl = isManagement ? '/Manage/Dogs' : '/Account/MyDogs';
+
     return (
         <div className={cn}>
             <PageHeader
                 title={
                     !addingNewDog ? `Dog Setup: ${dogDetails?.name ?? 'Loading...'}` : 'Dog Setup'
                 }
-                breadCrumbItems={[
-                    { label: 'My Dogs', path: '/Account/MyDogs' },
-                    {
-                        label: !addingNewDog
-                            ? `Dog Setup: ${dogDetails?.name ?? 'Loading...'}`
-                            : 'Dog Setup',
-                        active: true,
-                    },
-                ]}
+                breadCrumbItems={breadCrumbItems}
                 alerts={alerts}
                 setAlerts={setAlerts}
             >
                 {addingNewDog && (
-                    <Button tag={Link} to="/Account/MyDogs" color="secondary" outline>
+                    <Button tag={Link} to={cancelUrl} color="secondary" outline>
                         Cancel
                     </Button>
                 )}
