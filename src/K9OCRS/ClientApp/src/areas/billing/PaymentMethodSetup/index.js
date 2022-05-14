@@ -8,7 +8,7 @@ import PageBody from 'src/shared/components/PageBody';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
 const PaymentMethodSetup = (props) => {
-    const { getData, doUpdate, initializeAddition, doAdd, loading, details } = props;
+    const { getData, doUpdate, initializeAddition, doAdd, doDelete, loading, details } = props;
     const { paymentMethodId } = useParams();
     const navigate = useNavigate();
     const onCreationMode = !paymentMethodId;
@@ -69,6 +69,12 @@ const PaymentMethodSetup = (props) => {
         }
     };
 
+    const handleDelete = () => {
+        if (window.confirm('This payment method will be deleted')) {
+            doDelete({ paymentMethodId, setAlerts, navigate });
+        }
+    };
+
     const pageTitle = onCreationMode
         ? 'Payment Method Setup'
         : `Payment Method: ${loading ? 'Loading...' : details.name}`;
@@ -92,6 +98,11 @@ const PaymentMethodSetup = (props) => {
                         onClick={() => navigate('/Manage/PaymentMethods')}
                     >
                         Cancel
+                    </Button>
+                )}
+                {!onCreationMode && (
+                    <Button color="danger" onClick={handleDelete}>
+                        Delete
                     </Button>
                 )}
                 <Button color="primary" onClick={handleSaveChanges}>
@@ -167,5 +178,6 @@ export default connect(
         doUpdate: actions.updatePaymentMethod,
         initializeAddition: actions.initializePaymentMethod,
         doAdd: actions.createPaymentMethod,
+        doDelete: actions.deletePaymentMethod,
     }
 )(PaymentMethodSetup);

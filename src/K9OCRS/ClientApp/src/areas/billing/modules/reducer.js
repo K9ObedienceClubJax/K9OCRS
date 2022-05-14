@@ -83,6 +83,14 @@ export default handleActions(
             ...state,
             submitting: false,
         }),
+        [actions.deletePaymentMethod]: (state) => ({
+            ...state,
+            submitting: true,
+        }),
+        [actions.deletedPaymentMethod]: (state) => ({
+            ...state,
+            submitting: false,
+        }),
     },
     INITIAL_STATE()
 );

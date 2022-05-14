@@ -84,11 +84,29 @@ function* createPaymentMethod({ payload: { data, setAlerts, navigate } }) {
     }
 }
 
+function* deletePaymentMethod({ payload: { paymentMethodId, setAlerts, navigate } }) {
+    try {
+        log(`Deleting a payment method with id: ${paymentMethodId}`);
+        yield call(apiClient.deletePaymentMethod, paymentMethodId);
+        yield put(actions.deletedPaymentMethod());
+        log(`Deleting a payment method with id: ${paymentMethodId}`);
+        navigate(`/Manage/PaymentMethods`);
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'An issue ocurred while deleting the payment method.',
+            },
+        ]);
+    }
+}
+
 const sagas = [
     takeEvery(actions.fetchPaymentMethods, fetchPaymentMethods),
     takeEvery(actions.fetchPaymentMethodDetails, fetchPaymentMethodDetails),
     takeLatest(actions.updatePaymentMethod, updatePaymentMethod),
     takeLatest(actions.createPaymentMethod, createPaymentMethod),
+    takeLatest(actions.deletePaymentMethod, deletePaymentMethod),
 ];
 
 export default sagas;
