@@ -32,3 +32,11 @@ BEGIN
 	VALUES
 		(1,1,0,1)
 END
+
+-- Payment Methods
+IF NOT EXISTS (SELECT 1 FROM dbo.PaymentMethods)
+BEGIN
+	INSERT INTO [PaymentMethods] ([Name], [Description], [Instructions], [isIntegration], [isArchived], [isSystemOwned])
+	VALUES
+		('Deleted Method', 'This payment method has been deleted', '', 1, 1, 1)
+END

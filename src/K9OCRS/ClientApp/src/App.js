@@ -18,9 +18,9 @@ import PasswordReset from './areas/accounts/PasswordReset';
 import ChangePassword from './areas/accounts/ChangePassword';
 import MyAccount from './areas/accounts/index';
 
-import MyDogs from './pages/MyDogs';
-import DogDetails from './pages/DogDetails';
-import DogSetup from './pages/DogSetup';
+import MyDogs from './areas/dogs/MyDogs';
+import DogSetup from './areas/dogs/DogSetup';
+import DogManagement from './areas/dogs/DogManagement';
 
 import ManagementDashboard from './areas/management/ManagementDashboard';
 import Users from './areas/management/Users/index';
@@ -29,9 +29,11 @@ import User from './areas/management/Users/User';
 import ClassManagement from './areas/classes/ClassManagement';
 import ClassTypeSetup from './areas/classes/ClassTypeSetup';
 import ClassSectionSetup from './areas/classes/ClassSectionSetup';
+import PaymentMethodManagement from './areas/billing/PaymentMethodManagement';
+import PaymentMethodSetup from './areas/billing/PaymentMethodSetup';
 import AppManagement from './areas/applications/AppManagement';
-import TestUpload from './areas/classes/TestUpload';
 import AppDetails from './areas/applications/AppManagement/components/AppDetails';
+import MySections from './areas/sections/index';
 
 import './app.scss';
 
@@ -100,11 +102,19 @@ export default class App extends Component {
                         path="/Account/MyDogs/:dogId"
                         element={
                             <ProtectedRoute>
-                                <DogDetails />
+                                <DogSetup />
                             </ProtectedRoute>
                         }
                     />
                     {/* Routes available to Instructors */}
+                    <Route
+                        path="Account/MySections"
+                        element={
+                            <ProtectedRoute>
+                                <MySections />
+                            </ProtectedRoute>
+                        }
+                    />
                     {/* Routes available only to Administrators */}
                     <Route
                         path="/Manage"
@@ -139,6 +149,14 @@ export default class App extends Component {
                         }
                     />
                     <Route
+                        path="/Manage/Dogs"
+                        element={
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <DogManagement />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
                         path="/Manage/Classes"
                         element={
                             <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
@@ -149,25 +167,40 @@ export default class App extends Component {
                     <Route
                         path="/Manage/Applications"
                         element={
-                        <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
-                            <AppManagement />
-                        </ProtectedRoute>
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <AppManagement />
+                            </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/Manage/Applications/Details/:id"
                         element={
-                        <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
-                            <AppDetails />
-                        </ProtectedRoute>
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <AppDetails />
+                            </ProtectedRoute>
                         }
                     />
-                    {/* This route is just for a quick test, it will be removed */}
                     <Route
-                        path="/Manage/Classes/testImageUpload"
+                        path="/Manage/PaymentMethods"
                         element={
                             <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
-                                <TestUpload />
+                                <PaymentMethodManagement />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Manage/PaymentMethods/Add"
+                        element={
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <PaymentMethodSetup />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Manage/PaymentMethods/:paymentMethodId"
+                        element={
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <PaymentMethodSetup />
                             </ProtectedRoute>
                         }
                     />

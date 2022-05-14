@@ -2,6 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /app
 
+ARG REACT_APP_PAYPAL_CLIENT_ID
+
 # Install node@15.x
 RUN curl -sL https://deb.nodesource.com/setup_16.x |  bash -
 RUN apt-get install -y nodejs

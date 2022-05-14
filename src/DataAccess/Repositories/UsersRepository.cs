@@ -26,15 +26,16 @@ namespace DataAccess.Repositories
             return await conn.QueryFirstOrDefaultAsync<User>(query, new { Email = email, Password = password });
         }
 
-        public async Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role)
+        public async Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role, bool includeArchived = false)
         {
-            var query = $"SELECT * FROM {_tableName} WHERE UserRoleID = @Role AND isSystemOwned = 0";
+            var archivedFilter = !includeArchived ? "AND isArchived = 0" : "";
+            var query = $"SELECT * FROM {_tableName} WHERE UserRoleID = @Role AND isSystemOwned = 0 {archivedFilter}";
             return await conn.QueryAsync<User>(query, new { Role = role });
         }
 
         public async Task<IEnumerable<User>> GetInstructorOptions(IDbConnection conn)
         {
-            var query = $"SELECT * FROM {_tableName} WHERE UserRoleID IN (1,2) AND isSystemOwned = 0";
+            var query = $"SELECT * FROM {_tableName} WHERE UserRoleID IN (1,2) AND isSystemOwned = 0 AND isArchived = 0";
             return await conn.QueryAsync<User>(query);
         }
 

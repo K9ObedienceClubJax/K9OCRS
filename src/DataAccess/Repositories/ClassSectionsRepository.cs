@@ -15,7 +15,7 @@ namespace DataAccess.Repositories
         // passing in the Db table name that is associated to it by using this syntax
         public ClassSectionsRepository(IHttpContextAccessor _httpContextAccessor) : base(nameof(ClassSection), _httpContextAccessor) { }
 
-        public override async Task<IReadOnlyList<ClassSection>> GetAll(IDbConnection conn, bool includeDrafts = false)
+        public async Task<IReadOnlyList<ClassSection>> GetAll(IDbConnection conn, bool includeDrafts = false)
         {
             var draftFilter = !includeDrafts ? "AND cs.isDraft = 0" : "";
 

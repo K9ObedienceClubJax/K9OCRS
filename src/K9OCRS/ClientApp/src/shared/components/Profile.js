@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import selectors from '../../shared/modules/selectors';
 import * as accountsApi from '../../util/apiClients/userAccounts';
 import ProfileContainer from './ProfileContainer';
-import { USER_ROLES } from '../../util/accessEvaluator';
+import { USER_ROLES, isAdmin } from '../../util/accessEvaluator';
+import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
 function ValidateEmail(e) {
     //Validate email
@@ -40,7 +41,9 @@ async function getUserData(
     setRole,
     setPicture,
     setMember,
-    setDiscount
+    setDiscount,
+    archivedStatusSetter,
+    setLastModifiedData
 ) {
     //API call to get user data
     const inspectedUser = await accountsApi.getUser(id);
@@ -53,6 +56,13 @@ async function getUserData(
     setPicture(inspectedUser.profilePictureUrl);
     setMember(inspectedUser.isMember);
     setDiscount(inspectedUser.hasDiscounts);
+    archivedStatusSetter(inspectedUser.isArchived);
+
+    setLastModifiedData({
+        id: inspectedUser.modifiedByID,
+        name: inspectedUser.modifiedByName,
+        date: inspectedUser.modifiedDate,
+    });
 }
 
 async function getDefaultProfile(setPicture) {
@@ -143,7 +153,13 @@ function handleSubmit(
 }
 
 const Profile = (props) => {
-    const { currentUser = null, mode = null, paramsId = null } = props;
+    const {
+        userIsAdmin = false,
+        currentUser = null,
+        mode = null,
+        paramsId = null,
+        archivedStatusSetter,
+    } = props;
     const setAlerts = props.setAlerts;
     const [userID, setUserID] = useState('');
     const [first, setFirst] = useState('');
@@ -158,6 +174,7 @@ const Profile = (props) => {
     const [imageToUpdate, setImageToUpdate] = useState(null);
 
     const [passwordResetLink, setPasswordResetLink] = useState('');
+    const [lastModifiedData, setLastModifiedData] = useState({});
 
     const styleObj = {
         marginRight: '6px',
@@ -167,9 +184,9 @@ const Profile = (props) => {
     var createMode = false;
     var inspectMode = false;
 
-    if (mode === 'create' && currentUser.userRoleID === 1) {
+    if (mode === 'create' && userIsAdmin) {
         createMode = true;
-    } else if (mode === 'inspect' && currentUser.userRoleID === 1) {
+    } else if (mode === 'inspect' && userIsAdmin) {
         inspectMode = true;
     } else {
         defaultMode = true;
@@ -186,6 +203,11 @@ const Profile = (props) => {
             getPasswordLink(setPasswordResetLink, currentUser.email);
             setMember(currentUser.isMember);
             setDiscount(currentUser.hasDiscounts);
+            setLastModifiedData({
+                id: currentUser.modifiedByID,
+                name: currentUser.modifiedByName,
+                date: currentUser.modifiedDate,
+            });
         } else if (inspectMode) {
             setUserID(paramsId);
             getUserData(
@@ -196,7 +218,9 @@ const Profile = (props) => {
                 setRole,
                 setPicture,
                 setMember,
-                setDiscount
+                setDiscount,
+                archivedStatusSetter,
+                setLastModifiedData
             );
         } else if (createMode) {
             getDefaultProfile(setPicture);
@@ -230,224 +254,234 @@ const Profile = (props) => {
     userRoleRadios.reverse();
 
     return (
-        <form
-            id="profileForm"
-            onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit(
-                    defaultMode,
-                    createMode,
-                    inspectMode,
-                    setAlerts,
-                    userID,
-                    first,
-                    last,
-                    email,
-                    password,
-                    role,
-                    picture,
-                    imageToUpdate,
-                    member,
-                    discount
-                );
-            }}
-        >
-            <Col lg={{ size: 10, offset: 1 }}>
-                <ProfileContainer
-                    modal={modal}
-                    setModal={setModal}
-                    setImageToUpdate={setImageToUpdate}
-                    currentUser={currentUser}
-                    picture={picture}
-                    setPicture={setPicture}
+        <>
+            {(inspectMode || defaultMode) && (
+                <LastUpdatedNote
+                    modifiedByID={lastModifiedData?.id}
+                    modifiedByName={lastModifiedData?.name}
+                    modifiedDate={lastModifiedData?.date}
                 />
-            </Col>
-            <Col lg={{ size: 10, offset: 1 }}>
-                <Row className="mt-3">
-                    <Col lg={{ size: 3, offset: 3 }}>
-                        <div className="input-group mb-3">
-                            <Input
-                                type="text"
-                                autoComplete="off"
-                                className="form-control"
-                                placeholder="First Name"
-                                htmlFor="First"
-                                name="first"
-                                value={first}
-                                onChange={(e) => setFirst(e.target.value)}
-                                required
-                            />
-                        </div>
-                    </Col>
+            )}
+            <form
+                id="profileForm"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSubmit(
+                        defaultMode,
+                        createMode,
+                        inspectMode,
+                        setAlerts,
+                        userID,
+                        first,
+                        last,
+                        email,
+                        password,
+                        role,
+                        picture,
+                        imageToUpdate,
+                        member,
+                        discount
+                    );
+                }}
+            >
+                <Col lg={{ size: 10, offset: 1 }}>
+                    <ProfileContainer
+                        modal={modal}
+                        setModal={setModal}
+                        setImageToUpdate={setImageToUpdate}
+                        currentUser={currentUser}
+                        picture={picture}
+                        setPicture={setPicture}
+                    />
+                </Col>
+                <Col lg={{ size: 10, offset: 1 }}>
+                    <Row className="mt-3">
+                        <Col lg={{ size: 3, offset: 3 }}>
+                            <div className="input-group mb-3">
+                                <Input
+                                    type="text"
+                                    autoComplete="off"
+                                    className="form-control"
+                                    placeholder="First Name"
+                                    htmlFor="First"
+                                    name="first"
+                                    value={first}
+                                    onChange={(e) => setFirst(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </Col>
 
-                    <Col lg="3">
-                        <div className="input-group mb-3">
-                            <Input
-                                type="text"
-                                autoComplete="off"
-                                className="form-control"
-                                placeholder="Last Name"
-                                htmlFor="Last"
-                                name="last"
-                                value={last}
-                                onChange={(e) => setLast(e.target.value)}
-                                required
-                            />
-                        </div>
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col lg="6" className="mx-auto">
-                        <div className="input-group mb-3">
-                            <Input
-                                type="email"
-                                autoComplete="off"
-                                className="form-control"
-                                placeholder="Email Address"
-                                htmlFor="Email"
-                                name="email"
-                                value={email}
-                                onChange={(e) => {
-                                    ValidateEmail(e.target);
-                                    setEmail(e.target.value);
-                                }}
-                                required
-                            />
-                        </div>
-                    </Col>
-                </Row>
-                {inspectMode === true && (
-                    <Row className="text-center">
-                        {/* eslint-disable-next-line */}
-                        <a
-                            style={{
-                                cursor: 'pointer',
-                            }}
-                            className="link-info"
-                            onClick={() => sendPasswordEmail(email, setAlerts)}
-                        >
-                            Send user password reset email
-                        </a>
+                        <Col lg="3">
+                            <div className="input-group mb-3">
+                                <Input
+                                    type="text"
+                                    autoComplete="off"
+                                    className="form-control"
+                                    placeholder="Last Name"
+                                    htmlFor="Last"
+                                    name="last"
+                                    value={last}
+                                    onChange={(e) => setLast(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </Col>
                     </Row>
-                )}
-                {createMode === true && (
+
                     <Row>
                         <Col lg="6" className="mx-auto">
                             <div className="input-group mb-3">
                                 <Input
-                                    type="password"
-                                    autoComplete="new-password"
+                                    type="email"
+                                    autoComplete="off"
                                     className="form-control"
-                                    placeholder="Password"
-                                    htmlFor="Password"
-                                    name="password"
-                                    value={password}
+                                    placeholder="Email Address"
+                                    htmlFor="Email"
+                                    name="email"
+                                    value={email}
                                     onChange={(e) => {
-                                        ValidatePassword(e.target);
-                                        setPassword(e.target.value);
+                                        ValidateEmail(e.target);
+                                        setEmail(e.target.value);
                                     }}
                                     required
                                 />
                             </div>
                         </Col>
                     </Row>
-                )}
+                    {inspectMode === true && (
+                        <Row className="text-center">
+                            {/* eslint-disable-next-line */}
+                            <a
+                                style={{
+                                    cursor: 'pointer',
+                                }}
+                                className="link-info"
+                                onClick={() => sendPasswordEmail(email, setAlerts)}
+                            >
+                                Send user password reset email
+                            </a>
+                        </Row>
+                    )}
+                    {createMode === true && (
+                        <Row>
+                            <Col lg="6" className="mx-auto">
+                                <div className="input-group mb-3">
+                                    <Input
+                                        type="password"
+                                        autoComplete="new-password"
+                                        className="form-control"
+                                        placeholder="Password"
+                                        htmlFor="Password"
+                                        name="password"
+                                        value={password}
+                                        onChange={(e) => {
+                                            ValidatePassword(e.target);
+                                            setPassword(e.target.value);
+                                        }}
+                                        required
+                                    />
+                                </div>
+                            </Col>
+                        </Row>
+                    )}
 
-                {defaultMode === true && (
-                    <Row className="text-center">
-                        <a target="_blank" href={passwordResetLink} rel="noopener noreferrer">
-                            Change Password
-                        </a>
-                    </Row>
-                )}
+                    {defaultMode === true && (
+                        <Row className="text-center">
+                            <a target="_blank" href={passwordResetLink} rel="noopener noreferrer">
+                                Change Password
+                            </a>
+                        </Row>
+                    )}
 
-                {(inspectMode === true || createMode === true) && (
-                    <div className=" mx-auto text-center mt-3">
-                        <div className="btn-group">{userRoleRadios}</div>
-                    </div>
-                )}
-
-                {defaultMode === false && (
-                    <div>
+                    {(inspectMode === true || createMode === true) && (
                         <div className=" mx-auto text-center mt-3">
-                            <Label className="form-check-label">
-                                <Input
-                                    className="form-check-input"
-                                    style={styleObj}
-                                    type="checkbox"
-                                    name="isMember"
-                                    checked={member}
-                                    onClick={() => {
-                                        if (member) {
-                                            setMember(false);
-                                        } else {
-                                            setMember(true);
-                                        }
-                                    }}
-                                />
-                                Member
-                            </Label>
+                            <div className="btn-group">{userRoleRadios}</div>
                         </div>
+                    )}
 
-                        <div className=" mx-auto text-center mt-3">
-                            <Label>
-                                <Input
-                                    className="form-check-input"
-                                    style={styleObj}
-                                    type="checkbox"
-                                    name="discount"
-                                    checked={discount}
-                                    onClick={() => {
-                                        if (discount) {
-                                            setDiscount(false);
-                                        } else {
-                                            setDiscount(true);
-                                        }
-                                    }}
-                                />
-                                Qualifies for Discount
-                            </Label>
-                        </div>
-                    </div>
-                )}
+                    {defaultMode === false && (
+                        <div>
+                            <div className=" mx-auto text-center mt-3">
+                                <Label className="form-check-label">
+                                    <Input
+                                        className="form-check-input"
+                                        style={styleObj}
+                                        type="checkbox"
+                                        name="isMember"
+                                        checked={member}
+                                        onClick={() => {
+                                            if (member) {
+                                                setMember(false);
+                                            } else {
+                                                setMember(true);
+                                            }
+                                        }}
+                                    />
+                                    Member
+                                </Label>
+                            </div>
 
-                {defaultMode === true && (
-                    <div>
-                        <div className=" mx-auto text-center mt-3">
-                            <Label className="form-check-label">
-                                <Input
-                                    className="form-check-input"
-                                    style={styleObj}
-                                    type="checkbox"
-                                    name="isMember"
-                                    checked={member}
-                                    disabled={true}
-                                />
-                                Member
-                            </Label>
+                            <div className=" mx-auto text-center mt-3">
+                                <Label>
+                                    <Input
+                                        className="form-check-input"
+                                        style={styleObj}
+                                        type="checkbox"
+                                        name="discount"
+                                        checked={discount}
+                                        onClick={() => {
+                                            if (discount) {
+                                                setDiscount(false);
+                                            } else {
+                                                setDiscount(true);
+                                            }
+                                        }}
+                                    />
+                                    Qualifies for Discount
+                                </Label>
+                            </div>
                         </div>
+                    )}
 
-                        <div className=" mx-auto text-center mt-3">
-                            <Label>
-                                <Input
-                                    className="form-check-input"
-                                    style={styleObj}
-                                    type="checkbox"
-                                    name="discount"
-                                    checked={discount}
-                                    disabled={true}
-                                />
-                                Qualifies for Discount
-                            </Label>
+                    {defaultMode === true && (
+                        <div>
+                            <div className=" mx-auto text-center mt-3">
+                                <Label className="form-check-label">
+                                    <Input
+                                        className="form-check-input"
+                                        style={styleObj}
+                                        type="checkbox"
+                                        name="isMember"
+                                        checked={member}
+                                        disabled={true}
+                                    />
+                                    Member
+                                </Label>
+                            </div>
+
+                            <div className=" mx-auto text-center mt-3">
+                                <Label>
+                                    <Input
+                                        className="form-check-input"
+                                        style={styleObj}
+                                        type="checkbox"
+                                        name="discount"
+                                        checked={discount}
+                                        disabled={true}
+                                    />
+                                    Qualifies for Discount
+                                </Label>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </Col>
-        </form>
+                    )}
+                </Col>
+            </form>
+        </>
     );
 };
 
 export default connect((state) => ({
+    userIsAdmin: isAdmin(selectors.selectCurrentUser(state)),
     currentUser: selectors.selectCurrentUser(state),
 }))(Profile);

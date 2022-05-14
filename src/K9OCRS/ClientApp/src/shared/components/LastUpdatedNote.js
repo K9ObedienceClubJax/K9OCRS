@@ -1,8 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import moment from 'moment-timezone';
+import { isAdmin } from 'src/util/accessEvaluator';
 
-const LastUpdatedNote = ({ modifiedByName, modifiedByID, modifiedDate }) => {
-    const showModifierInfo = modifiedByID !== 0;
+const LastUpdatedNote = ({ userIsAdmin, modifiedByName, modifiedByID, modifiedDate }) => {
+    const showModifierInfo = userIsAdmin && !!modifiedByID;
 
     if (!showModifierInfo) return null;
 
@@ -15,4 +17,6 @@ const LastUpdatedNote = ({ modifiedByName, modifiedByID, modifiedDate }) => {
     );
 };
 
-export default LastUpdatedNote;
+export default connect((state) => ({
+    userIsAdmin: isAdmin(state.shared?.currentUser),
+}))(LastUpdatedNote);

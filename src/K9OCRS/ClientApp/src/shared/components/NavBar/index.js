@@ -47,7 +47,7 @@ const NavMenu = (props) => {
                                 <NavLink
                                     tag={Link}
                                     className="text-dark"
-                                    to="/Account/Classes"
+                                    to="/Account/MyClasses"
                                     onClick={() => setCollapsed(true)}
                                 >
                                     My Classes
@@ -61,16 +61,6 @@ const NavMenu = (props) => {
                                     onClick={() => setCollapsed(true)}
                                 >
                                     My Dogs
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink
-                                    tag={Link}
-                                    className="text-dark"
-                                    to="/Account/Membership"
-                                    onClick={() => setCollapsed(true)}
-                                >
-                                    My Membership
                                 </NavLink>
                             </NavItem>
                             {/* This my account link is temporary */}
@@ -91,7 +81,7 @@ const NavMenu = (props) => {
                             <NavLink
                                 tag={Link}
                                 className="text-dark"
-                                to="/Account/Sections"
+                                to="/Account/MySections"
                                 onClick={() => setCollapsed(true)}
                             >
                                 My Sections

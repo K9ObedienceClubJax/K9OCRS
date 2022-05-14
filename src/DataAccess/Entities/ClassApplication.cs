@@ -13,7 +13,7 @@ namespace DataAccess.Entities
         public string Status { get; set; } // One of [Pending, Active, Completed, Cancelled]
         public string MainAttendee { get; set; }
         public string AdditionalAttendees { get; set; }
-        public string PaymentMethod { get; set; }
+        public int PaymentMethodID { get; set; }
         public bool isPaid { get; set; } = false;
         public bool isRefunded { get; set; } = false;
         public int? ReviewedBy { get; set; }
@@ -22,13 +22,20 @@ namespace DataAccess.Entities
         #region Data optionally Hydrated
 
         [TransactionIgnore]
+        [ExportIgnore]
         public string ClassTypeTitle { get; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public string DogName { get ; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public string DogProfilePictureFilename { get; set; }
         [TransactionIgnore]
+        [ExportIgnore]
         public string DogProfilePictureUrl { get; set; }
+        [TransactionIgnore]
+        [ExportIgnore]
+        public string PaymentMethodName { get; set; }
 
         #endregion
 
@@ -42,7 +49,7 @@ namespace DataAccess.Entities
             Status = entity.Status;
             MainAttendee = entity.MainAttendee;
             AdditionalAttendees = entity.AdditionalAttendees;
-            PaymentMethod = entity.PaymentMethod;
+            PaymentMethodID = entity.PaymentMethodID;
             isPaid = entity.isPaid;
             isRefunded = entity.isRefunded;
             ReviewedBy = entity.ReviewedBy;
@@ -52,6 +59,7 @@ namespace DataAccess.Entities
             DogName = entity.DogName;
             DogProfilePictureFilename = entity.DogProfilePictureFilename;
             DogProfilePictureUrl = entity.DogProfilePictureUrl;
+            PaymentMethodName = entity.PaymentMethodName;
 
             ModifiedByID = entity.ModifiedByID;
             ModifiedByName = entity.ModifiedByName;
