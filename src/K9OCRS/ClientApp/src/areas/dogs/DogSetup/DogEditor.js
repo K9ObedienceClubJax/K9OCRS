@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import ClassNames from 'classnames';
-import { Row, Col, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Row, Col, FormGroup, Label, Input } from 'reactstrap';
 import FileDropzone from '../../../shared/components/FileDropzone';
 import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
-import { BsFileEarmarkText, BsXLg } from 'react-icons/bs';
+import { BsFileEarmarkText } from 'react-icons/bs';
 import { formatToServerDateTime } from 'src/util/dates';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
@@ -124,9 +124,6 @@ const DogEditor = (props) => {
                                     <span className={vaxStatusCn}>Approved</span>
                                 </span>
                             </h3>
-                            <Button color="danger" disabled={disableInputs} outline>
-                                Remove Current File <BsXLg />
-                            </Button>
                         </div>
                         <FileDropzone
                             maxSize="5MB"
