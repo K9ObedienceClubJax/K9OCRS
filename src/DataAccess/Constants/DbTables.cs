@@ -42,7 +42,8 @@ namespace DataAccess.Constants
         {
             Get(nameof(User)),
             Get(nameof(ClassType)),
-            Get(nameof(ClassSection))
+            Get(nameof(ClassSection)),
+            Get(nameof(PaymentMethod))
         };
 
         public static string Get(string entity) => mappings[entity];

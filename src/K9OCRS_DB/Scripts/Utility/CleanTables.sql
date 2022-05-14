@@ -39,8 +39,8 @@ BEGIN
 	SET NOEXEC ON;
 END
 
-DELETE FROM [PaymentMethods]
-DBCC CHECKIDENT ('[PaymentMethods]', RESEED, 0)
+DELETE FROM [PaymentMethods] WHERE isSystemOwned = 0
+DBCC CHECKIDENT ('[PaymentMethods]', RESEED, 1)
 GO
 
 SET NOEXEC OFF;
