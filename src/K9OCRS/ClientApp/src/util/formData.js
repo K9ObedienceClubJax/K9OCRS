@@ -92,7 +92,14 @@ export const classTypeUpdateRequestToFormData = ({
 
 // Dog Requests
 
-export const dogAddRequestToFormData = ({ name, breed, dateOfBirth, image, vaccinationRecord }) => {
+export const dogAddRequestToFormData = ({
+    name,
+    breed,
+    dateOfBirth,
+    image,
+    vaccinationRecord,
+    ownersIdsToInsert,
+}) => {
     var formData = new FormData();
 
     formData.append('name', name);
@@ -107,6 +114,12 @@ export const dogAddRequestToFormData = ({ name, breed, dateOfBirth, image, vacci
         formData.append('vaccinationRecord', vaccinationRecord, vaccinationRecord.name);
     }
 
+    if (ownersIdsToInsert && ownersIdsToInsert.length > 0) {
+        for (let i = 0; i < ownersIdsToInsert.length; i++) {
+            formData.append('ownersIdsToInsert', ownersIdsToInsert[i]);
+        }
+    }
+
     return formData;
 };
 
@@ -117,6 +130,8 @@ export const dogUpdateRequestToFormData = ({
     dateOfBirth,
     image,
     vaccinationRecord,
+    ownersIdsToInsert,
+    ownerIdsToDelete,
 }) => {
     var formData = new FormData();
 
@@ -131,6 +146,18 @@ export const dogUpdateRequestToFormData = ({
 
     if (vaccinationRecord) {
         formData.append('vaccinationRecord', vaccinationRecord, vaccinationRecord.name);
+    }
+
+    if (ownersIdsToInsert && ownersIdsToInsert.length > 0) {
+        for (let i = 0; i < ownersIdsToInsert.length; i++) {
+            formData.append('ownersIdsToInsert', ownersIdsToInsert[i]);
+        }
+    }
+
+    if (ownerIdsToDelete && ownerIdsToDelete.length > 0) {
+        for (let i = 0; i < ownerIdsToDelete.length; i++) {
+            formData.append('ownerIdsToDelete', ownerIdsToDelete[i]);
+        }
     }
 
     return formData;

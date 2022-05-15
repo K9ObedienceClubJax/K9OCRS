@@ -1,15 +1,27 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect, Fragment } from 'react';
 import moment from 'moment-timezone';
 import ClassNames from 'classnames';
-import { Row, Col, FormGroup, Label, Input } from 'reactstrap';
+import { Row, Col, FormGroup, Label, Input, Badge } from 'reactstrap';
+import { Typeahead, Token } from 'react-bootstrap-typeahead';
 import FileDropzone from '../../../shared/components/FileDropzone';
+import ProfileBadge from 'src/shared/components/ProfileBadge';
 import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
 import { BsFileEarmarkText } from 'react-icons/bs';
 import { formatToServerDateTime } from 'src/util/dates';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
 const DogEditor = (props) => {
-    const { loading, submitting, dogDetails, setData, formRef } = props;
+    const {
+        loading,
+        loadingOptions,
+        submitting,
+        dogDetails,
+        ownerOptions,
+        setData,
+        formRef,
+        userIsAdmin,
+    } = props;
 
     const disableInputs = loading || submitting;
 
@@ -19,6 +31,7 @@ const DogEditor = (props) => {
     const [breed, setBreed] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [vaccinationRecord, setVaccinationRecord] = useState(null);
+    const [selectedOwners, setSelectedOwners] = useState([]);
 
     const cn = 'dogSetup__editor';
 
@@ -26,6 +39,7 @@ const DogEditor = (props) => {
     const dogString = JSON.stringify(dogDetails);
     const profilePictureString = JSON.stringify(profilePicture);
     const vaccinationRecordString = JSON.stringify(vaccinationRecord);
+    const selectedOwnersString = JSON.stringify(selectedOwners);
 
     // Populate fields if we get data
     useEffect(() => {
@@ -42,7 +56,7 @@ const DogEditor = (props) => {
         return () => {
             isMounted = false;
         };
-    }, [dogString]); // eslint-disable-line
+    }, [dogString]);
 
     useEffect(() => {
         const data = {
@@ -52,13 +66,59 @@ const DogEditor = (props) => {
             dateOfBirth: dateOfBirth ? formatToServerDateTime(dateOfBirth) : '',
             image: profilePicture,
             vaccinationRecord,
+            ownersIdsToInsert: selectedOwners?.map((o) => o.id),
         };
         setData(data);
-    }, [setData, name, breed, dateOfBirth, profilePictureString, vaccinationRecordString]); // eslint-disable-line
-
-    //implement handleRemove function
+    }, [
+        setData,
+        name,
+        breed,
+        dateOfBirth,
+        profilePictureString,
+        vaccinationRecordString,
+        selectedOwnersString,
+    ]);
 
     const vaxStatusCn = ClassNames(`${cn}__vax-status`);
+
+    const ownerRenderMenuItemChildren = (option, { text }, index) => (
+        <Fragment>
+            <Row key={index}>
+                <Col className="d-flex justify-content-start align-items-center">
+                    <ProfileBadge
+                        id={option.id}
+                        imageUrl={option.profilePictureUrl}
+                        firstName={option.firstName}
+                        lastName={option.lastName}
+                    />
+                </Col>
+                <Col className="d-flex justify-content-start align-items-center">
+                    {option.isArchived && (
+                        <Badge color="dark" className="me-1">
+                            Archived
+                        </Badge>
+                    )}
+                    <span />
+                </Col>
+            </Row>
+        </Fragment>
+    );
+
+    const ownerRenderToken = (option, { onRemove }, index) => (
+        <Token key={index} onRemove={onRemove} option={option}>
+            <ProfileBadge
+                id={option.id}
+                imageUrl={option.profilePictureUrl}
+                firstName={option.firstName}
+                lastName={option.lastName}
+            />
+        </Token>
+    );
+
+    const ownerLabelKey = (option) =>
+        loadingOptions
+            ? 'Loading...'
+            : `${option.firstName} ${option.lastName} ${option.isArchived ? '- [Archived]' : ''}`;
 
     return (
         <div>
@@ -67,6 +127,33 @@ const DogEditor = (props) => {
                 modifiedByName={dogDetails?.modifiedByName}
                 modifiedDate={dogDetails?.modifiedDate}
             />
+            {userIsAdmin && (
+                <Row className="mb-3">
+                    <Col>
+                        <div className="cardsurface">
+                            <FormGroup>
+                                <Label>Owners</Label>
+                                <Typeahead
+                                    id="OwnersTypeahead"
+                                    style={{ maxWidth: '500px' }}
+                                    labelKey={ownerLabelKey}
+                                    placeholder="Choose Owners..."
+                                    selected={selectedOwners}
+                                    onChange={setSelectedOwners}
+                                    disabled={loadingOptions}
+                                    options={ownerOptions}
+                                    renderMenuItemChildren={ownerRenderMenuItemChildren}
+                                    renderToken={ownerRenderToken}
+                                    multiple
+                                    flip
+                                    clearButton
+                                    positionFixed
+                                />
+                            </FormGroup>
+                        </div>
+                    </Col>
+                </Row>
+            )}
             <Row className={`${cn} gy-3`} lg="2" xs="1">
                 <Col xxl="4" xl="5" lg="6">
                     <div className="cardsurface">

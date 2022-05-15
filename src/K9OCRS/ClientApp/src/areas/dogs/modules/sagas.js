@@ -2,6 +2,7 @@ import { put, call, takeEvery, takeLatest } from 'redux-saga/effects';
 import debug from 'debug';
 import * as actions from './actions';
 import * as dogApi from '../../../util/apiClients/dogs';
+import * as usersApi from 'src/util/apiClients/userAccounts';
 import { dogAddRequestToFormData, dogUpdateRequestToFormData } from 'src/util/formData';
 
 const log = debug('saga:dogs');
@@ -67,6 +68,25 @@ function* fetchDogDetails({ payload: { dogId, setAlerts } }) {
             },
         ]);
         log("An error ocurred while fetching a dog's details", err);
+    }
+}
+
+function* loadOptions({ payload: { setAlerts } }) {
+    try {
+        log('Loading options');
+
+        const result = yield call(usersApi.getDogOwnerOptions);
+
+        log('loaded options', result?.data);
+        yield put(actions.loadedOptions(result?.data));
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having issues retrieving the dog's details.",
+            },
+        ]);
+        log('An error ocurred while fetching dog owner options', err);
     }
 }
 
@@ -187,6 +207,7 @@ const sagas = [
     takeEvery(actions.fetchDogList, fetchDogList),
     takeEvery(actions.fetchDogDetails, fetchDogDetails),
     takeEvery(actions.initializeDogAddition, initializeDogAddition),
+    takeLatest(actions.loadOptions, loadOptions),
     takeEvery(actions.saveNewDog, createDog),
     takeEvery(actions.updateDog, updateDog),
     takeLatest(actions.archiveDog, archiveDog),

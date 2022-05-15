@@ -10,17 +10,22 @@ import DogEditor from './DogEditor';
 import ClassTable from './ClassTable';
 
 import './styles.scss';
+import { isAdmin } from 'src/util/accessEvaluator';
 
 const cn = 'dogSetup';
 
 const DogSetup = (props) => {
     const {
         isManagement,
+        userIsAdmin,
         loading,
+        loadingOptions,
         submitting,
         dogDetails,
+        ownerOptions,
         fetchDogDetails,
         init,
+        loadOptions,
         saveNewDog,
         updateDog,
         deleteDog,
@@ -41,6 +46,9 @@ const DogSetup = (props) => {
             init();
         } else {
             fetchDogDetails({ dogId, setAlerts });
+        }
+        if (userIsAdmin) {
+            loadOptions({ setAlerts });
         }
     }, [dogId]); // eslint-disable-line
 
@@ -172,11 +180,14 @@ const DogSetup = (props) => {
                     <>
                         <DogEditor
                             loading={loading}
+                            loadingOptions={loadingOptions}
                             submitting={submitting}
                             dogDetails={dogDetails}
                             setData={setData}
                             addingNewDog={addingNewDog}
                             formRef={formRef}
+                            userIsAdmin={userIsAdmin}
+                            ownerOptions={ownerOptions}
                         />
                         {!addingNewDog && <ClassTable />}
                     </>
@@ -189,12 +200,16 @@ const DogSetup = (props) => {
 export default connect(
     (state) => ({
         loading: state.dogs?.loading,
+        loadingOptions: state.dogs?.loadingOptions,
+        ownerOptions: state.dogs?.ownerOptions,
         submitting: state.dogs?.submitting,
         dogDetails: state.dogs?.dogDetails,
+        userIsAdmin: isAdmin(state.shared?.currentUser),
     }),
     {
         fetchDogDetails: actions.fetchDogDetails,
         init: actions.initializeDogAddition,
+        loadOptions: actions.loadOptions,
         saveNewDog: actions.saveNewDog,
         updateDog: actions.updateDog,
         deleteDog: actions.deleteDog,
