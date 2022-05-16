@@ -2,13 +2,13 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import moment from 'moment-timezone';
 import ClassNames from 'classnames';
-import { Row, Col, FormGroup, Label, Input, Badge } from 'reactstrap';
+import { Row, Col, FormGroup, Label, Input, Badge, FormText } from 'reactstrap';
 import { Typeahead, Token } from 'react-bootstrap-typeahead';
 import FileDropzone from '../../../shared/components/FileDropzone';
 import ProfileBadge from 'src/shared/components/ProfileBadge';
 import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
 import { BsFileEarmarkText } from 'react-icons/bs';
-import { formatToServerDateTime } from 'src/util/dates';
+import { formatDogAge, formatToServerDateTime } from 'src/util/dates';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
 const DogEditor = (props) => {
@@ -32,6 +32,20 @@ const DogEditor = (props) => {
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [vaccinationRecord, setVaccinationRecord] = useState(null);
     const [selectedOwners, setSelectedOwners] = useState([]);
+    const [existingOwnerIds, setExistingOwnerIds] = useState([]);
+    const [ownersToInsert, setOwnersToInsert] = useState([]);
+    const [ownersToDelete, setOwnersToDelete] = useState([]);
+    const selectedOwnerIds = selectedOwners?.map((o) => o.id);
+    const emptyOwnersField = selectedOwnerIds?.length < 1;
+
+    const handleSelectedOwnersChanged = (owners) => {
+        const postChangeOwnerIds = owners?.map((o) => o.id);
+        const toDelete = dogDetails?.owners?.filter((o) => !postChangeOwnerIds?.includes(o.id));
+        const newlyAddedOwners = owners?.filter((o) => !existingOwnerIds.includes(o.id));
+        setSelectedOwners(owners);
+        setOwnersToInsert(newlyAddedOwners);
+        setOwnersToDelete(toDelete);
+    };
 
     const cn = 'dogSetup__editor';
 
@@ -51,6 +65,8 @@ const DogEditor = (props) => {
             setDateOfBirth(
                 dogDetails?.dateOfBirth ? moment(dogDetails?.dateOfBirth).format('YYYY-MM-DD') : ''
             );
+            setSelectedOwners(dogDetails?.owners);
+            setExistingOwnerIds(dogDetails?.owners?.map((o) => o.id));
         }
 
         return () => {
@@ -66,7 +82,9 @@ const DogEditor = (props) => {
             dateOfBirth: dateOfBirth ? formatToServerDateTime(dateOfBirth) : '',
             image: profilePicture,
             vaccinationRecord,
-            ownersIdsToInsert: selectedOwners?.map((o) => o.id),
+            ownersIdsToInsert: ownersToInsert?.map((o) => o.id),
+            ownersIdsToDelete: ownersToDelete?.map((o) => o.id),
+            selectedOwnerIds,
         };
         setData(data);
     }, [
@@ -81,28 +99,31 @@ const DogEditor = (props) => {
 
     const vaxStatusCn = ClassNames(`${cn}__vax-status`);
 
-    const ownerRenderMenuItemChildren = (option, { text }, index) => (
-        <Fragment>
-            <Row key={index}>
-                <Col className="d-flex justify-content-start align-items-center">
-                    <ProfileBadge
-                        id={option.id}
-                        imageUrl={option.profilePictureUrl}
-                        firstName={option.firstName}
-                        lastName={option.lastName}
-                    />
-                </Col>
-                <Col className="d-flex justify-content-start align-items-center">
-                    {option.isArchived && (
-                        <Badge color="dark" className="me-1">
-                            Archived
-                        </Badge>
-                    )}
-                    <span />
-                </Col>
-            </Row>
-        </Fragment>
-    );
+    const ownerRenderMenuItemChildren = (option, { text }, index) => {
+        const display = selectedOwnerIds.includes(option.id) ? 'none' : undefined;
+        return (
+            <Fragment>
+                <Row key={index} style={{ display }}>
+                    <Col className="d-flex justify-content-start align-items-center">
+                        <ProfileBadge
+                            id={option.id}
+                            imageUrl={option.profilePictureUrl}
+                            firstName={option.firstName}
+                            lastName={option.lastName}
+                        />
+                    </Col>
+                    <Col className="d-flex justify-content-start align-items-center">
+                        {option.isArchived && (
+                            <Badge color="dark" className="me-1">
+                                Archived
+                            </Badge>
+                        )}
+                        <span />
+                    </Col>
+                </Row>
+            </Fragment>
+        );
+    };
 
     const ownerRenderToken = (option, { onRemove }, index) => (
         <Token key={index} onRemove={onRemove} option={option}>
@@ -132,14 +153,14 @@ const DogEditor = (props) => {
                     <Col>
                         <div className="cardsurface">
                             <FormGroup>
-                                <Label>Owners</Label>
+                                <Label>Owners *</Label>
                                 <Typeahead
                                     id="OwnersTypeahead"
                                     style={{ maxWidth: '500px' }}
                                     labelKey={ownerLabelKey}
                                     placeholder="Choose Owners..."
                                     selected={selectedOwners}
-                                    onChange={setSelectedOwners}
+                                    onChange={handleSelectedOwnersChanged}
                                     disabled={loadingOptions}
                                     options={ownerOptions}
                                     renderMenuItemChildren={ownerRenderMenuItemChildren}
@@ -149,6 +170,9 @@ const DogEditor = (props) => {
                                     clearButton
                                     positionFixed
                                 />
+                                {emptyOwnersField && (
+                                    <FormText>There must be at least one owner</FormText>
+                                )}
                             </FormGroup>
                         </div>
                     </Col>
@@ -169,7 +193,7 @@ const DogEditor = (props) => {
                         </div>
                         <form ref={formRef}>
                             <FormGroup>
-                                <Label>Name</Label>
+                                <Label>Name *</Label>
                                 <Input
                                     type="text"
                                     value={name}
@@ -179,7 +203,7 @@ const DogEditor = (props) => {
                                 ></Input>
                             </FormGroup>
                             <FormGroup>
-                                <Label>Breed</Label>
+                                <Label>Breed *</Label>
                                 <Input
                                     type="text"
                                     value={breed}
@@ -189,7 +213,7 @@ const DogEditor = (props) => {
                                 ></Input>
                             </FormGroup>
                             <FormGroup>
-                                <Label>Date of Birth</Label>
+                                <Label>Date of Birth *</Label>
                                 <Input
                                     type="date"
                                     value={dateOfBirth}
@@ -197,6 +221,7 @@ const DogEditor = (props) => {
                                     disabled={disableInputs}
                                     required
                                 ></Input>
+                                <FormText>Age: {formatDogAge(dateOfBirth)}</FormText>
                             </FormGroup>
                         </form>
                     </div>

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DataAccess.Constants;
 using DataAccess.Entities;
 using DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +25,17 @@ namespace DataAccess.Repositories
         {
             var query = $@"SELECT * FROM {_tableName} WHERE Email = @Email AND Password = @Password";
             return await conn.QueryFirstOrDefaultAsync<User>(query, new { Email = email, Password = password });
+        }
+
+        public Task<IEnumerable<User>> GetDogOwners(IDbConnection conn, int dogId)
+        {
+            var query = $@"
+                SELECT *
+                FROM {_tableName} u
+                JOIN {DbTables.Get(nameof(UserDog))} ud ON ud.UserID = u.ID AND ud.DogID = @dogId
+            ";
+
+            return conn.QueryAsync<User>(query, new { dogId });
         }
 
         public async Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role, bool includeArchived = false)

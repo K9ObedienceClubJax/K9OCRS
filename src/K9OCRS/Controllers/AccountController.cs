@@ -407,12 +407,21 @@ namespace K9OCRS.Controllers
             return Ok(userResults);
         }
 
+        [HttpGet("dogOwners/{dogId}")]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        public async Task<IActionResult> GetDogOwners(int dogId)
+        {
+            var users = await connectionOwner.Use(conn => dbOwner.Users.GetAll(conn, true, true));
+            var userResults = users.Select(u => new UserResult(u, serviceConstants.storageBasePath));
+            return Ok(userResults);
+        }
+
         [HttpGet("placeholderImageUrl")]
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult GetPlaceholderImageUrl()
         {
             return Ok((new User { ProfilePictureFilename = "UserPlaceholder.png" })
-                .ToClassTypeResult(serviceConstants.storageBasePath)
+                .ToUserResult(serviceConstants.storageBasePath)
                 .ProfilePictureUrl);
         }
 

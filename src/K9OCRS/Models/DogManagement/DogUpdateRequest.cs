@@ -18,7 +18,7 @@ namespace K9OCRS.Models.DogManagement
         public IFormFile Image { get; set; }
         public IFormFile VaccinationRecord { get; set; }
 
-        public IEnumerable<int> OwnerIdsToDelete { get; set; } = new List<int>();
+        public IEnumerable<int> OwnersIdsToDelete { get; set; } = new List<int>();
         public IEnumerable<int> OwnersIdsToInsert { get; set; } = new List<int>();
     }
 }

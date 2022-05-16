@@ -9,6 +9,7 @@ namespace DataAccess.Repositories.Contracts
     {
         Task<User> GetByEmail(IDbConnection conn, string email);
         Task<User> GetIdByLogin(IDbConnection conn, string email, string password);
+        Task<IEnumerable<User>> GetDogOwners(IDbConnection conn, int dogId);
         Task<IEnumerable<User>> QueryUsersByRole(IDbConnection conn, int role, bool includeArchived = false);
         Task<IEnumerable<User>> GetInstructorOptions(IDbConnection conn);
         Task<int> UpdateProfilePicture(IDbConnection conn, int userId, string filename);

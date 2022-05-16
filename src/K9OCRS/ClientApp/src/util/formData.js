@@ -131,7 +131,7 @@ export const dogUpdateRequestToFormData = ({
     image,
     vaccinationRecord,
     ownersIdsToInsert,
-    ownerIdsToDelete,
+    ownersIdsToDelete,
 }) => {
     var formData = new FormData();
 
@@ -154,9 +154,9 @@ export const dogUpdateRequestToFormData = ({
         }
     }
 
-    if (ownerIdsToDelete && ownerIdsToDelete.length > 0) {
-        for (let i = 0; i < ownerIdsToDelete.length; i++) {
-            formData.append('ownerIdsToDelete', ownerIdsToDelete[i]);
+    if (ownersIdsToDelete && ownersIdsToDelete.length > 0) {
+        for (let i = 0; i < ownersIdsToDelete.length; i++) {
+            formData.append('ownersIdsToDelete', ownersIdsToDelete[i]);
         }
     }
 

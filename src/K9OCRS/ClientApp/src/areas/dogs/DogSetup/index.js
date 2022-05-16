@@ -53,17 +53,30 @@ const DogSetup = (props) => {
     }, [dogId]); // eslint-disable-line
 
     const handleSubmit = () => {
-        if (addingNewDog) {
-            saveNewDog({
-                data,
-                setAlerts,
-                redirect: (dogId) => navigate(`/Account/MyDogs/${dogId}`),
-            });
+        const noOwnersLeft = data.selectedOwnerIds?.length < 1;
+        const valid =
+            !!data.id && !!data.name && !!data.breed && !!data.dateOfBirth && !noOwnersLeft;
+
+        if (valid) {
+            if (addingNewDog) {
+                saveNewDog({
+                    data,
+                    setAlerts,
+                    redirect: (dogId) => navigate(`/Account/MyDogs/${dogId}`),
+                });
+            } else {
+                updateDog({
+                    data,
+                    setAlerts,
+                });
+            }
         } else {
-            updateDog({
-                data,
-                setAlerts,
-            });
+            setAlerts([
+                {
+                    color: 'danger',
+                    message: 'Please fill in all fields marked with a *',
+                },
+            ]);
         }
     };
 

@@ -166,12 +166,18 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var dog = await connectionOwner.Use(conn =>
+                var (dog, owners) = await connectionOwner.Use(async conn =>
                 {
-                    return dbOwner.Dogs.GetByID(conn, Id);
+                    var _dog = await dbOwner.Dogs.GetByID(conn, Id);
+                    var _owners = await dbOwner.Users.GetDogOwners(conn, Id);
+
+                    return (_dog, _owners);
                 });
 
                 var dogResult = dog.ToDogResult(serviceConstants.storageBasePath);
+                var ownerResults = owners.Select(o => o.ToUserResult(serviceConstants.storageBasePath)).ToList();
+
+                dogResult.Owners = ownerResults;
 
                 //returns a dog
                 return Ok(dogResult);
@@ -204,9 +210,9 @@ namespace K9OCRS.Controllers
                     var deletedCount = 0;
                     var insertedCount = 0;
 
-                    if (request.OwnerIdsToDelete.Any())
+                    if (request.OwnersIdsToDelete.Any())
                     {
-                        deletedCount = await dbOwner.UserDogs.DeleteManyByUserIds(conn, tr, request.ID, request.OwnerIdsToDelete);
+                        deletedCount = await dbOwner.UserDogs.DeleteManyByUserIds(conn, tr, request.ID, request.OwnersIdsToDelete);
                     }
 
                     if (request.OwnersIdsToInsert.Any())
@@ -221,7 +227,7 @@ namespace K9OCRS.Controllers
                     }
 
                     if (
-                        request.OwnerIdsToDelete.Count() != deletedCount ||
+                        request.OwnersIdsToDelete.Count() != deletedCount ||
                         request.OwnersIdsToInsert.Count() != insertedCount
                     )
                     {
