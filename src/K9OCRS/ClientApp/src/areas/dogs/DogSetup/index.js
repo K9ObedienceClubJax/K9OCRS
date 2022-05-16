@@ -53,9 +53,8 @@ const DogSetup = (props) => {
     }, [dogId]); // eslint-disable-line
 
     const handleSubmit = () => {
-        const noOwnersLeft = data.selectedOwnerIds?.length < 1;
-        const valid =
-            !!data.id && !!data.name && !!data.breed && !!data.dateOfBirth && !noOwnersLeft;
+        const noOwnersLeft = userIsAdmin && data.selectedOwnerIds?.length < 1;
+        const valid = !!data.name && !!data.breed && !!data.dateOfBirth && !noOwnersLeft;
 
         if (valid) {
             if (addingNewDog) {

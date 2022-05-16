@@ -221,7 +221,9 @@ const DogEditor = (props) => {
                                     disabled={disableInputs}
                                     required
                                 ></Input>
-                                <FormText>Age: {formatDogAge(dateOfBirth)}</FormText>
+                                {dateOfBirth && (
+                                    <FormText>Age: {formatDogAge(dateOfBirth)}</FormText>
+                                )}
                             </FormGroup>
                         </form>
                     </div>
