@@ -201,7 +201,7 @@ const DogSetup = (props) => {
                             userIsAdmin={userIsAdmin}
                             ownerOptions={ownerOptions}
                         />
-                        {!addingNewDog && <ClassTable />}
+                        {!addingNewDog && dogDetails?.classes?.length > 0 && <ClassTable />}
                     </>
                 )}
             </PageBody>
