@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 
+export const CLUB_TIME_ZONE = 'America/New_York';
 export const SERVER_DATETIME_FORMAT = 'YYYY-MM-DD[T]HH:mm:ss';
 
 // transform the dotnet timespan from our backend into a useful moment object

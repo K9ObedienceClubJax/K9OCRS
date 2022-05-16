@@ -268,7 +268,7 @@ namespace DataAccess.Repositories
         internal string GenerateTrackingSection()
         {
             var identity = new ModifierIdentity(_httpContextAccessor);
-            return $"ModifiedByID = {identity.ID}, ModifiedByName = '{identity.Name}', ModifiedDate=GETDATE()";
+            return $"ModifiedByID = {identity.ID}, ModifiedByName = '{identity.Name}', ModifiedDate=GETUTCDATE()";
         }
         #endregion
 
