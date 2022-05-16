@@ -9,7 +9,8 @@ const LastUpdatedNote = ({ userIsAdmin, modifiedByName, modifiedByID, modifiedDa
 
     if (!showModifierInfo) return null;
 
-    const lastUpdatedDate = moment(modifiedDate)
+    const lastUpdatedDate = moment
+        .utc(modifiedDate)
         .tz(CLUB_TIME_ZONE)
         .format('MMMM Do, YYYY [at] h:mm A');
 

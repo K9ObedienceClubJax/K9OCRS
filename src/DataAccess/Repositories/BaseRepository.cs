@@ -404,7 +404,7 @@ namespace DataAccess.Repositories
                 }
             });
 
-            updateQuery.Append($"ModifiedDate=GETDATE()");
+            updateQuery.Append(GenerateTrackingSection());
             //updateQuery.Remove(updateQuery.Length - 1, 1); //remove last comma
             updateQuery.Append(" WHERE ID=@ID");
 

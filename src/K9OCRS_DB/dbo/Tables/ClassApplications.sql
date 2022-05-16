@@ -13,7 +13,7 @@
     [ReviewedDate]   DATE         NULL,
     [ModifiedByID] INT NULL,
     [ModifiedByName] VARCHAR(128) NULL,
-    [ModifiedDate] DATETIME NOT NULL DEFAULT GETDATE(),
+    [ModifiedDate] DATETIME NOT NULL DEFAULT GETUTCDATE(),
     CONSTRAINT [PK_ClassApplications] PRIMARY KEY CLUSTERED ([ID] ASC),
     CONSTRAINT [CHK_ClassApplications_Status] CHECK ([Status]='Cancelled' OR [Status]='Completed' OR [Status]='Active' OR [Status]='Pending'),
     CONSTRAINT [FK_ClassApplications_ClassTypes] FOREIGN KEY ([ClassTypeID]) REFERENCES [dbo].[ClassTypes] ([ID]),
