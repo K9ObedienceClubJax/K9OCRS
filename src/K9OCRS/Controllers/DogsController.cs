@@ -64,9 +64,29 @@ namespace K9OCRS.Controllers
                     DateOfBirth = request.DateOfBirth,
                 };
 
-                var result = await connectionOwner.Use(conn =>
+                var result = await connectionOwner.UseTransaction(async (conn, tr) =>
                 {
-                    return dbOwner.Dogs.Add(conn, entity);
+                    var dog = await dbOwner.Dogs.Add(conn, tr, entity);
+
+                    if (request.OwnersIdsToInsert.Any())
+                    {
+                        var assignments = request.OwnersIdsToInsert.Select(userId => new UserDog
+                        {
+                            DogID = dog.ID,
+                            UserID = userId,
+                        }).ToList();
+
+                        // Add all requested user-dog relationships
+                        await dbOwner.UserDogs.AddMany(conn, tr, assignments);
+                    }
+                    else
+                    {
+                        // Assign dog to the user that created it
+                        await dbOwner.UserDogs.AssignDogToCurrentUser(conn, tr, dog.ID);
+                    }
+                    
+                    tr.Commit();
+                    return dog;
                 });
 
                 if (request.Image != null)
@@ -74,6 +94,14 @@ namespace K9OCRS.Controllers
                     await UpdateImage(result.ID, new FileUpload
                     {
                         Files = new List<IFormFile> { request.Image },
+                    });
+                }
+
+                if (request.VaccinationRecord != null)
+                {
+                    await UploadRecord(result.ID, new FileUpload
+                    {
+                        Files = new List<IFormFile> { request.VaccinationRecord },
                     });
                 }
 
@@ -138,12 +166,18 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var dog = await connectionOwner.Use(conn =>
+                var (dog, owners) = await connectionOwner.Use(async conn =>
                 {
-                    return dbOwner.Dogs.GetByID(conn, Id);
+                    var _dog = await dbOwner.Dogs.GetByID(conn, Id);
+                    var _owners = await dbOwner.Users.GetDogOwners(conn, Id);
+
+                    return (_dog, _owners);
                 });
 
                 var dogResult = dog.ToDogResult(serviceConstants.storageBasePath);
+                var ownerResults = owners.Select(o => o.ToUserResult(serviceConstants.storageBasePath)).ToList();
+
+                dogResult.Owners = ownerResults;
 
                 //returns a dog
                 return Ok(dogResult);
@@ -160,20 +194,49 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var result = await connectionOwner.Use(conn =>
+                var existingDog = await connectionOwner.Use(conn => dbOwner.Dogs.GetByID(conn, request.ID));
+                var result = await connectionOwner.UseTransaction(async (conn, tr) =>
                 {
+                    var entity = new Dog(existingDog);
 
-                    var entity = new Dog
+                    entity.Name = request.Name;
+                    entity.Breed = request.Breed;
+                    entity.DateOfBirth = request.DateOfBirth;
+
+                    var updatedCount = await dbOwner.Dogs.Update(conn, tr, entity);
+
+                    if (updatedCount < 1) throw new KeyNotFoundException();
+
+                    var deletedCount = 0;
+                    var insertedCount = 0;
+
+                    if (request.OwnersIdsToDelete.Any())
                     {
-                        ID = request.ID,
-                        Name = request.Name,
-                        Breed = request.Breed,
-                        DateOfBirth = request.DateOfBirth,
-                    };
+                        deletedCount = await dbOwner.UserDogs.DeleteManyByUserIds(conn, tr, request.ID, request.OwnersIdsToDelete);
+                    }
 
+                    if (request.OwnersIdsToInsert.Any())
+                    {
+                        var userDogs = request.OwnersIdsToInsert.Select(userId => new UserDog
+                        {
+                            DogID = request.ID,
+                            UserID = userId,
+                        }).ToList();
 
-                    return dbOwner.Dogs.Update(conn, entity);
+                        insertedCount = (await dbOwner.UserDogs.AddMany(conn, tr, userDogs)).Count();
+                    }
 
+                    if (
+                        request.OwnersIdsToDelete.Count() != deletedCount ||
+                        request.OwnersIdsToInsert.Count() != insertedCount
+                    )
+                    {
+                        throw new Exception();
+                    }
+
+                    tr.Commit();
+
+                    return updatedCount;
                 });
 
                 if (request.Image != null)
@@ -184,12 +247,46 @@ namespace K9OCRS.Controllers
                     });
                 }
 
+                if (request.VaccinationRecord != null)
+                {
+                    await UploadRecord(request.ID, new FileUpload
+                    {
+                        Files = new List<IFormFile> { request.VaccinationRecord },
+                    });
+                }
+
                 return Ok(result);
             }
             catch (Exception e)
             {
+                if (e is KeyNotFoundException)
+                {
+                    return NotFound();
+                }
+
+                logger.Error(e, e.Message);
                 return StatusCode(500, e.Message);
             }
+        }
+
+        [HttpPost("archive/{id}")]
+        public async Task<IActionResult> ArchiveDog(int id)
+        {
+            var result = await connectionOwner.Use(conn => dbOwner.Dogs.Archive(conn, id));
+
+            if (result < 1) NotFound("Could not find the requested dog");
+
+            return Ok(result);
+        }
+
+        [HttpPost("unarchive/{id}")]
+        public async Task<IActionResult> UnarchiveDog(int id)
+        {
+            var result = await connectionOwner.Use(conn => dbOwner.Dogs.Unarchive(conn, id));
+
+            if (result < 1) NotFound("Could not find the requested dog");
+
+            return Ok(result);
         }
 
         //delete dog

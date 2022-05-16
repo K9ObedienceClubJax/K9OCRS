@@ -19,6 +19,11 @@ body {
     // padding: 2rem;
 }
 
+.rbt-token {
+    background-color: bootstrapOverrides.$gray-100;
+    color: bootstrapOverrides.$primary;
+}
+
 @mixin cardsurface {
     background-color: darken(bootstrapOverrides.$gray-100, 1);
     border: 1px solid rgba(bootstrapOverrides.$gray-900, 0.2);

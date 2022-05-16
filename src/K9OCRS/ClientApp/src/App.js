@@ -157,6 +157,22 @@ export default class App extends Component {
                         }
                     />
                     <Route
+                        path="/Manage/Dogs/Add"
+                        element={
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <DogSetup isManagement />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Manage/Dogs/:dogId"
+                        element={
+                            <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>
+                                <DogSetup isManagement />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
                         path="/Manage/Classes"
                         element={
                             <ProtectedRoute minimumAccess={USER_ROLES.Administrator}>

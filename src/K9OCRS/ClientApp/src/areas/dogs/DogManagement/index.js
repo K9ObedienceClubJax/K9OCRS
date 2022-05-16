@@ -1,6 +1,7 @@
-import React, {useState } from 'react';
+import React, { useState } from 'react';
 import PageHeader from '../../../shared/components/PageHeader';
-import { FormGroup, Input, Button, Label, Form, Row, Col} from 'reactstrap';
+import { FormGroup, Input, Button, Label, Form, Row, Col } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import PageBody from '../../../shared/components/PageBody';
 import DogTable from './DogTable';
 import './styles.scss';
@@ -19,36 +20,36 @@ const DogManagement = (props) => {
                 alerts={alerts}
                 setAlerts={setAlerts}
             >
-                <Button color="primary">Save Changes</Button>
+                <Button tag={Link} color="primary" to="/Manage/Dogs/Add">
+                    Add a Dog
+                </Button>
             </PageHeader>
             <PageBody>
-                <Form className='cardsurface'>
+                <Form className="cardsurface">
                     <Row>
-                        <Col xl='3'>
+                        <Col xl="3">
                             <FormGroup>
                                 <Label for="DogNameInput">Search</Label>
                                 <Input
                                     id="DogNameInput"
-                                    type='search'
-                                    placeholder="Search by name of breed"  
+                                    type="search"
+                                    placeholder="Search by name of breed"
                                 />
                             </FormGroup>
                         </Col>
-                        <Col xl='3'>
+                        <Col xl="3">
                             <FormGroup>
                                 <Label for="filterByOwner">Filter by Owners</Label>
                                 <Input
                                     id="filterByOwner"
-                                    type='search'
-                                    placeholder="Filter by owner..."  
+                                    type="search"
+                                    placeholder="Filter by owner..."
                                 />
                             </FormGroup>
                         </Col>
-                        <Col xl='4'>
+                        <Col xl="4">
                             <FormGroup>
-                                <p className='vaccinationStatusLabel'>
-                                    Vaccination Status
-                                </p>
+                                <p className="vaccinationStatusLabel">Vaccination Status</p>
                                 <div id="vaccinationStatusRadio">
                                     <input
                                         type="radio"
@@ -56,7 +57,6 @@ const DogManagement = (props) => {
                                         name="vaccinationStatus"
                                         value="0"
                                         id="option0"
-                                    
                                     />
                                     <label className="btn btn-outline-secondary" htmlFor="option0">
                                         All
@@ -96,7 +96,7 @@ const DogManagement = (props) => {
                         </Col>
                     </Row>
                 </Form>
-                <DogTable/>
+                <DogTable />
             </PageBody>
         </div>
     );
