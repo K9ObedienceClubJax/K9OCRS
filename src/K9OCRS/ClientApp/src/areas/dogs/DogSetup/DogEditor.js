@@ -41,7 +41,7 @@ const DogEditor = (props) => {
     const handleSelectedOwnersChanged = (owners) => {
         const postChangeOwnerIds = owners?.map((o) => o.id);
         const toDelete = dogDetails?.owners?.filter((o) => !postChangeOwnerIds?.includes(o.id));
-        const newlyAddedOwners = owners?.filter((o) => !existingOwnerIds.includes(o.id));
+        const newlyAddedOwners = owners?.filter((o) => !existingOwnerIds?.includes(o.id));
         setSelectedOwners(owners);
         setOwnersToInsert(newlyAddedOwners);
         setOwnersToDelete(toDelete);
@@ -100,7 +100,7 @@ const DogEditor = (props) => {
     const vaxStatusCn = ClassNames(`${cn}__vax-status`);
 
     const ownerRenderMenuItemChildren = (option, { text }, index) => {
-        const display = selectedOwnerIds.includes(option.id) ? 'none' : undefined;
+        const display = selectedOwnerIds?.includes(option.id) ? 'none' : undefined;
         return (
             <Fragment>
                 <Row key={index} style={{ display }}>
