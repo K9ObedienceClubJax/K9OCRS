@@ -268,7 +268,7 @@ namespace DataAccess.Repositories
         internal string GenerateTrackingSection()
         {
             var identity = new ModifierIdentity(_httpContextAccessor);
-            return $"ModifiedByID = {identity.ID}, ModifiedByName = '{identity.Name}', ModifiedDate=GETDATE()";
+            return $"ModifiedByID = {identity.ID}, ModifiedByName = '{identity.Name}', ModifiedDate=GETUTCDATE()";
         }
         #endregion
 
@@ -404,7 +404,7 @@ namespace DataAccess.Repositories
                 }
             });
 
-            updateQuery.Append($"ModifiedDate=GETDATE()");
+            updateQuery.Append(GenerateTrackingSection());
             //updateQuery.Remove(updateQuery.Length - 1, 1); //remove last comma
             updateQuery.Append(" WHERE ID=@ID");
 

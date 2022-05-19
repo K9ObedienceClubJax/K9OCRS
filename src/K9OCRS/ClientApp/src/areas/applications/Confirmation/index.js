@@ -26,6 +26,7 @@ import ProfileBadge from '../../../shared/components/ProfileBadge';
 import PageBody from '../../../shared/components/PageBody';
 import MeetingsList from 'src/shared/components/MeetingsList';
 import { formatDogAge } from 'src/util/dates';
+import INTEGRATION_PAYMENT_METHODS from 'src/util/paymentMethods';
 
 const Confirm = (props) => {
     const { sectionId } = useParams();
@@ -342,8 +343,7 @@ const Confirm = (props) => {
                                     })}
                                 </Input>
                             </FormGroup>
-                            {/* PayPal's id is 1 */}
-                            {selectedPaymentMethod?.id === 1 && (
+                            {selectedPaymentMethod?.id === INTEGRATION_PAYMENT_METHODS.PAYPAL && (
                                 <PayPalButtons
                                     disabled={!filledOut}
                                     createOrder={(data, actions) => {
@@ -370,7 +370,9 @@ const Confirm = (props) => {
                                     </b>
                                 </p>
                             )}
-                            {selectedPaymentMethod?.id !== 1 && (
+                            {!Object.values(INTEGRATION_PAYMENT_METHODS).includes(
+                                selectedPaymentMethod?.id
+                            ) && (
                                 <Button
                                     color="primary"
                                     size="lg"

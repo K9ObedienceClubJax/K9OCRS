@@ -48,7 +48,7 @@ namespace K9OCRS.Utils.Extensions
 
         public static ClassSectionExport ToClassSectionExport(this ClassSection type) => new ClassSectionExport(type);
 
-        public static UserResult ToClassTypeResult(this User type, string storageBasePath) =>
+        public static UserResult ToUserResult(this User type, string storageBasePath) =>
             new UserResult(type, storageBasePath);
 
         public static DogResult ToDogResult(this Dog dog, string storageBasePath) =>

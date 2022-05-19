@@ -18,15 +18,7 @@ const MyDogs = (props) => {
 
     return (
         <div>
-            <PageHeader
-                title="My Dogs"
-                breadCrumbItems={[
-                    { label: 'My Account', path: '/Account' },
-                    { label: 'My Dogs', active: true },
-                ]}
-                alerts={alerts}
-                setAlerts={setAlerts}
-            >
+            <PageHeader title="My Dogs" alerts={alerts} setAlerts={setAlerts}>
                 <Button tag={Link} to="/Account/MyDogs/Add" color="primary">
                     Add a Dog
                 </Button>

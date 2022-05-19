@@ -7,7 +7,7 @@
     [ReviewedDate] DATE         NULL,
     [ModifiedByID] INT NULL,
     [ModifiedByName] VARCHAR(128) NULL,
-    [ModifiedDate] DATETIME NOT NULL DEFAULT GETDATE(),
+    [ModifiedDate] DATETIME NOT NULL DEFAULT GETUTCDATE(),
     CONSTRAINT [PK_VaccinationRecords] PRIMARY KEY CLUSTERED ([DogID] ASC),
     CONSTRAINT [FK_VaccinationRecords_Dogs] FOREIGN KEY ([DogID]) REFERENCES [dbo].[Dogs] ([ID]) ON DELETE CASCADE
 );

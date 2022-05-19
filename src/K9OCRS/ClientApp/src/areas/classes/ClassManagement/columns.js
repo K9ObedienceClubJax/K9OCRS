@@ -48,7 +48,7 @@ const statusTemplate = ({ value }) => <Badge color={statusColors[value]}>{value}
 const columns = [
     {
         Header: 'Class Type',
-        accessor: (row) => !row.title ? null : ({ id: row.id, title: row.title }),
+        accessor: (row) => (!row.title ? null : { id: row.id, title: row.title }),
         Cell: classTypeTemplate,
     },
     {
@@ -87,7 +87,7 @@ const columns = [
             if (!row.startTime || !row.endTime) return null;
             return {
                 startTime: row.startTime,
-                endTime: row.endTime
+                endTime: row.endTime,
             };
         },
         Cell: alignmentWrapper('center', timeTemplate),

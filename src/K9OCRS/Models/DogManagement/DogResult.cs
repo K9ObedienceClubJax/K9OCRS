@@ -1,11 +1,13 @@
 ﻿using DataAccess.Constants;
 using DataAccess.Entities;
+using System.Collections.Generic;
 
 namespace K9OCRS.Models.DogManagement
 {
     public class DogResult : Dog
     {
         public string ProfilePictureUrl { get; set; }
+        public List<UserResult> Owners { get; set; }
 
         public DogResult() { }
         public DogResult(Dog entity): base(entity) { }

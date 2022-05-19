@@ -277,6 +277,22 @@ function* saveSectionChanges({ payload }) {
     }
 }
 
+function* deleteSection({ payload: { classSectionId, setAlerts, navigate } }) {
+    log(`Deleting section with id: ${classSectionId}`);
+    try {
+        const res = yield call(classSectionsClient.deleteSection, classSectionId);
+        log(`Deleted section with id: ${classSectionId}`, res?.data);
+        navigate('/Manage/Classes');
+    } catch (err) {
+        setAlerts([
+            {
+                color: 'danger',
+                message: 'An issue ocurred while trying to delete the section.',
+            },
+        ]);
+    }
+}
+
 //#endregion
 
 const sagas = [
@@ -296,6 +312,7 @@ const sagas = [
     takeEvery(actions.fetchSectionDetails, fetchSectionDetails),
     takeEvery(actions.initializeSectionAddition, initializeSectionAddition),
     takeLatest(actions.saveSectionChanges, saveSectionChanges),
+    takeLatest(actions.deleteSection, deleteSection),
 ];
 
 export default sagas;

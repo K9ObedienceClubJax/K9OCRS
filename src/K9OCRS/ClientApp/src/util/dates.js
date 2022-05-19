@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 
+export const CLUB_TIME_ZONE = 'America/New_York';
 export const SERVER_DATETIME_FORMAT = 'YYYY-MM-DD[T]HH:mm:ss';
 
 // transform the dotnet timespan from our backend into a useful moment object
@@ -14,12 +15,12 @@ export const formatDogAge = (birthDate) => {
     const monthsModulo = months % 12;
     const hasMonths = monthsModulo !== 0;
 
-    const monthsString = `${monthsModulo} month${months > 1 ? 's' : ''}`;
+    const monthsString = `${monthsModulo} month${monthsModulo >= 2 ? 's' : ''}`;
 
     if (months < 12) {
         return monthsString;
     } else {
-        const yearsString = `${years} year${years > 1 ? 's' : ''} `;
+        const yearsString = `${years} year${years >= 2 ? 's' : ''} `;
         return `${yearsString}${hasMonths ? monthsString : ''}`;
     }
 };

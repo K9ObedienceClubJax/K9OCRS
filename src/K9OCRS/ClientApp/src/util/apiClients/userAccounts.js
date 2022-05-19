@@ -27,6 +27,7 @@ export const getUser = async (id) =>
         .then((response) => response.data);
 
 export const getInstructorOptions = async () => axios.get(`${base}/options`);
+export const getDogOwnerOptions = async () => axios.get(`${base}/dogOwnerOptions`);
 
 export const placeholderImage = async () =>
     axios.get(`${base}/placeholderImageUrl`).then((response) => response.data);

@@ -9,7 +9,7 @@
 	[isSystemOwned] BIT NOT NULL DEFAULT 0,
 	[ModifiedByID] INT NULL,
     [ModifiedByName] VARCHAR(128) NULL,
-    [ModifiedDate] DATETIME NOT NULL DEFAULT GETDATE(),
+    [ModifiedDate] DATETIME NOT NULL DEFAULT GETUTCDATE(),
 	CONSTRAINT [PK_PaymentMethods] PRIMARY KEY CLUSTERED ([ID] ASC),
     CONSTRAINT [UQ_PaymentMethods_Name] UNIQUE NONCLUSTERED ([Name] ASC),
 	CONSTRAINT [CHK_PaymentMethods_Name] CHECK (LEN([Name]) >= 2)

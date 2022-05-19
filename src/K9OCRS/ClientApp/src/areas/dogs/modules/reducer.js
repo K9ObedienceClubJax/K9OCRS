@@ -3,14 +3,33 @@ import * as actions from './actions';
 
 const INITIAL_STATE = {
     loading: false,
+    loadingOptions: false,
     submitting: false,
     dogList: [],
     myDogsList: [],
     dogDetails: {},
+    ownerOptions: [],
 };
 
 export default handleActions(
     {
+        [actions.savingChanges]: (state) => ({
+            ...state,
+            submitting: true,
+        }),
+        [actions.savedChanges]: (state) => ({
+            ...state,
+            submitting: false,
+        }),
+        [actions.loadOptions]: (state) => ({
+            ...state,
+            loadingOptions: true,
+        }),
+        [actions.loadedOptions]: (state, { payload }) => ({
+            ...state,
+            loadingOptions: false,
+            ownerOptions: payload,
+        }),
         [actions.fetchingMyDogsList]: (state) => ({
             ...state,
             loading: true,

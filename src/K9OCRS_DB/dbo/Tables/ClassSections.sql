@@ -7,7 +7,7 @@
     [isDraft] BIT NOT NULL DEFAULT 0, 
     [ModifiedByID] INT NULL,
     [ModifiedByName] VARCHAR(128) NULL,
-    [ModifiedDate] DATETIME NOT NULL DEFAULT GETDATE(),
+    [ModifiedDate] DATETIME NOT NULL DEFAULT GETUTCDATE(),
     CONSTRAINT [PK_ClassSections] PRIMARY KEY CLUSTERED ([ID] ASC),
     CONSTRAINT [FK_ClassSections_ClassTypes] FOREIGN KEY ([ClassTypeID]) REFERENCES [dbo].[ClassTypes] ([ID]) ON DELETE SET DEFAULT,
     CONSTRAINT [FK_ClassSections_Users] FOREIGN KEY ([InstructorID]) REFERENCES [dbo].[Users] ([ID]) ON DELETE SET DEFAULT
