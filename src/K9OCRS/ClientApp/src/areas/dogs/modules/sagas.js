@@ -16,6 +16,7 @@ function* initializeDogAddition({ payload }) {
                 breed: '',
                 dateOfBirth: '',
                 profilePictureUrl: res?.data,
+                owners: [],
             })
         );
     } catch (error) {
