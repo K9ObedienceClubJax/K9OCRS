@@ -37,7 +37,7 @@ function* fetchMyDogsList({ payload }) {
     }
 }
 
-function* fetchDogList({ payload }) {
+function* fetchDogList({ payload: { setAlerts } }) {
     try {
         log('Fetching dogs list');
         yield put(actions.fetchingDogList());
@@ -48,6 +48,12 @@ function* fetchDogList({ payload }) {
         yield put(actions.fetchedDogList(result?.data));
     } catch (err) {
         log('An error ocurred while fetching a list of dogs', err);
+        setAlerts([
+            {
+                color: 'danger',
+                message: "We're having issues retrieving the list of dogs.",
+            },
+        ]);
     }
 }
 

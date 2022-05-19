@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Avatar from '../Avatar';
 
 import './styles.scss';
@@ -9,7 +9,6 @@ import './styles.scss';
 const ProfileBadge = (props) => {
     const { className, id, imageUrl, fullName, firstName, lastName, link, isDog } = props;
 
-    const navigate = useNavigate();
     const userSetupPath = `/Manage/Users/${id}`;
     const dogsSetupPath = `/Manage/Dogs/${id}`;
 
@@ -25,14 +24,24 @@ const ProfileBadge = (props) => {
         className
     );
 
-    return (
-        <div className={topCn} onClick={link ? () => navigate(linkPath) : undefined}>
+    const content = (
+        <>
             <Avatar imageUrl={imageUrl} />
             <span className={`${cn}__name`}>
                 {fullName ? fullName : `${firstName} ${lastName}`}
             </span>
-        </div>
+        </>
     );
+
+    if (link) {
+        return (
+            <Link className={topCn} to={linkPath}>
+                {content}
+            </Link>
+        );
+    }
+
+    return <div className={topCn}>{content}</div>;
 };
 
 ProfileBadge.defaultProps = {

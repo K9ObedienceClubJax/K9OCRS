@@ -15,12 +15,12 @@ export const formatDogAge = (birthDate) => {
     const monthsModulo = months % 12;
     const hasMonths = monthsModulo !== 0;
 
-    const monthsString = `${monthsModulo} month${months > 1 ? 's' : ''}`;
+    const monthsString = `${monthsModulo} month${monthsModulo >= 2 ? 's' : ''}`;
 
     if (months < 12) {
         return monthsString;
     } else {
-        const yearsString = `${years} year${years > 1 ? 's' : ''} `;
+        const yearsString = `${years} year${years >= 2 ? 's' : ''} `;
         return `${yearsString}${hasMonths ? monthsString : ''}`;
     }
 };
