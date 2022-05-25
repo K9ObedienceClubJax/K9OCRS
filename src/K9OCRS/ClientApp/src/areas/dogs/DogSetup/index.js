@@ -117,12 +117,14 @@ const DogSetup = (props) => {
 
     const cancelUrl = isManagement ? '/Manage/Dogs' : '/Account/MyDogs';
 
+    const dogName = loading
+        ? 'Loading...'
+        : `${dogDetails?.name} ${isManagement ? dogDetails?.lastName : ''}`;
+
     return (
         <div className={cn}>
             <PageHeader
-                title={
-                    !addingNewDog ? `Dog Setup: ${dogDetails?.name ?? 'Loading...'}` : 'Dog Setup'
-                }
+                title={!addingNewDog ? `Dog Setup: ${dogName}` : 'Dog Setup'}
                 breadCrumbItems={breadCrumbItems}
                 alerts={alerts}
                 setAlerts={setAlerts}

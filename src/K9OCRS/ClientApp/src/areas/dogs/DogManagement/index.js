@@ -42,7 +42,8 @@ const DogManagement = (props) => {
         if (searchQuery) {
             setVisibleDogs(
                 dogList?.filter((d) => {
-                    const nameMatch = d.name.toLowerCase().includes(searchQuery.toLowerCase());
+                    const fullName = `${d.name.toLowerCase()} ${d.lastName.toLowerCase()}`;
+                    const nameMatch = fullName.includes(searchQuery.toLowerCase());
                     const breedMatch = d.breed.toLowerCase().includes(searchQuery.toLowerCase());
                     return nameMatch || breedMatch;
                 })
