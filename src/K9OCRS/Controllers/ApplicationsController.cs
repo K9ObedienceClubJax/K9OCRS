@@ -1,4 +1,4 @@
-﻿using DataAccess;
+using DataAccess;
 using DataAccess.Clients.Contracts;
 using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
@@ -120,7 +120,7 @@ namespace K9OCRS.Controllers
 
                 var result = await connectionOwner.Use(async conn => {
                     if (await CheckIsSectionFull(conn, request.ClassSectionID)) throw new ConstraintException();
-                    return dbOwner.ClassApplications.Add(conn, entity);
+                    return await dbOwner.ClassApplications.Add(conn, entity);
                 });
 
                 return Ok(result);

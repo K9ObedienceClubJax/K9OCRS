@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment-timezone';
-import { Button } from 'reactstrap';
+import { Button, Tooltip } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { alignmentWrapper } from '../../../../util/columns';
 import ProfileBadge from '../../../../shared/components/ProfileBadge';
@@ -18,12 +18,19 @@ const timeTemplate = ({ value }) => {
     return `${startTime} - ${endTime}`;
 };
 
-const classSectionTemplate = ({ value }) => {
-    if (!value) return '';
-    return (
-        <Link to={`/Classes/Apply/${value}`}>
+const classSectionTemplate = ({ value: { id, isFull } }) => {
+    if (!id) return '';
+    return !isFull ? (
+        <Link to={`/Classes/Apply/${id}`}>
             <Button>Enroll</Button>
         </Link>
+    ) : (
+        <span id={`ACTION${id}`} title="The class section is full">
+            <Button style={{ pointerEvents: 'none' }} disabled>
+                Enroll
+            </Button>
+            <Tooltip target={`ACTION${id}`}>The class section is full</Tooltip>
+        </span>
     );
 };
 
@@ -67,7 +74,8 @@ const columns = [
     },
     {
         Header: '',
-        accessor: 'id',
+        id: 'action',
+        accessor: (row) => ({ id: row.id, isFull: row.rosterActual >= row.rosterCapacity }),
         Cell: alignmentWrapper('center', classSectionTemplate),
     },
 ];
