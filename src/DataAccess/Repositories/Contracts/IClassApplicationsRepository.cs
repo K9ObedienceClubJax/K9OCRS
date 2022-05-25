@@ -18,6 +18,7 @@ namespace DataAccess.Repositories.Contracts
             bool includeActive,
             bool includeCompleted,
             bool includeCancelled);
+        Task<IReadOnlyList<ClassApplication>> GetSectionRoster(IDbConnection conn, int sectionId);
         Task<int> ReassignWholeClassType(IDbConnection conn, IDbTransaction tr, int currentClassTypeId, int targetClassTypeId);
     }
 }

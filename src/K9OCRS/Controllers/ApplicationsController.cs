@@ -1,4 +1,4 @@
-﻿using DataAccess;
+using DataAccess;
 using DataAccess.Clients.Contracts;
 using DataAccess.Entities;
 using DataAccess.Modules.Contracts;
@@ -9,7 +9,9 @@ using K9OCRS.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -102,21 +104,32 @@ namespace K9OCRS.Controllers
         [ProducesResponseType(typeof(ClassApplication), 200)]
         public async Task<IActionResult> CreateApplication([FromBody] ApplicationAddRequest request)
         {
-            var entity = new ClassApplication
+            try
             {
-                ClassTypeID = request.ClassTypeID,
-                ClassSectionID = request.ClassSectionID,
-                DogID = request.DogID,
-                Status = request.Status,
-                MainAttendee = request.MainAttendee,
-                AdditionalAttendees = request.AdditionalAttendees,
-                PaymentMethodID = request.PaymentMethodID,
-                isPaid = request.isPaid,
-            };
+                var entity = new ClassApplication
+                {
+                    ClassTypeID = request.ClassTypeID,
+                    ClassSectionID = request.ClassSectionID,
+                    DogID = request.DogID,
+                    Status = request.Status,
+                    MainAttendee = request.MainAttendee,
+                    AdditionalAttendees = request.AdditionalAttendees,
+                    PaymentMethodID = request.PaymentMethodID,
+                    isPaid = request.isPaid,
+                };
 
-            var result = await connectionOwner.Use(conn => dbOwner.ClassApplications.Add(conn, entity));
+                var result = await connectionOwner.Use(async conn => {
+                    if (await CheckIsSectionFull(conn, request.ClassSectionID)) throw new ConstraintException();
+                    return await dbOwner.ClassApplications.Add(conn, entity);
+                });
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                if (ex is ConstraintException) return BadRequest("The class section is full");
+                throw;
+            }
         }
 
         // Update
@@ -140,5 +153,14 @@ namespace K9OCRS.Controllers
 
             return Ok(result);
         }
+
+        #region Utility Methods
+        private async Task<bool> CheckIsSectionFull(IDbConnection conn, int sectionId)
+        {
+            var section = await dbOwner.ClassSections.GetByID(conn, sectionId);
+
+            return section.RosterActual >= section.RosterCapacity;
+        } 
+        #endregion
     }
 }

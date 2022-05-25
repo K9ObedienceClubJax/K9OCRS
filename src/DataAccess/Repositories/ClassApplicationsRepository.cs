@@ -150,6 +150,54 @@ namespace DataAccess.Repositories
             return result.ToList();
         }
 
+        public async Task<IReadOnlyList<ClassApplication>> GetSectionRoster(IDbConnection conn, int sectionId)
+        {
+            var query = $@"
+                SELECT
+	                ca.ID,
+	                ca.ClassTypeID,
+	                ca.ClassSectionID,
+                    ca.DogID,
+	                ca.[Status],
+	                ca.MainAttendee,
+	                ca.AdditionalAttendees,
+	                ca.PaymentMethodID,
+                    pm.[Name] AS PaymentMethodName,
+	                ca.isPaid,
+	                ca.isRefunded,
+	                ca.ReviewedBy,
+	                ca.ReviewedDate,
+	                ca.ModifiedByID,
+	                ca.ModifiedByName,
+	                ca.ModifiedDate,
+	                -- Dog
+	                d.Breed,
+	                d.ID,
+	                d.[Name],
+	                d.DateOfBirth,
+	                d.ProfilePictureFilename,
+	                d.isArchived,
+	                d.ModifiedByID,
+	                d.ModifiedByName,
+	                d.ModifiedDate
+                FROM ClassApplications ca
+                JOIN Dogs d ON ca.DogID = d.ID
+                JOIN PaymentMethods pm ON ca.PaymentMethodID = pm.ID
+                WHERE ca.ClassSectionID = 4
+                AND ca.[Status] IN ('Active', 'Pending')
+            ";
+
+            var result = await conn.QueryAsync<ClassApplication, Dog, ClassApplication>(query,
+                (a, d) =>
+                {
+                    a.Dog = d;
+                    return a;
+                },
+                new { sectionId },
+                splitOn: "Breed");
+            return result.ToList();
+        }
+
         public async Task<int> ReassignWholeClassType(IDbConnection conn, IDbTransaction tr, int currentClassTypeId, int targetClassTypeId)
         {
             var query = @$"
