@@ -8,6 +8,7 @@ namespace DataAccess.Entities
         public VaccinationRecord() { }
         public VaccinationRecord(VaccinationRecord entity)
         {
+            ID = entity.ID;
             DogID = entity.DogID;
             Filename = entity.Filename;
             Approved = entity.Approved;
@@ -19,12 +20,14 @@ namespace DataAccess.Entities
             ModifiedDate = entity.ModifiedDate;
         }
 
-        [TransactionIgnore]
+        [UpdateIgnore]
+        public int ID { get; set; }
+        [UpdateIgnore]
         public int DogID { get; set; }
         public string Filename { get; set; }
         public bool Approved { get; set; }
-        public DateTime ExpireDate { get; set; }
+        public DateTime? ExpireDate { get; set; } = null;
         public int ReviewedBy { get; set; }
-        public DateTime ReviewedDate { get; set; }
+        public DateTime? ReviewedDate { get; set; } = null;
     }
 }

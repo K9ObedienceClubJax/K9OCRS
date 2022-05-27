@@ -10,12 +10,12 @@ namespace DataAccess.Constants
             { UploadType.ProfilePicture, "profilepictures" },
             { UploadType.DogProfilePicture, "dogprofilepictures" },
             { UploadType.VaccinationRecord, "vaccinationrecords" },
-            { UploadType.ClassPicture, "classpictures" }
+            { UploadType.ClassPicture, "classpictures" },
         };
 
         private static Dictionary<UploadType, string> parameterizedMappings = new Dictionary<UploadType, string>
         {
-            { UploadType.ClassPhoto, "{0}/photos" }
+            { UploadType.ClassPhoto, "{0}/photos" },
         };
 
         public static string Get(UploadType type) => mappings[type];

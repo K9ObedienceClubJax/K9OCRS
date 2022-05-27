@@ -97,12 +97,9 @@ namespace K9OCRS.Controllers
                     });
                 }
 
-                if (request.VaccinationRecord != null)
+                if (request.VaccinationRecordsToAdd != null && request.VaccinationRecordsToAdd.Count > 0)
                 {
-                    await UploadRecord(result.ID, new FileUpload
-                    {
-                        Files = new List<IFormFile> { request.VaccinationRecord },
-                    });
+                    await UploadRecords(result.ID, request.VaccinationRecordsToAdd);
                 }
 
                 return Ok(result);
@@ -247,12 +244,9 @@ namespace K9OCRS.Controllers
                     });
                 }
 
-                if (request.VaccinationRecord != null)
+                if (request.VaccinationRecordsToAdd != null && request.VaccinationRecordsToAdd.Count > 0)
                 {
-                    await UploadRecord(request.ID, new FileUpload
-                    {
-                        Files = new List<IFormFile> { request.VaccinationRecord },
-                    });
+                    await UploadRecords(request.ID, request.VaccinationRecordsToAdd);
                 }
 
                 return Ok(result);
@@ -362,23 +356,60 @@ namespace K9OCRS.Controllers
         #endregion
 
         #region Vaccines
-        [HttpPut("{dogId}/vaccine")]
-        public async Task<IActionResult> UploadRecord(int dogId, [FromForm] FileUpload upload)
+
+        private async Task<ActionResult> UploadRecords(int dogId, List<IFormFile> files)
         {
-            if (upload.Files != null && upload.Files.Count > 0)
+            var tasks = new List<Task>();
+
+            if (files != null && files.Count > 0)
             {
-                var data = await upload.Files[0].ToBinaryData();
+                for (int i = 0; i < files.Count; i++)
+                {
+                    var data = await files[i].ToBinaryData();
+                    var ext = Path.GetExtension(files[i].FileName);
+                    var contType = files[i].ContentType;
 
-                var filePath = String.Concat(dogId.ToString(), "/", dogId, Path.GetExtension(upload.Files[0].FileName));
-                var filename = Path.GetFileName(filePath);
+                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
+                        try
+                        {
+                            var vaccinationRecord = new VaccinationRecord
+                            {
+                                DogID = dogId,
+                                Filename = "creating",
+                            };
 
-                await storageClient.UploadFile(UploadType.VaccinationRecord, filePath, upload.Files[0].ContentType, data);
+                            var vaccinationRecordResult = await dbOwner.VaccinationRecords.Add(conn, tr, vaccinationRecord);
 
-                await connectionOwner.Use(conn => {
-                    return dbOwner.VaccinationRecords.VaccineUpload(conn, dogId, filename);
-                });
+                            var filePath = $"{dogId}/vrecord-{dogId}-{vaccinationRecordResult.ID}{ext}";
 
-                return Ok();
+                            var filename = Path.GetFileName(filePath);
+
+                            await storageClient.UploadFile(UploadType.VaccinationRecord, filePath, contType, data);
+
+                            vaccinationRecord.ID = vaccinationRecordResult.ID;
+                            vaccinationRecord.Filename = filename;
+
+                            await dbOwner.VaccinationRecords.Update(conn, tr, vaccinationRecord);
+
+                            tr.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            tr.Rollback();
+                            throw new Exception(ex.Message);
+                        }
+                    }));
+                }
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "An error ocurred while uploading dog Vaccination Records");
+                }
             }
 
             return BadRequest();
