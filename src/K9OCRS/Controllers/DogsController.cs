@@ -16,6 +16,7 @@ using K9OCRS.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using K9OCRS.Models;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 
 namespace K9OCRS.Controllers
 {
@@ -163,18 +164,23 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var (dog, owners) = await connectionOwner.Use(async conn =>
+                var (dog, owners, vaccinationRecords) = await connectionOwner.Use(async conn =>
                 {
                     var _dog = await dbOwner.Dogs.GetByID(conn, Id);
                     var _owners = await dbOwner.Users.GetDogOwners(conn, Id);
+                    var _vaccinationRecords = await dbOwner.VaccinationRecords.GetByID(conn, "DogID", Id);
 
-                    return (_dog, _owners);
+                    return (_dog, _owners, _vaccinationRecords);
                 });
 
                 var dogResult = dog.ToDogResult(serviceConstants.storageBasePath);
                 var ownerResults = owners.Select(o => o.ToUserResult(serviceConstants.storageBasePath)).ToList();
+                var vaccinationRecordResults = vaccinationRecords
+                    .Select(vr => vr.ToVaccinationRecordResult(serviceConstants.storageBasePath))
+                    .ToList();
 
                 dogResult.Owners = ownerResults;
+                dogResult.VaccinationRecords = vaccinationRecordResults;
 
                 //returns a dog
                 return Ok(dogResult);
@@ -247,6 +253,13 @@ namespace K9OCRS.Controllers
                 if (request.VaccinationRecordsToAdd != null && request.VaccinationRecordsToAdd.Count > 0)
                 {
                     await UploadRecords(request.ID, request.VaccinationRecordsToAdd);
+                }
+
+                if (request.VaccinationRecordsToRemove != null)
+                {
+                    var vRecordsToRemove = JsonSerializer.Deserialize<IEnumerable<VaccinationRecord>>(request.VaccinationRecordsToRemove);
+                    var fileNames = vRecordsToRemove.Select(vr => vr.Filename).ToList();
+                    await DeleteRecords(request.ID, fileNames);
                 }
 
                 return Ok(result);
@@ -355,7 +368,7 @@ namespace K9OCRS.Controllers
 
         #endregion
 
-        #region Vaccines
+        #region Vaccination Records
 
         private async Task<ActionResult> UploadRecords(int dogId, List<IFormFile> files)
         {
@@ -380,7 +393,7 @@ namespace K9OCRS.Controllers
 
                             var vaccinationRecordResult = await dbOwner.VaccinationRecords.Add(conn, tr, vaccinationRecord);
 
-                            var filePath = $"{dogId}/vrecord-{dogId}-{vaccinationRecordResult.ID}{ext}";
+                            var filePath = $"{dogId}/{vaccinationRecordResult.ID}-{dogId}-vrecord{ext}";
 
                             var filename = Path.GetFileName(filePath);
 
@@ -409,6 +422,46 @@ namespace K9OCRS.Controllers
                 catch (Exception e)
                 {
                     logger.Error(e, "An error ocurred while uploading dog Vaccination Records");
+                }
+            }
+
+            return BadRequest();
+        }
+
+        private async Task<ActionResult> DeleteRecords(int dogId, List<string> fileNames)
+        {
+            var tasks = new List<Task>();
+
+            if (fileNames != null && fileNames.Count > 0)
+            {
+                for (int i = 0; i < fileNames.Count; i++)
+                {
+                    var filePath = $"{dogId}/{fileNames[i]}";
+
+                    var vrecordId = Int32.Parse(fileNames[i].Substring(0, fileNames[i].IndexOf('-')));
+
+                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
+                        try
+                        {
+                            await dbOwner.VaccinationRecords.Delete(conn, tr, vrecordId);
+                            await storageClient.DeleteFile(UploadType.VaccinationRecord, filePath);
+                            tr.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            tr.Rollback();
+                        }
+                    }));
+                }
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "An error ocurred while deleting vaccination records");
                 }
             }
 

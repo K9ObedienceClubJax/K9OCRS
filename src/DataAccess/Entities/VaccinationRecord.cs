@@ -1,5 +1,6 @@
 ﻿using DataAccess.Extensions;
 using System;
+using System.Text.Json.Serialization;
 
 namespace DataAccess.Entities
 {
@@ -21,9 +22,12 @@ namespace DataAccess.Entities
         }
 
         [UpdateIgnore]
+        [JsonPropertyName("id")]
         public int ID { get; set; }
         [UpdateIgnore]
+        [JsonPropertyName("dogID")]
         public int DogID { get; set; }
+        [JsonPropertyName("filename")]
         public string Filename { get; set; }
         public bool Approved { get; set; }
         public DateTime? ExpireDate { get; set; } = null;

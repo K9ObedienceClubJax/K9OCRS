@@ -16,6 +16,7 @@ namespace DataAccess.Constants
         private static Dictionary<UploadType, string> parameterizedMappings = new Dictionary<UploadType, string>
         {
             { UploadType.ClassPhoto, "{0}/photos" },
+            { UploadType.VaccinationRecord, "vaccinationrecords/{0}" }
         };
 
         public static string Get(UploadType type) => mappings[type];
