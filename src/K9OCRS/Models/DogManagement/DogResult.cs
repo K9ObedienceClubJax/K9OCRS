@@ -8,6 +8,7 @@ namespace K9OCRS.Models.DogManagement
     {
         public string ProfilePictureUrl { get; set; }
         public List<UserResult> Owners { get; set; }
+        public List<VaccinationRecordResult> VaccinationRecords { get; set; }
 
         public DogResult() { }
         public DogResult(Dog entity): base(entity) { }

@@ -54,6 +54,9 @@ namespace K9OCRS.Utils.Extensions
         public static DogResult ToDogResult(this Dog dog, string storageBasePath) =>
             new DogResult(dog, storageBasePath);
 
+        public static VaccinationRecordResult ToVaccinationRecordResult(this VaccinationRecord vr, string storageBasePath) =>
+            new VaccinationRecordResult(vr, storageBasePath);
+
         #endregion
     }
 }
