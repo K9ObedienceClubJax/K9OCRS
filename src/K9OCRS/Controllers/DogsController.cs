@@ -65,8 +65,7 @@ namespace K9OCRS.Controllers
                     DateOfBirth = request.DateOfBirth,
                 };
 
-                var result = await connectionOwner.UseTransaction(async (conn, tr) =>
-                {
+                var result = await connectionOwner.UseTransaction(async (conn, tr) => {
                     var dog = await dbOwner.Dogs.Add(conn, tr, entity);
 
                     if (request.OwnersIdsToInsert.Any())
@@ -85,7 +84,7 @@ namespace K9OCRS.Controllers
                         // Assign dog to the user that created it
                         await dbOwner.UserDogs.AssignDogToCurrentUser(conn, tr, dog.ID);
                     }
-                    
+
                     tr.Commit();
                     return dog;
                 });
@@ -118,8 +117,7 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var dogs = await connectionOwner.Use(conn =>
-                {
+                var dogs = await connectionOwner.Use(conn => {
                     return dbOwner.Dogs.GetAll(conn);
                 });
 
@@ -128,7 +126,7 @@ namespace K9OCRS.Controllers
                 //returns list of dogs
                 return Ok(dogResults);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -141,8 +139,7 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var dogs = await connectionOwner.Use(conn =>
-                {
+                var dogs = await connectionOwner.Use(conn => {
                     return dbOwner.Dogs.GetOwnedDogs(conn);
                 });
 
@@ -164,8 +161,7 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var (dog, owners, vaccinationRecords) = await connectionOwner.Use(async conn =>
-                {
+                var (dog, owners, vaccinationRecords) = await connectionOwner.Use(async conn => {
                     var _dog = await dbOwner.Dogs.GetByID(conn, Id);
                     var _owners = await dbOwner.Users.GetDogOwners(conn, Id);
                     var _vaccinationRecords = await dbOwner.VaccinationRecords.GetByID(conn, "DogID", Id);
@@ -198,8 +194,7 @@ namespace K9OCRS.Controllers
             try
             {
                 var existingDog = await connectionOwner.Use(conn => dbOwner.Dogs.GetByID(conn, request.ID));
-                var result = await connectionOwner.UseTransaction(async (conn, tr) =>
-                {
+                var result = await connectionOwner.UseTransaction(async (conn, tr) => {
                     var entity = new Dog(existingDog);
 
                     entity.Name = request.Name;
@@ -302,14 +297,13 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var result = await connectionOwner.Use(conn =>
-                {
+                var result = await connectionOwner.Use(conn => {
                     return dbOwner.Dogs.Delete(conn, id);
                 });
 
                 return Ok(result);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -329,7 +323,7 @@ namespace K9OCRS.Controllers
         [HttpPut("{dogId}/image")]
         public async Task<IActionResult> UpdateImage(int dogId, [FromForm] FileUpload upload)
         {
-            if(upload.Files != null && upload.Files.Count > 0)
+            if (upload.Files != null && upload.Files.Count > 0)
             {
                 var data = await upload.Files[0].ToBinaryData();
 
@@ -338,8 +332,7 @@ namespace K9OCRS.Controllers
 
                 await storageClient.UploadFile(UploadType.DogProfilePicture, filePath, upload.Files[0].ContentType, data);
 
-                await connectionOwner.Use(conn =>
-                {
+                await connectionOwner.Use(conn => {
                     return dbOwner.Dogs.UpdateImage(conn, dogId, filename);
                 });
 
@@ -369,6 +362,23 @@ namespace K9OCRS.Controllers
         #endregion
 
         #region Vaccination Records
+
+        [HttpPut("reviewRecord")]
+        public async Task<ActionResult> ReviewRecord(VaccinationRecordReview review)
+        {
+            try
+            {
+                var result = await connectionOwner.Use(conn => {
+                    return dbOwner.VaccinationRecords.ReviewRecord(conn, review.ID, review.Approved, review.ExpireDate);
+                });
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
 
         private async Task<ActionResult> UploadRecords(int dogId, List<IFormFile> files)
         {
