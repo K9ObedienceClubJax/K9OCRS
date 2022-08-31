@@ -129,7 +129,8 @@ export const dogUpdateRequestToFormData = ({
     breed,
     dateOfBirth,
     image,
-    vaccinationRecord,
+    vaccinationRecordsToAdd,
+    vaccinationRecordsToRemove,
     ownersIdsToInsert,
     ownersIdsToDelete,
 }) => {
@@ -144,8 +145,14 @@ export const dogUpdateRequestToFormData = ({
         formData.append('image', image, image.name);
     }
 
-    if (vaccinationRecord) {
-        formData.append('vaccinationRecord', vaccinationRecord, vaccinationRecord.name);
+    if (vaccinationRecordsToAdd) {
+        for (let i = 0; i < vaccinationRecordsToAdd.length; i++) {
+            formData.append('vaccinationRecordsToAdd', vaccinationRecordsToAdd[i], vaccinationRecordsToAdd[i].name);
+        }
+    }
+
+    if (vaccinationRecordsToRemove) {
+        formData.append('vaccinationRecordsToRemove', JSON.stringify(vaccinationRecordsToRemove));
     }
 
     if (ownersIdsToInsert && ownersIdsToInsert.length > 0) {

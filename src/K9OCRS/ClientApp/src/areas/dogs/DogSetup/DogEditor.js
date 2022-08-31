@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, Fragment } from 'react';
 import moment from 'moment-timezone';
-import ClassNames from 'classnames';
 import { Row, Col, FormGroup, Label, Input, Badge, FormText } from 'reactstrap';
 import { Typeahead, Token } from 'react-bootstrap-typeahead';
 import FileDropzone from '../../../shared/components/FileDropzone';
+import FileThumbnail from '../../../shared/components/FileThumbnail';
 import ProfileBadge from 'src/shared/components/ProfileBadge';
 import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
 import { BsFileEarmarkText } from 'react-icons/bs';
@@ -30,11 +30,13 @@ const DogEditor = (props) => {
     const [name, setName] = useState('');
     const [breed, setBreed] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
-    const [vaccinationRecord, setVaccinationRecord] = useState(null);
     const [selectedOwners, setSelectedOwners] = useState([]);
     const [existingOwnerIds, setExistingOwnerIds] = useState([]);
     const [ownersToInsert, setOwnersToInsert] = useState([]);
     const [ownersToDelete, setOwnersToDelete] = useState([]);
+    const [vaccinationRecords, setVaccinationRecords] = useState([]);
+    const [vaccinationRecordsToAdd, setVaccinationRecordsToAdd] = useState([]);
+    const [vaccinationRecordsToRemove, setVaccinationRecordsToRemove] = useState([]);
     const selectedOwnerIds = selectedOwners?.map((o) => o.id);
     const emptyOwnersField = selectedOwnerIds?.length < 1;
 
@@ -52,7 +54,8 @@ const DogEditor = (props) => {
     // make reference data types to strings so useEffect can tell when to update
     const dogString = JSON.stringify(dogDetails);
     const profilePictureString = JSON.stringify(profilePicture);
-    const vaccinationRecordString = JSON.stringify(vaccinationRecord);
+    const vaccinationRecordsToAddString = JSON.stringify(vaccinationRecordsToAdd);
+    const vaccinationRecordsToRemoveString = JSON.stringify(vaccinationRecordsToRemove);
     const selectedOwnersString = JSON.stringify(selectedOwners);
 
     // Populate fields if we get data
@@ -67,6 +70,7 @@ const DogEditor = (props) => {
             );
             setSelectedOwners(dogDetails?.owners);
             setExistingOwnerIds(dogDetails?.owners?.map((o) => o.id));
+            setVaccinationRecords(dogDetails?.vaccinationRecords);
         }
 
         return () => {
@@ -81,7 +85,8 @@ const DogEditor = (props) => {
             breed,
             dateOfBirth: dateOfBirth ? formatToServerDateTime(dateOfBirth) : '',
             image: profilePicture,
-            vaccinationRecord,
+            vaccinationRecordsToAdd,
+            vaccinationRecordsToRemove,
             ownersIdsToInsert: ownersToInsert?.map((o) => o.id),
             ownersIdsToDelete: ownersToDelete?.map((o) => o.id),
             selectedOwnerIds,
@@ -93,11 +98,15 @@ const DogEditor = (props) => {
         breed,
         dateOfBirth,
         profilePictureString,
-        vaccinationRecordString,
+        vaccinationRecordsToAddString,
+        vaccinationRecordsToRemoveString,
         selectedOwnersString,
     ]);
 
-    const vaxStatusCn = ClassNames(`${cn}__vax-status`);
+    const handleRemove = (vaccinationRecord, idx) => {
+        setVaccinationRecords((currentVaccinationRecords) => currentVaccinationRecords.filter((p, i) => i !== idx));
+        setVaccinationRecordsToRemove(vaccinationRecordsToRemove.concat(vaccinationRecord));
+    };
 
     const ownerRenderMenuItemChildren = (option, { text }, index) => {
         const display = selectedOwnerIds?.includes(option.id) ? 'none' : undefined;
@@ -234,19 +243,26 @@ const DogEditor = (props) => {
                             <h3 className="d-flex align-items-center">
                                 <BsFileEarmarkText size={42} />
                                 <span>
-                                    Vaccination Record -{' '}
-                                    <span className={vaxStatusCn}>Approved</span>
+                                    Vaccination Records
                                 </span>
                             </h3>
                         </div>
                         <FileDropzone
-                            maxSize="5MB"
-                            maxFiles={1}
-                            accept="application/pdf, image/jpeg,image/png,image/bmp"
-                            acceptText="pdf, jpg, png, bmp"
-                            onChange={(files) => setVaccinationRecord(files[0])}
+                            maxSize="10MB"
+                            maxFiles={10}
+                            accept="image/*, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            acceptText="any image, .pdf, .doc, .docx"
+                            onChange={(files) => setVaccinationRecordsToAdd(files)}
                             bordered
                         />
+                        {vaccinationRecords?.map((vr, idx) => (
+                            <FileThumbnail
+                                key={vr.id}
+                                src={vr.fileUrl}
+                                handleRemove={() => handleRemove(vr, idx)}
+                                removable
+                            />
+                        ))}
                     </div>
                 </Col>
             </Row>
