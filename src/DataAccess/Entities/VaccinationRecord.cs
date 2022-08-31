@@ -12,10 +12,7 @@ namespace DataAccess.Entities
             ID = entity.ID;
             DogID = entity.DogID;
             Filename = entity.Filename;
-            Approved = entity.Approved;
             ExpireDate = entity.ExpireDate;
-            ReviewedBy = entity.ReviewedBy;
-            ReviewedDate = entity.ReviewedDate;
             ModifiedByID = entity.ModifiedByID;
             ModifiedByName = entity.ModifiedByName;
             ModifiedDate = entity.ModifiedDate;
@@ -29,9 +26,6 @@ namespace DataAccess.Entities
         public int DogID { get; set; }
         [JsonPropertyName("filename")]
         public string Filename { get; set; }
-        public bool Approved { get; set; }
         public DateTime? ExpireDate { get; set; } = null;
-        public int ReviewedBy { get; set; }
-        public DateTime? ReviewedDate { get; set; } = null;
     }
 }
