@@ -44,6 +44,27 @@
         }
     }
 
+    &__approval {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1.65rem;
+        height: 1.65rem;
+        padding: 0.1rem;
+        z-index: 999;
+        color: app.$gray-900;
+        background-color: app.$info;
+        border-radius: 50%;
+
+        &.--approved {
+            background-color: app.$success;
+        }
+
+        &.--denied {
+            background-color: app.$warning;
+        }
+    }
+
     &__name {
         position: absolute;
         bottom: 0;

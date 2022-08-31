@@ -7,7 +7,10 @@ import FileDropzone from '../../../shared/components/FileDropzone';
 import FileThumbnail from '../../../shared/components/FileThumbnail';
 import ProfileBadge from 'src/shared/components/ProfileBadge';
 import ProfileFileDropzone from '../../../shared/components/FileDropzone/Profile';
-import { BsFileEarmarkText } from 'react-icons/bs';
+import {
+    BsFileEarmarkText,
+    BsCircleFill,
+} from 'react-icons/bs';
 import { formatDogAge, formatToServerDateTime } from 'src/util/dates';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
 
@@ -247,6 +250,11 @@ const DogEditor = (props) => {
                                 </span>
                             </h3>
                         </div>
+                        <p>
+                            Upload your dog's vaccination records. The icon to the left of your uploaded records means the following: <br/>
+                            <BsCircleFill className='text-info' /> pending review, <BsCircleFill className='text-success' /> approved,&nbsp;
+                            <BsCircleFill className='text-warning' /> expired
+                        </p>
                         <FileDropzone
                             maxSize="10MB"
                             maxFiles={10}
@@ -259,8 +267,10 @@ const DogEditor = (props) => {
                             <FileThumbnail
                                 key={vr.id}
                                 src={vr.fileUrl}
+                                data={vr}
                                 handleRemove={() => handleRemove(vr, idx)}
                                 removable
+                                showApprovalStatus
                             />
                         ))}
                     </div>
