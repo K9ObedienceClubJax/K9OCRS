@@ -13,6 +13,7 @@ import {
 } from 'react-icons/bs';
 import { formatDogAge, formatToServerDateTime } from 'src/util/dates';
 import LastUpdatedNote from 'src/shared/components/LastUpdatedNote';
+import RecordOptionsModal from './RecordOptionsModal';
 
 const DogEditor = (props) => {
     const {
@@ -24,6 +25,8 @@ const DogEditor = (props) => {
         setData,
         formRef,
         userIsAdmin,
+        reviewRecord,
+        setAlerts,
     } = props;
 
     const disableInputs = loading || submitting;
@@ -40,6 +43,8 @@ const DogEditor = (props) => {
     const [vaccinationRecords, setVaccinationRecords] = useState([]);
     const [vaccinationRecordsToAdd, setVaccinationRecordsToAdd] = useState([]);
     const [vaccinationRecordsToRemove, setVaccinationRecordsToRemove] = useState([]);
+    const [inspectedVaccinationRecord, setInspectedVaccinationRecord] = useState({});
+    const [modalOpen, setModalOpen] = useState(false);
     const selectedOwnerIds = selectedOwners?.map((o) => o.id);
     const emptyOwnersField = selectedOwnerIds?.length < 1;
 
@@ -152,6 +157,20 @@ const DogEditor = (props) => {
         loadingOptions
             ? 'Loading...'
             : `${option.firstName} ${option.lastName} ${option.isArchived ? '- [Archived]' : ''}`;
+
+    const handleInspectRecord = (data) => {
+        setInspectedVaccinationRecord(data);
+        setModalOpen(true);
+    };
+
+    const handleSubmitRecordReview = (data) => {
+        const preparedData = {
+            ...data,
+            expireDate: formatToServerDateTime(data?.expireDate),
+        };
+
+        reviewRecord({ data: preparedData, setAlerts });
+    };
 
     return (
         <div>
@@ -270,7 +289,7 @@ const DogEditor = (props) => {
                                 src={vr.fileUrl}
                                 data={vr}
                                 handleRemove={() => handleRemove(vr, idx)}
-                                handleClick={(data) => console.log(data)}
+                                handleClick={handleInspectRecord}
                                 removable
                                 showApprovalStatus
                             />
@@ -278,6 +297,13 @@ const DogEditor = (props) => {
                     </div>
                 </Col>
             </Row>
+            <RecordOptionsModal
+                data={inspectedVaccinationRecord}
+                handleClose={() => setModalOpen(false)}
+                allowReview={userIsAdmin}
+                handleSubmitRecordReview={handleSubmitRecordReview}
+                open={modalOpen}
+            />
         </div>
     );
 };
