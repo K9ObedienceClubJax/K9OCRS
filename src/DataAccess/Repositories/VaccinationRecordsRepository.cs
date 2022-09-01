@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using DataAccess.Entities;
+using DataAccess.Modules;
 using DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -17,6 +19,22 @@ namespace DataAccess.Repositories
         {
             var query = $"UPDATE {_tableName} SET Filename=@Filename WHERE DogID=@DogID";
             return await conn.ExecuteAsync(query, new { DogID = dogId, Filename = vaccinefile });
+        }
+
+        public async Task<int> ReviewRecord(IDbConnection conn, int recordId, bool approved, DateTime expirationDate)
+        {
+            var identity = new ModifierIdentity(_httpContextAccessor);
+            var expireDateString = approved ? "@expirationDate" : "GETUTCDATE()";
+
+            var query = $@"
+                UPDATE {_tableName}
+                SET
+                    ExpireDate={expireDateString},
+                    {GenerateTrackingSection()}
+                WHERE ID=@recordId
+            ";
+
+            return await conn.ExecuteAsync(query, new { recordId, expirationDate, Name = identity.Name });
         }
     }
 }

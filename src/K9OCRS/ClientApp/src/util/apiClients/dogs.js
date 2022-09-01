@@ -27,6 +27,8 @@ export const updateDog = async (dogUpdateRequest) =>
         },
     });
 
+export const reviewRecord = async (review) => axios.put(`${base}/reviewRecord`, review);
+
 // delete by id
 export const deleteById = async (dogId) => axios.delete(`${base}/${dogId}`);
 

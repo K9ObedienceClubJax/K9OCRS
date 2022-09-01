@@ -7,6 +7,8 @@ export const SERVER_DATETIME_FORMAT = 'YYYY-MM-DD[T]HH:mm:ss';
 export const timespanToMoment = (timespan) =>
     moment().startOf('day').add(moment.duration(timespan));
 
+export const getZonedMoment = date => moment.utc(date).tz(CLUB_TIME_ZONE);
+
 export const formatToServerDateTime = (datetime) => moment(datetime).format(SERVER_DATETIME_FORMAT);
 
 export const formatDogAge = (birthDate) => {

@@ -3,6 +3,7 @@
 .file-thumbnail {
     position: relative;
     display: inline-flex;
+    flex-direction: column;
     width: 126px;
     height: 126px;
     padding: 0.25rem;
@@ -14,6 +15,15 @@
 
     &:hover {
         box-shadow: app.$box-shadow-sm;
+    }
+
+    &__content {
+        width: 100%;
+        height: 100%;
+
+        &.--clickable {
+            cursor: pointer;
+        }
     }
 
     img {
@@ -44,11 +54,37 @@
         }
     }
 
+    &__approval {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1.65rem;
+        height: 1.65rem;
+        padding: 0.1rem;
+        z-index: 999;
+        color: app.$gray-900;
+        background-color: app.$info;
+        border-radius: 50%;
+
+        &.--approved {
+            background-color: app.$success;
+        }
+
+        &.--denied {
+            background-color: app.$warning;
+        }
+    }
+
     &__name {
         position: absolute;
         bottom: 0;
         background-color: app.$gray-100;
         padding: 0.1rem 0.25rem;
+    }
+
+    &__file-icon {
+        height: 100%;
+        width: 100%;
     }
 }
 

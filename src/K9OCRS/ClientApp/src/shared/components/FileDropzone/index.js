@@ -26,7 +26,13 @@ const FileDropzone = (props) => {
     const cn = 'fileDropZone';
 
     const files = acceptedFiles.map((file) => (
-        <FileThumbnail key={file.path} file={file} />
+        <FileThumbnail
+            key={file.path}
+            file={file}
+            data={{
+                filename: file.name,
+            }}
+        />
     ));
     return (
         <section className={`${cn}-container${bordered ? '--bordered' : ''}`}>

@@ -31,6 +31,7 @@ const DogSetup = (props) => {
         deleteDog,
         archiveDog,
         unarchiveDog,
+        reviewRecord,
     } = props;
 
     const navigate = useNavigate();
@@ -202,6 +203,8 @@ const DogSetup = (props) => {
                             formRef={formRef}
                             userIsAdmin={userIsAdmin}
                             ownerOptions={ownerOptions}
+                            reviewRecord={reviewRecord}
+                            setAlerts={setAlerts}
                         />
                         {!addingNewDog && dogDetails?.classes?.length > 0 && <ClassTable />}
                     </>
@@ -229,5 +232,6 @@ export default connect(
         deleteDog: actions.deleteDog,
         archiveDog: actions.archiveDog,
         unarchiveDog: actions.unarchiveDog,
+        reviewRecord: actions.reviewRecord,
     }
 )(DogSetup);

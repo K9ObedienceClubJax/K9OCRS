@@ -14,7 +14,7 @@ namespace K9OCRS.Models.DogManagement
         [Required]
         public DateTime DateOfBirth { get; set; }
         public IFormFile Image { get; set; }
-        public IFormFile VaccinationRecord { get; set; }
+        public List<IFormFile> VaccinationRecordsToAdd { get; set; }
 
         public IEnumerable<int> OwnersIdsToInsert { get; set; } = new List<int>();
     }

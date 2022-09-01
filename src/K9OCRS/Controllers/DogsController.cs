@@ -16,6 +16,7 @@ using K9OCRS.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using K9OCRS.Models;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 
 namespace K9OCRS.Controllers
 {
@@ -64,8 +65,7 @@ namespace K9OCRS.Controllers
                     DateOfBirth = request.DateOfBirth,
                 };
 
-                var result = await connectionOwner.UseTransaction(async (conn, tr) =>
-                {
+                var result = await connectionOwner.UseTransaction(async (conn, tr) => {
                     var dog = await dbOwner.Dogs.Add(conn, tr, entity);
 
                     if (request.OwnersIdsToInsert.Any())
@@ -84,7 +84,7 @@ namespace K9OCRS.Controllers
                         // Assign dog to the user that created it
                         await dbOwner.UserDogs.AssignDogToCurrentUser(conn, tr, dog.ID);
                     }
-                    
+
                     tr.Commit();
                     return dog;
                 });
@@ -97,12 +97,9 @@ namespace K9OCRS.Controllers
                     });
                 }
 
-                if (request.VaccinationRecord != null)
+                if (request.VaccinationRecordsToAdd != null && request.VaccinationRecordsToAdd.Count > 0)
                 {
-                    await UploadRecord(result.ID, new FileUpload
-                    {
-                        Files = new List<IFormFile> { request.VaccinationRecord },
-                    });
+                    await UploadRecords(result.ID, request.VaccinationRecordsToAdd);
                 }
 
                 return Ok(result);
@@ -120,8 +117,7 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var dogs = await connectionOwner.Use(conn =>
-                {
+                var dogs = await connectionOwner.Use(conn => {
                     return dbOwner.Dogs.GetAll(conn);
                 });
 
@@ -130,7 +126,7 @@ namespace K9OCRS.Controllers
                 //returns list of dogs
                 return Ok(dogResults);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -143,8 +139,7 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var dogs = await connectionOwner.Use(conn =>
-                {
+                var dogs = await connectionOwner.Use(conn => {
                     return dbOwner.Dogs.GetOwnedDogs(conn);
                 });
 
@@ -166,18 +161,22 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var (dog, owners) = await connectionOwner.Use(async conn =>
-                {
+                var (dog, owners, vaccinationRecords) = await connectionOwner.Use(async conn => {
                     var _dog = await dbOwner.Dogs.GetByID(conn, Id);
                     var _owners = await dbOwner.Users.GetDogOwners(conn, Id);
+                    var _vaccinationRecords = await dbOwner.VaccinationRecords.GetByID(conn, "DogID", Id);
 
-                    return (_dog, _owners);
+                    return (_dog, _owners, _vaccinationRecords);
                 });
 
                 var dogResult = dog.ToDogResult(serviceConstants.storageBasePath);
                 var ownerResults = owners.Select(o => o.ToUserResult(serviceConstants.storageBasePath)).ToList();
+                var vaccinationRecordResults = vaccinationRecords
+                    .Select(vr => vr.ToVaccinationRecordResult(serviceConstants.storageBasePath))
+                    .ToList();
 
                 dogResult.Owners = ownerResults;
+                dogResult.VaccinationRecords = vaccinationRecordResults;
 
                 //returns a dog
                 return Ok(dogResult);
@@ -195,8 +194,7 @@ namespace K9OCRS.Controllers
             try
             {
                 var existingDog = await connectionOwner.Use(conn => dbOwner.Dogs.GetByID(conn, request.ID));
-                var result = await connectionOwner.UseTransaction(async (conn, tr) =>
-                {
+                var result = await connectionOwner.UseTransaction(async (conn, tr) => {
                     var entity = new Dog(existingDog);
 
                     entity.Name = request.Name;
@@ -247,12 +245,16 @@ namespace K9OCRS.Controllers
                     });
                 }
 
-                if (request.VaccinationRecord != null)
+                if (request.VaccinationRecordsToAdd != null && request.VaccinationRecordsToAdd.Count > 0)
                 {
-                    await UploadRecord(request.ID, new FileUpload
-                    {
-                        Files = new List<IFormFile> { request.VaccinationRecord },
-                    });
+                    await UploadRecords(request.ID, request.VaccinationRecordsToAdd);
+                }
+
+                if (request.VaccinationRecordsToRemove != null)
+                {
+                    var vRecordsToRemove = JsonSerializer.Deserialize<IEnumerable<VaccinationRecord>>(request.VaccinationRecordsToRemove);
+                    var fileNames = vRecordsToRemove.Select(vr => vr.Filename).ToList();
+                    await DeleteRecords(request.ID, fileNames);
                 }
 
                 return Ok(result);
@@ -295,14 +297,13 @@ namespace K9OCRS.Controllers
         {
             try
             {
-                var result = await connectionOwner.Use(conn =>
-                {
+                var result = await connectionOwner.Use(conn => {
                     return dbOwner.Dogs.Delete(conn, id);
                 });
 
                 return Ok(result);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -322,7 +323,7 @@ namespace K9OCRS.Controllers
         [HttpPut("{dogId}/image")]
         public async Task<IActionResult> UpdateImage(int dogId, [FromForm] FileUpload upload)
         {
-            if(upload.Files != null && upload.Files.Count > 0)
+            if (upload.Files != null && upload.Files.Count > 0)
             {
                 var data = await upload.Files[0].ToBinaryData();
 
@@ -331,8 +332,7 @@ namespace K9OCRS.Controllers
 
                 await storageClient.UploadFile(UploadType.DogProfilePicture, filePath, upload.Files[0].ContentType, data);
 
-                await connectionOwner.Use(conn =>
-                {
+                await connectionOwner.Use(conn => {
                     return dbOwner.Dogs.UpdateImage(conn, dogId, filename);
                 });
 
@@ -361,24 +361,119 @@ namespace K9OCRS.Controllers
 
         #endregion
 
-        #region Vaccines
-        [HttpPut("{dogId}/vaccine")]
-        public async Task<IActionResult> UploadRecord(int dogId, [FromForm] FileUpload upload)
+        #region Vaccination Records
+
+        [HttpPut("reviewRecord")]
+        public async Task<ActionResult> ReviewRecord(VaccinationRecordReview review)
         {
-            if (upload.Files != null && upload.Files.Count > 0)
+            try
             {
-                var data = await upload.Files[0].ToBinaryData();
-
-                var filePath = String.Concat(dogId.ToString(), "/", dogId, Path.GetExtension(upload.Files[0].FileName));
-                var filename = Path.GetFileName(filePath);
-
-                await storageClient.UploadFile(UploadType.VaccinationRecord, filePath, upload.Files[0].ContentType, data);
-
-                await connectionOwner.Use(conn => {
-                    return dbOwner.VaccinationRecords.VaccineUpload(conn, dogId, filename);
+                var result = await connectionOwner.Use(conn => {
+                    return dbOwner.VaccinationRecords.ReviewRecord(conn, review.ID, review.Approved, review.ExpireDate);
                 });
 
-                return Ok();
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        private async Task<ActionResult> UploadRecords(int dogId, List<IFormFile> files)
+        {
+            var tasks = new List<Task>();
+
+            if (files != null && files.Count > 0)
+            {
+                for (int i = 0; i < files.Count; i++)
+                {
+                    var data = await files[i].ToBinaryData();
+                    var ext = Path.GetExtension(files[i].FileName);
+                    var contType = files[i].ContentType;
+
+                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
+                        try
+                        {
+                            var vaccinationRecord = new VaccinationRecord
+                            {
+                                DogID = dogId,
+                                Filename = "creating",
+                                OriginalFilename = files[i].FileName,
+                            };
+
+                            var vaccinationRecordResult = await dbOwner.VaccinationRecords.Add(conn, tr, vaccinationRecord);
+
+                            var filePath = $"{dogId}/{vaccinationRecordResult.ID}-{dogId}-vrecord{ext}";
+
+                            var filename = Path.GetFileName(filePath);
+
+                            await storageClient.UploadFile(UploadType.VaccinationRecord, filePath, contType, data);
+
+                            vaccinationRecord.ID = vaccinationRecordResult.ID;
+                            vaccinationRecord.Filename = filename;
+
+                            await dbOwner.VaccinationRecords.Update(conn, tr, vaccinationRecord);
+
+                            tr.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            tr.Rollback();
+                            throw new Exception(ex.Message);
+                        }
+                    }));
+                }
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "An error ocurred while uploading dog Vaccination Records");
+                }
+            }
+
+            return BadRequest();
+        }
+
+        private async Task<ActionResult> DeleteRecords(int dogId, List<string> fileNames)
+        {
+            var tasks = new List<Task>();
+
+            if (fileNames != null && fileNames.Count > 0)
+            {
+                for (int i = 0; i < fileNames.Count; i++)
+                {
+                    var filePath = $"{dogId}/{fileNames[i]}";
+
+                    var vrecordId = Int32.Parse(fileNames[i].Substring(0, fileNames[i].IndexOf('-')));
+
+                    tasks.Add(connectionOwner.UseTransaction(async (conn, tr) => {
+                        try
+                        {
+                            await dbOwner.VaccinationRecords.Delete(conn, tr, vrecordId);
+                            await storageClient.DeleteFile(UploadType.VaccinationRecord, filePath);
+                            tr.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            tr.Rollback();
+                        }
+                    }));
+                }
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "An error ocurred while deleting vaccination records");
+                }
             }
 
             return BadRequest();
