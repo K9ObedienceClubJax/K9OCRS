@@ -30,3 +30,4 @@ export const updateDog = makeAction('UPDATE_DOG');
 export const deleteDog = makeAction('DELETE_DOG');
 export const archiveDog = makeAction('ARCHIVE_DOG');
 export const unarchiveDog = makeAction('UNARCHIVE_DOG');
+export const reviewRecord = makeAction('REVIEW_RECORD');

@@ -10,7 +10,8 @@ const dogTemplate = ({ value }) => {
         <ProfileBadge
             id={value?.id}
             imageUrl={value?.profilePictureUrl}
-            fullName={value?.name}
+            firstName={value?.name}
+            lastName={value?.lastName}
             isDog
             link
         />
@@ -33,6 +34,7 @@ const Columns = [
         accessor: (row) => ({
             id: row.id,
             name: row.name,
+            lastName: row.lastName,
             profilePictureUrl: row.profilePictureUrl,
         }),
         Cell: alignmentWrapper('left', dogTemplate),

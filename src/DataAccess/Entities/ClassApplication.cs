@@ -37,6 +37,10 @@ namespace DataAccess.Entities
         [ExportIgnore]
         public string PaymentMethodName { get; set; }
 
+        [TransactionIgnore]
+        [ExportIgnore]
+        public Dog Dog { get; set; }
+
         #endregion
 
         public ClassApplication() { }

@@ -31,6 +31,7 @@ const DogSetup = (props) => {
         deleteDog,
         archiveDog,
         unarchiveDog,
+        reviewRecord,
     } = props;
 
     const navigate = useNavigate();
@@ -117,12 +118,14 @@ const DogSetup = (props) => {
 
     const cancelUrl = isManagement ? '/Manage/Dogs' : '/Account/MyDogs';
 
+    const dogName = loading
+        ? 'Loading...'
+        : `${dogDetails?.name} ${isManagement ? dogDetails?.lastName : ''}`;
+
     return (
         <div className={cn}>
             <PageHeader
-                title={
-                    !addingNewDog ? `Dog Setup: ${dogDetails?.name ?? 'Loading...'}` : 'Dog Setup'
-                }
+                title={!addingNewDog ? `Dog Setup: ${dogName}` : 'Dog Setup'}
                 breadCrumbItems={breadCrumbItems}
                 alerts={alerts}
                 setAlerts={setAlerts}
@@ -200,6 +203,8 @@ const DogSetup = (props) => {
                             formRef={formRef}
                             userIsAdmin={userIsAdmin}
                             ownerOptions={ownerOptions}
+                            reviewRecord={reviewRecord}
+                            setAlerts={setAlerts}
                         />
                         {!addingNewDog && dogDetails?.classes?.length > 0 && <ClassTable />}
                     </>
@@ -227,5 +232,6 @@ export default connect(
         deleteDog: actions.deleteDog,
         archiveDog: actions.archiveDog,
         unarchiveDog: actions.unarchiveDog,
+        reviewRecord: actions.reviewRecord,
     }
 )(DogSetup);

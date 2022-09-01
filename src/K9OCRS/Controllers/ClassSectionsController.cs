@@ -16,6 +16,7 @@ using System.Data.SqlClient;
 using K9OCRS.Utils.Constants;
 using K9OCRS.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using K9OCRS.Models.ApplicationsManagement;
 
 namespace K9OCRS.Controllers
 {
@@ -76,10 +77,14 @@ namespace K9OCRS.Controllers
 
         [HttpGet("roster/{classSectionId}")]
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.Instructor))]
-        //[ProducesResponseType(typeof(ClassSectionResult), 200)]
+        [ProducesResponseType(typeof(IEnumerable<RosterEntry>), 200)]
         public async Task<IActionResult> GetRoster(int classSectionId)
         {
-            throw new NotImplementedException();
+            var roster = await connectionOwner.Use(conn => dbOwner.ClassApplications.GetSectionRoster(conn, classSectionId));
+
+            var mappedRoster = roster.Select(ca => new RosterEntry(ca, serviceConstants.storageBasePath));
+
+            return Ok(mappedRoster);
         }
 
         [HttpPost]

@@ -209,6 +209,15 @@ function* unarchiveDog({ payload }) {
     }
 }
 
+function* reviewRecord({ payload: { data, setAlerts } }) {
+    try {
+        yield call(dogApi.reviewRecord, data);
+        yield call(fetchDogDetails, { payload: { dogId: data?.dogId, setAlerts } });
+    } catch (err) {
+        console.err(err);
+    }
+}
+
 const sagas = [
     takeEvery(actions.fetchMyDogsList, fetchMyDogsList),
     takeEvery(actions.fetchDogList, fetchDogList),
@@ -220,6 +229,7 @@ const sagas = [
     takeLatest(actions.archiveDog, archiveDog),
     takeLatest(actions.unarchiveDog, unarchiveDog),
     takeLatest(actions.deleteDog, deleteDog),
+    takeEvery(actions.reviewRecord, reviewRecord),
 ];
 
 export default sagas;
