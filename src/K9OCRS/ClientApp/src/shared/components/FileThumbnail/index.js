@@ -7,12 +7,14 @@ import {
     BsCheckCircle,
     BsExclamationCircle,
     BsDashCircle,
+    BsFileEarmarkTextFill,
 } from 'react-icons/bs';
+import { testImageFilename } from 'src/util/files';
 
 import './styles.scss';
 
 const FileThumbnail = (props) => {
-    const { src, data, alt, file, removable, handleRemove, showApprovalStatus } = props;
+    const { src, data, alt, file, removable, handleRemove, handleClick, showApprovalStatus } = props;
 
     const cn = 'file-thumbnail';
 
@@ -34,6 +36,8 @@ const FileThumbnail = (props) => {
         approvalIcon = <BsExclamationCircle className={approvalCn} />;
     }
 
+    const noImage = !testImageFilename(data?.filename);
+
     return (
         <div className={cn}>
             {removable ? (
@@ -43,10 +47,18 @@ const FileThumbnail = (props) => {
                 />
             ) : null}
             {showApprovalStatus ? approvalIcon : null}
-            <img
-                src={file ? URL.createObjectURL(file) : src}
-                alt={`Thumbnail of ${file?.path || alt}`}
-            />
+            <div
+                className={`${cn}__content ${handleClick === null ? '' : '--clickable'}`}
+                onClick={() => handleClick(data)}
+            >
+                {noImage
+                    ? <BsFileEarmarkTextFill className={`${cn}__file-icon`} />
+                    : <img
+                        src={file ? URL.createObjectURL(file) : src}
+                        alt={`Thumbnail of ${file?.path || alt}`}
+                    />}
+            </div>
+            <span>{data.filename}</span>
         </div>
     );
 };
@@ -59,6 +71,7 @@ FileThumbnail.defaultProps = {
     removable: false,
     showApprovalStatus: false,
     handleRemove: () => {},
+    handleClick: null,
 };
 
 FileThumbnail.propTypes = {
@@ -69,6 +82,7 @@ FileThumbnail.propTypes = {
     removable: PropTypes.bool,
     showApprovalStatus: PropTypes.bool,
     handleRemove: PropTypes.func,
+    handleClick: PropTypes.func,
 };
 
 export default FileThumbnail;

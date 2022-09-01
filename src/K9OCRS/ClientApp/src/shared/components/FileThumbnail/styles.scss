@@ -3,6 +3,7 @@
 .file-thumbnail {
     position: relative;
     display: inline-flex;
+    flex-direction: column;
     width: 126px;
     height: 126px;
     padding: 0.25rem;
@@ -14,6 +15,15 @@
 
     &:hover {
         box-shadow: app.$box-shadow-sm;
+    }
+
+    &__content {
+        width: 100%;
+        height: 100%;
+
+        &.--clickable {
+            cursor: pointer;
+        }
     }
 
     img {
@@ -70,6 +80,11 @@
         bottom: 0;
         background-color: app.$gray-100;
         padding: 0.1rem 0.25rem;
+    }
+
+    &__file-icon {
+        height: 100%;
+        width: 100%;
     }
 }
 

@@ -263,12 +263,14 @@ const DogEditor = (props) => {
                             onChange={(files) => setVaccinationRecordsToAdd(files)}
                             bordered
                         />
+                        <h4>Received Records</h4>
                         {vaccinationRecords?.map((vr, idx) => (
                             <FileThumbnail
                                 key={vr.id}
                                 src={vr.fileUrl}
                                 data={vr}
                                 handleRemove={() => handleRemove(vr, idx)}
+                                handleClick={(data) => console.log(data)}
                                 removable
                                 showApprovalStatus
                             />
