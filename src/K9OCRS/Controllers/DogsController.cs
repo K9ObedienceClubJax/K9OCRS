@@ -399,6 +399,7 @@ namespace K9OCRS.Controllers
                             {
                                 DogID = dogId,
                                 Filename = "creating",
+                                OriginalFilename = files[i].FileName,
                             };
 
                             var vaccinationRecordResult = await dbOwner.VaccinationRecords.Add(conn, tr, vaccinationRecord);

@@ -12,6 +12,7 @@ namespace DataAccess.Entities
             ID = entity.ID;
             DogID = entity.DogID;
             Filename = entity.Filename;
+            OriginalFilename = entity.OriginalFilename;
             ExpireDate = entity.ExpireDate;
             ModifiedByID = entity.ModifiedByID;
             ModifiedByName = entity.ModifiedByName;
@@ -26,6 +27,8 @@ namespace DataAccess.Entities
         public int DogID { get; set; }
         [JsonPropertyName("filename")]
         public string Filename { get; set; }
+        [JsonPropertyName("originalFilename")]
+        public string OriginalFilename { get; set; }
         public DateTime? ExpireDate { get; set; } = null;
     }
 }

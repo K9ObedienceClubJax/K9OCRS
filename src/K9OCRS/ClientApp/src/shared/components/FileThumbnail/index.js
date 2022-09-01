@@ -58,7 +58,7 @@ const FileThumbnail = (props) => {
                         alt={`Thumbnail of ${file?.path || alt}`}
                     />}
             </div>
-            <span>{data.filename}</span>
+            <span>{data?.originalFilename}</span>
         </div>
     );
 };

@@ -9,6 +9,7 @@ namespace K9OCRS.Models.DogManagement
         public int ID { get; set; }
         public int DogID { get; set; }
         public string Filename { get; set; }
+        public string OriginalFilename { get; set; }
         public string FileUrl { get; set; }
         public DateTime? ExpireDate { get; set; } = null;
 
@@ -18,6 +19,7 @@ namespace K9OCRS.Models.DogManagement
             ID = vr.ID;
             DogID = vr.DogID;
             Filename = vr.Filename;
+            OriginalFilename = vr.OriginalFilename;
             FileUrl = GenerateFileUrl(storageBasePath);
             ExpireDate = vr.ExpireDate;
         }

@@ -2,6 +2,7 @@
     [ID]           INT          IDENTITY(1,1) NOT NULL,
     [DogID]        INT          NOT NULL,
     [Filename]     VARCHAR (70) NOT NULL,
+    [OriginalFilename]     VARCHAR (70) NOT NULL,
     [ExpireDate]   DATE         NULL,
     [ModifiedByID] INT NULL,
     [ModifiedByName] VARCHAR(128) NULL,

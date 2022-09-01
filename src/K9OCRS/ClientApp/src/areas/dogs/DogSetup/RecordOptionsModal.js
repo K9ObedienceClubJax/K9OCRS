@@ -67,9 +67,9 @@ const RecordOptionsModal = (props) => {
 
     return (
         <Modal isOpen={open} toggle={handleClose}>
-            <ModalHeader toggle={handleClose}>{data?.filename}</ModalHeader>
+            <ModalHeader toggle={handleClose}>{data?.originalFilename}</ModalHeader>
             <ModalBody className='d-flex flex-column'>
-                <a className='btn btn-secondary' href={data?.fileUrl} download>Download File</a>
+                <a className='btn btn-secondary' href={data?.fileUrl} download={data?.originalFilename}>Download File</a>
                 <hr />
                 <Label>Expiration Date</Label>
                 <Input
